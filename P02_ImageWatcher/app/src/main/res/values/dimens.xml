@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="edge_padding">12dip</dimen>  <dimen name="title_height">48dip</dimen>
+</resources>
