@@ -31,13 +31,22 @@
         </LinearLayout>
 
 
+        <ImageView
+            android:id="@+id/i_a"
+            android:layout_width="100dip"
+            android:src="@mipmap/ic_launcher"
+            android:layout_height="100dip"/>
+
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/v_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
+
     </LinearLayout>
 
-    <ch.ielse.demo.ImageWatcher
+    <ch.ielse.demo.p02.ImageWatcher
         android:id="@+id/v_image_watcher"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

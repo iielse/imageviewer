@@ -8,7 +8,7 @@
     android:padding="3dip"
     app:cardUseCompatPadding="true">
 
-    <ch.ielse.demo.p02.RatioImageView
+    <ch.ielse.demo.p03.RatioImageView
         android:id="@+id/i_picture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -1,11 +1,11 @@
-package ch.ielse.demo;
+package ch.ielse.demo.p01;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import ch.ielse.utils.FallDownToast;
+import ch.ielse.demo.p01.utils.FallDownToast;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 

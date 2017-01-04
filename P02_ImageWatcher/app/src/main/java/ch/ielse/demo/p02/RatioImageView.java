@@ -1,4 +1,4 @@
-package ch.ielse.demo;
+package ch.ielse.demo.p02;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -20,8 +20,12 @@ public class RatioImageView extends ImageView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightValue = (int) (widthSize * 1f /  mHeightRatio * mWidthRatio);
-        setMeasuredDimension(widthSize, heightValue);
+        if (mWidthRatio != 0 && mHeightRatio != 0) {
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+            int heightValue = (int) (widthSize * 1f / mHeightRatio * mWidthRatio);
+            setMeasuredDimension(widthSize, heightValue);
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
     }
 }

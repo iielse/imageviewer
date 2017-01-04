@@ -4,7 +4,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
     defaultConfig {
-        applicationId "ch.ielse.demo"
+        applicationId "ch.ielse.demo.p01"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1

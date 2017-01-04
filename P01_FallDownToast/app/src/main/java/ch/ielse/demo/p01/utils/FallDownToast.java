@@ -1,4 +1,4 @@
-package ch.ielse.utils;
+package ch.ielse.demo.p01.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import ch.ielse.demo.R;
+import ch.ielse.demo.p01.R;
 
 public class FallDownToast {
 

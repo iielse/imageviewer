@@ -1,4 +1,4 @@
-package ch.ielse.demo;
+package ch.ielse.demo.p02;
 
 import android.content.Context;
 import android.os.Build;
