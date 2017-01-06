@@ -1,17 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="3dip"
-    app:cardUseCompatPadding="true">
 
-    <ch.ielse.demo.p02.RatioImageView
-        android:id="@+id/i_picture"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="20dip"
+                android:layout_marginRight="20dip"
+                android:background="#666"
+                android:padding="12dip">
+
+    <ImageView
+        android:id="@+id/i_avatar"
+        android:layout_width="36dip"
+        android:layout_height="36dip"
+        android:layout_marginRight="10dip"/>
+
+    <TextView
+        android:id="@+id/t_nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dip"
+        android:layout_toRightOf="@+id/i_avatar"
+        android:textColor="#000"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:id="@+id/t_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/t_nickname"
+        android:layout_marginTop="1.5dip"
+        android:layout_toRightOf="@+id/i_avatar"
+        android:textColor="#777"
+        android:textSize="13sp"/>
+
+    <TextView
+        android:id="@+id/t_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="fitXY"/>
+        android:layout_below="@+id/i_avatar"
+        android:layout_marginTop="10dip"
+        android:textColor="#000"
+        android:textSize="15sp"/>
 
-</android.support.v7.widget.CardView>
+    <ch.ielse.demo.p02.MessagePicturesLayout
+        android:id="@+id/l_pictures"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/t_content"
+        android:layout_marginTop="10dip"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dip"
+        android:layout_below="@+id/l_pictures"
+        android:layout_marginLeft="3dip"
+        android:layout_marginRight="3dip"
+        android:layout_marginTop="10dip"
+        android:background="#E1E1E1"/>
+
+</RelativeLayout>

@@ -1,19 +1,61 @@
 package ch.ielse.demo.p02;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 
 public class MessageAdapter extends RecyclerView.Adapter {
+    private final List<Data> mDataList = new ArrayList<>();
+    private final CropCircleTransformation mCropCircleTransformation;
+
+    MessageAdapter(Context context) {
+        mCropCircleTransformation = new CropCircleTransformation(context);
+    }
+
+    public void set(List<Data> dataList) {
+        mDataList.clear();
+        if (dataList != null) {
+            mDataList.addAll(dataList);
+        }
+        notifyDataSetChanged();
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView iAvatar;
+        TextView tNickname, tTime, tContent;
+        MessagePicturesLayout lPictures;
+
+        Data mData;
+
         ViewHolder(View itemView) {
             super(itemView);
+            iAvatar = (ImageView) itemView.findViewById(R.id.i_avatar);
+            tNickname = (TextView) itemView.findViewById(R.id.t_nickname);
+            tTime = (TextView) itemView.findViewById(R.id.t_time);
+            tContent = (TextView) itemView.findViewById(R.id.t_content);
+            lPictures = (MessagePicturesLayout) itemView.findViewById(R.id.l_pictures);
         }
 
-        void refresh() {
+        void refresh(int pos) {
+            mData = mDataList.get(pos);
+            Glide.with(itemView.getContext()).load(mData.getAvatar())
+                    .placeholder(R.drawable.default_avatar).bitmapTransform(mCropCircleTransformation).into(iAvatar);
+            tNickname.setText(mData.getNickname());
+            tTime.setText(mData.getCreateTime());
+            tContent.setText(mData.getContent());
+//            lPictures.set(mData.getPictureList());
         }
     }
 
@@ -24,11 +66,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ((ViewHolder) holder).refresh();
+        ((ViewHolder) holder).refresh(position);
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mDataList.size();
     }
 }

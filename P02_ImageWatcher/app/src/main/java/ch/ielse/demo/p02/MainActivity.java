@@ -9,12 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 
 public class MainActivity extends Activity {
 
-    private ImageWatcher vImageWatcher;
+//    private ImageWatcher vImageWatcher;
 
     private RecyclerView vRecycler;
     private MessageAdapter adapter;
@@ -33,23 +32,17 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         Utils.fitsSystemWindows(findViewById(R.id.v_fit));
-
+//
         vRecycler = (RecyclerView) findViewById(R.id.v_recycler);
         vRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vRecycler.setAdapter(adapter = new MessageAdapter());
+        vRecycler.addItemDecoration(new SpaceItemDecoration(this).setSpace(4).setEdgeSpace(10).setSpaceColor(0xFF123456));
+        vRecycler.setAdapter(adapter = new MessageAdapter(this));
 
-        vImageWatcher = (ImageWatcher) findViewById(R.id.v_image_watcher);
 
-        final ImageView iA = (ImageView) findViewById(R.id.i_a);
-        iA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+//        vImageWatcher = (ImageWatcher) findViewById(R.id.v_image_watcher);
 
-                vImageWatcher.show(iA);
-            }
-        });
 
+        adapter.set(Data.get());
     }
-
 
 }
