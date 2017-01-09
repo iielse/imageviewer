@@ -55,7 +55,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             tNickname.setText(mData.getNickname());
             tTime.setText(mData.getCreateTime());
             tContent.setText(mData.getContent());
-//            lPictures.set(mData.getPictureList());
+            lPictures.set(mData.getPictureList());
         }
     }
 

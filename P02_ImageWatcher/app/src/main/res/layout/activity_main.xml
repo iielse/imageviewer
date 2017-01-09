@@ -33,8 +33,6 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/v_recycler"
             android:layout_width="match_parent"
-            android:layout_margin="10dip"
-            android:background="#C0F"
             android:layout_height="match_parent"/>
     </LinearLayout>
 

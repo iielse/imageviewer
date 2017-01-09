@@ -63,12 +63,6 @@ public class Data {
         dataList.add(data1);
         dataList.add(data2);
         dataList.add(data3);
-        dataList.add(data2);
-        dataList.add(data3);
-        dataList.add(data2);
-        dataList.add(data3);
-        dataList.add(data2);
-        dataList.add(data3);
         return dataList;
     }
 

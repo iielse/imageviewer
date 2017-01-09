@@ -1,9 +1,7 @@
 package ch.ielse.demo.p02;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -23,7 +21,7 @@ public class MessagePicturesLayout extends RecyclerView {
     private static final int MAX_DISPLAY_COUNT = 9;
     private final PicturesAdapter mAdapter;
     private final WrappableGridLayoutManager mLayoutManager;
-    private final SpaceGridItemDecoration mSpaceItemDecoration;
+    private final SpaceItemDecoration mSpaceItemDecoration;
 
     public void set(List<String> urlList) {
         int column = 3;
@@ -34,8 +32,6 @@ public class MessagePicturesLayout extends RecyclerView {
             column = 2;
         }
         mLayoutManager.setSpanCount(column);
-        mSpaceItemDecoration.setColumn(column, urlListSize);
-
         mAdapter.set(urlList);
     }
 
@@ -43,10 +39,7 @@ public class MessagePicturesLayout extends RecyclerView {
         super(context, attrs);
         setAdapter(mAdapter = new PicturesAdapter());
         setLayoutManager(mLayoutManager = new WrappableGridLayoutManager(getContext(), 1));
-        addItemDecoration(mSpaceItemDecoration = new SpaceGridItemDecoration(
-                getResources().getDimensionPixelSize(R.dimen.line_space_picture)
-        ));
-        setBackgroundColor(0xFFcc00ff);
+        addItemDecoration(mSpaceItemDecoration = new SpaceItemDecoration(context).setSpace(2));
     }
 
     private static class PicturesAdapter extends RecyclerView.Adapter {
@@ -97,54 +90,6 @@ public class MessagePicturesLayout extends RecyclerView {
         @Override
         public int getItemCount() {
             return mPictureUrlList.size() <= 9 ? mPictureUrlList.size() : 9;
-        }
-    }
-
-
-    private static class SpaceGridItemDecoration extends RecyclerView.ItemDecoration {
-
-
-        private int mColumn;
-        private int mSpace;
-        private int mShownDataSize;
-
-        public void setColumn(int column, int totalDataSize) {
-            if (column < 1 || totalDataSize < 0)
-                throw new IllegalArgumentException("SpaceGridItemDecoration setColumn column [" + mColumn + "] ##totalDataSize [" + totalDataSize + "]");
-
-            mColumn = column;
-            mShownDataSize = totalDataSize;
-            if (mShownDataSize > MessagePicturesLayout.MAX_DISPLAY_COUNT) {
-                mShownDataSize = MessagePicturesLayout.MAX_DISPLAY_COUNT;
-            }
-        }
-
-        public SpaceGridItemDecoration(int space) {
-            mSpace = space;
-        }
-
-        @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-            final int position = parent.getChildAdapterPosition(view);
-            Log.e("TTT", "position:" + position + "#mColumn:" + mColumn + "##((GridLayoutManager)parent.getLayoutManager()).getOrientation()" + ((GridLayoutManager)parent.getLayoutManager()).getOrientation());
-
-
-//            if ((position + 1) % mColumn != 0) {
-//                outRect.right = mSpace;
-//                Log.e("TTT", "  outRect.right = mSpace" + mSpace);
-//            } else {
-//                outRect.right = 0;
-//                Log.d("TTT", "  outRect.right = mSpace" + 0);
-//            }
-
-//            Log.e("TTT", "  mTotalDataSize" + mShownDataSize + "##(mTotalDataSize - mTotalDataSize % mColumn)" + (mShownDataSize - mShownDataSize % mColumn));
-//            if (position < (mShownDataSize - mShownDataSize % mColumn - mColumn)) {
-//                outRect.bottom = mSpace;
-//                Log.d("TTT", "  outRect.bottom = mSpace" + mSpace);
-//            } else {
-//                outRect.bottom = 0;
-//                Log.d("TTT", "  outRect.bottom = mSpace" + 0);
-//            }
         }
     }
 }

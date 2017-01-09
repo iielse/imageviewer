@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
 //
         vRecycler = (RecyclerView) findViewById(R.id.v_recycler);
         vRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vRecycler.addItemDecoration(new SpaceItemDecoration(this).setSpace(4).setEdgeSpace(10).setSpaceColor(0xFF123456));
+        vRecycler.addItemDecoration(new SpaceItemDecoration(this).setSpace(14).setSpaceColor(0xFFECECEC));
         vRecycler.setAdapter(adapter = new MessageAdapter(this));
 
 

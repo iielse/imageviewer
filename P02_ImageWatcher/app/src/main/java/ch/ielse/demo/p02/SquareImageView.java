@@ -4,10 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-/**
- * Created by LY on 2017/1/6.
- */
-
 public class SquareImageView extends ImageView {
 
     public SquareImageView(Context context, AttributeSet attrs) {
@@ -16,6 +12,9 @@ public class SquareImageView extends ImageView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // MeasureSpec.getSize(widthMeasureSpec);
+        // todo
+
         super.onMeasure(widthMeasureSpec, widthMeasureSpec);
     }
 }
