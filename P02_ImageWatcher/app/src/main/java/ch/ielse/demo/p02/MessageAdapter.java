@@ -19,9 +19,15 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 public class MessageAdapter extends RecyclerView.Adapter {
     private final List<Data> mDataList = new ArrayList<>();
     private final CropCircleTransformation mCropCircleTransformation;
+    private MessagePicturesLayout.Callback mCallback;
 
     MessageAdapter(Context context) {
         mCropCircleTransformation = new CropCircleTransformation(context);
+    }
+
+    public MessageAdapter setPictureClickCallback(MessagePicturesLayout.Callback callback) {
+        mCallback = callback;
+        return this;
     }
 
     public void set(List<Data> dataList) {
@@ -46,6 +52,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             tTime = (TextView) itemView.findViewById(R.id.t_time);
             tContent = (TextView) itemView.findViewById(R.id.t_content);
             lPictures = (MessagePicturesLayout) itemView.findViewById(R.id.l_pictures);
+            lPictures.setCallback(mCallback);
         }
 
         void refresh(int pos) {
@@ -73,4 +80,12 @@ public class MessageAdapter extends RecyclerView.Adapter {
     public int getItemCount() {
         return mDataList.size();
     }
+
+//    @Override
+//    public int getItemViewType(int position) {
+//        // recyclerView嵌套卡顿优化方案，依旧卡顿
+//        return position;
+//    }
+
+
 }

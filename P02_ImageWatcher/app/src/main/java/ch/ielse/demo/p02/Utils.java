@@ -4,9 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.view.View;
 
-/**
- * Created by LY on 2017/1/3.
- */
 
 public class Utils {
     public static void fitsSystemWindows(View view) {
