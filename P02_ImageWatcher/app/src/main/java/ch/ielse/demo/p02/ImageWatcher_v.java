@@ -38,7 +38,7 @@ import java.util.Map;
 /**
  * QQ 517309507
  */
-public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestureListener, ViewPager.OnPageChangeListener {
+public class ImageWatcher_v extends FrameLayout implements GestureDetector.OnGestureListener, ViewPager.OnPageChangeListener {
     private static final int SINGLE_TAP_UP_CONFIRMED = 1;
     private final Handler mHandler;
 
@@ -84,7 +84,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private List<String> mUrlList;
     private int initPosition;
 
-    public ImageWatcher(Context context, AttributeSet attrs) {
+    public ImageWatcher_v(Context context, AttributeSet attrs) {
         super(context, attrs);
         mHandler = new GestureHandler(this);
         mGestureDetector = new GestureDetector(context, this);
@@ -647,12 +647,14 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             itemView.addView(imageView);
             mImageMap.put(position, imageView);
 
-            if (position == initPosition && !hasPlayBeginAnimation) {
-                doEnterTransitionAnimation(imageView);
-                hasPlayBeginAnimation = true;
-            } else {
-                setDefaultDisplayConfigs(imageView, position);
-            }
+//            if (position == initPosition && !hasPlayBeginAnimation) {
+//                doEnterTransitionAnimation(imageView);
+//                hasPlayBeginAnimation = true;
+//            } else {
+//                setDefaultDisplayConfigs(imageView, position);
+//            }
+
+            hasPlayBeginAnimation = setDefaultDisplayConfigs(imageView, position, hasPlayBeginAnimation);
 
             return itemView;
         }
@@ -663,8 +665,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         }
     }
 
-    private void setDefaultDisplayConfigs(final ImageView imageView, final int pos ) {
-        ImageWatcher.this.setVisibility(View.VISIBLE);
+    private boolean setDefaultDisplayConfigs(final ImageView imageView, final int pos, boolean hasPlayBeginAnimation) {
+        ImageWatcher_v.this.setVisibility(View.VISIBLE);
 
 //        final String currentUrl = mUrlList.get(pos);
 //        imageView.setTag(currentUrl);
@@ -672,7 +674,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         ImageView originRef = null;
         if (pos < mImageGroupList.size()) originRef = mImageGroupList.get(pos);
         if (originRef != null) {
-            int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY ;
+//            int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY ;
 
             int[] location = new int[2];
             originRef.getLocationOnScreen(location);
@@ -684,133 +686,165 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             viewStateOrigin.width = originRef.getWidth();
             viewStateOrigin.height = originRef.getHeight();
 
-            int originImageWidth = (int) originRef.getTag(R.id.image_width);
-            int originImageHeight = (int) originRef.getTag(R.id.image_height);
-
-            if (originImageWidth * 1f / originRef.getHeight() > mWidth * 1f / mHeight) {
-                sourceDefaultWidth = mWidth;
-                sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
-                sourceDefaultTranslateX = 0;
-                sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
-                imageView.setTag(R.id.image_orientation, "horizontal");
-            } else {
-                sourceDefaultHeight = mHeight;
-                sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
-                sourceDefaultTranslateY = 0;
-                sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
-                imageView.setTag(R.id.image_orientation, "vertical");
-            }
-            imageView.setTranslationX(sourceDefaultTranslateX);
-            imageView.setTranslationY(sourceDefaultTranslateY);
-            imageView.getLayoutParams().width = sourceDefaultWidth;
-            imageView.getLayoutParams().height = sourceDefaultHeight;
-            ViewState.write(imageView, ViewState.STATE_DEFAULT);
-            Glide.with(imageView.getContext()).load(mUrlList.get(pos)).into(imageView);
-        } else {
-            Glide.with(imageView.getContext()).load(mUrlList.get(pos)).asBitmap().into(new SimpleTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-//                    if (imageView.getTag() != null &&
-//                            TextUtils.equals(currentUrl, String.valueOf(imageView.getTag()))){
-                    int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
-                    int originImageWidth = resource.getWidth();
-                    int originImageHeight = resource.getHeight();
-
-                    if (originImageWidth * 1f / originImageHeight > mWidth * 1f / mHeight) {
-                        sourceDefaultWidth = mWidth;
-                        sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
-                        sourceDefaultTranslateX = 0;
-                        sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
-                        imageView.setTag(R.id.image_orientation, "horizontal");
-                    } else {
-                        sourceDefaultHeight = mHeight;
-                        sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
-                        sourceDefaultTranslateY = 0;
-                        sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
-                        imageView.setTag(R.id.image_orientation, "vertical");
-                    }
-                    imageView.setTranslationX(sourceDefaultTranslateX);
-                    imageView.setTranslationY(sourceDefaultTranslateY);
-                    imageView.getLayoutParams().width = sourceDefaultWidth;
-                    imageView.getLayoutParams().height = sourceDefaultHeight;
-                    ViewState.write(imageView, ViewState.STATE_DEFAULT);
-                    imageView.setImageBitmap(resource);
-                }
-            });
+//            int originImageWidth = (int) originRef.getTag(R.id.image_width);
+//            int originImageHeight = (int) originRef.getTag(R.id.image_height);
+//
+//            if (originImageWidth * 1f / originRef.getHeight() > mWidth * 1f / mHeight) {
+//                sourceDefaultWidth = mWidth;
+//                sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
+//                sourceDefaultTranslateX = 0;
+//                sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
+//                imageView.setTag(R.id.image_orientation, "horizontal");
+//            } else {
+//                sourceDefaultHeight = mHeight;
+//                sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
+//                sourceDefaultTranslateY = 0;
+//                sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
+//                imageView.setTag(R.id.image_orientation, "vertical");
+//            }
+//            imageView.setTranslationX(sourceDefaultTranslateX);
+//            imageView.setTranslationY(sourceDefaultTranslateY);
+//            imageView.getLayoutParams().width = sourceDefaultWidth;
+//            imageView.getLayoutParams().height = sourceDefaultHeight;
+//            ViewState.write(imageView, ViewState.STATE_DEFAULT);
+//            Glide.with(imageView.getContext()).load(mUrlList.get(pos)).into(imageView);
         }
 
+        final boolean animPlayingTag = !hasPlayBeginAnimation && pos == initPosition;
 
+        Glide.with(imageView.getContext()).load(mUrlList.get(pos)).asBitmap().into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+               final int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
+               final int originImageWidth = resource.getWidth();
+                final int originImageHeight = resource.getHeight();
+                if (originImageWidth * 1f / originImageHeight > mWidth * 1f / mHeight) {
+                    sourceDefaultWidth = mWidth;
+                    sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
+                    sourceDefaultTranslateX = 0;
+                    sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
+                    imageView.setTag(R.id.image_orientation, "horizontal");
+                } else {
+                    sourceDefaultHeight = mHeight;
+                    sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
+                    sourceDefaultTranslateY = 0;
+                    sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
+                    imageView.setTag(R.id.image_orientation, "vertical");
+                }
+                imageView.setTranslationX(sourceDefaultTranslateX);
+                imageView.setTranslationY(sourceDefaultTranslateY);
+                imageView.getLayoutParams().width = sourceDefaultWidth;
+                imageView.getLayoutParams().height = sourceDefaultHeight;
+                ViewState.write(imageView, ViewState.STATE_DEFAULT);
+                imageView.setImageBitmap(resource);
+
+
+                if (animPlayingTag) {
+                    iSource = imageView;
+                    final ViewState viewStateOrigin = ViewState.read(imageView, ViewState.STATE_ORIGIN);
+                    // 此事件执行时间段内 禁止 触摸
+                    if (animTransitions != null) animTransitions.cancel();
+                    animTransitions = null;
+                    animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
+                    animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            float p = (float) animation.getAnimatedValue();
+
+                            iSource.getLayoutParams().width = (int) (iOrigin.getWidth() + (sourceDefaultWidth - iOrigin.getWidth()) * p);
+                            iSource.getLayoutParams().height = (int) (iOrigin.getHeight() + (sourceDefaultHeight - iOrigin.getHeight()) * p);
+                            iSource.requestLayout();
+
+                            iSource.setTranslationX(viewStateOrigin.translationX + (sourceDefaultTranslateX - viewStateOrigin.translationX) * p);
+                            iSource.setTranslationY(viewStateOrigin.translationY + (sourceDefaultTranslateY - viewStateOrigin.translationY) * p);
+                            setBackgroundColor(mColorEvaluator.evaluate(p, 0x00000000, 0xFF000000));
+                        }
+                    });
+                    animTransitions.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            ViewState.write(iSource, ViewState.STATE_DEFAULT);
+                        }
+                    });
+                    animTransitions.addListener(mAnimTransitionStateListener);
+                    animTransitions.start();
+                }
+            }
+        });
+
+
+        return animPlayingTag;
     }
 
     private void doEnterTransitionAnimation(ImageView imageView) {
-        Bitmap mInitBitmap = (Bitmap) iOrigin.getTag(R.id.image_bitmap);
-        if (mInitBitmap == null) {
-            return;
-        }
-        iSource = imageView;
-        iSource.setImageBitmap(mInitBitmap);
+//        Bitmap mInitBitmap = (Bitmap) iOrigin.getTag(R.id.image_bitmap);
+//        if (mInitBitmap == null) {
+//            return;
+//        }
+//        iSource = imageView;
+//        iSource.setImageBitmap(mInitBitmap);
+//
+//        iOrigin.setVisibility(View.INVISIBLE);
+//        ImageWatcher.this.setVisibility(View.VISIBLE);
+//        int[] location = new int[2];
+//        iOrigin.getLocationOnScreen(location);
+//
+//        iSource.setTranslationX(location[0]);
+//        int locationYOfFullScreen = location[1];
+//        locationYOfFullScreen -= mStatusBarHeight;
+//        iSource.setTranslationY(locationYOfFullScreen);
+//
+//        final ViewState viewStateOrigin = ViewState.write(iSource, ViewState.STATE_ORIGIN);
+//        viewStateOrigin.width = iOrigin.getWidth();
+//        viewStateOrigin.height = iOrigin.getHeight();
+//
+//        final int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
+//
+//        int originImageWidth = (int) iOrigin.getTag(R.id.image_width);
+//        int originImageHeight = (int) iOrigin.getTag(R.id.image_height);
+//        Log.e("TTT", "AAA bitmap.getWidth():" + mInitBitmap.getWidth() + "#bitmap.getHeight():" + mInitBitmap.getWidth() + "#iOrigin.getWidth():" + iOrigin.getWidth() + "#iOrigin.getHeight():" + iOrigin.getHeight()
+//                + "#originTagWidth:" + originImageWidth + "##originTagHeight:" + originImageHeight);
+//
+//        if (originImageWidth * 1f / iOrigin.getHeight() > mWidth * 1f / mHeight) {
+//            sourceDefaultWidth = mWidth;
+//            sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
+//            sourceDefaultTranslateX = 0;
+//            sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
+//            iSource.setTag(R.id.image_orientation, "horizontal");
+//        } else {
+//            sourceDefaultHeight = mHeight;
+//            sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
+//            sourceDefaultTranslateY = 0;
+//            sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
+//            iSource.setTag(R.id.image_orientation, "vertical");
+//        }
 
-        iOrigin.setVisibility(View.INVISIBLE);
-        ImageWatcher.this.setVisibility(View.VISIBLE);
-        int[] location = new int[2];
-        iOrigin.getLocationOnScreen(location);
-
-        iSource.setTranslationX(location[0]);
-        int locationYOfFullScreen = location[1];
-        locationYOfFullScreen -= mStatusBarHeight;
-        iSource.setTranslationY(locationYOfFullScreen);
-
-        final ViewState viewStateOrigin = ViewState.write(iSource, ViewState.STATE_ORIGIN);
-        viewStateOrigin.width = iOrigin.getWidth();
-        viewStateOrigin.height = iOrigin.getHeight();
-
-        final int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
-
-        int originImageWidth = (int) iOrigin.getTag(R.id.image_width);
-        int originImageHeight = (int) iOrigin.getTag(R.id.image_height);
-        Log.e("TTT", "AAA bitmap.getWidth():" + mInitBitmap.getWidth() + "#bitmap.getHeight():" + mInitBitmap.getWidth() + "#iOrigin.getWidth():" + iOrigin.getWidth() + "#iOrigin.getHeight():" + iOrigin.getHeight()
-                + "#originTagWidth:" + originImageWidth + "##originTagHeight:" + originImageHeight);
-
-        if (originImageWidth * 1f / iOrigin.getHeight() > mWidth * 1f / mHeight) {
-            sourceDefaultWidth = mWidth;
-            sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
-            sourceDefaultTranslateX = 0;
-            sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
-            iSource.setTag(R.id.image_orientation, "horizontal");
-        } else {
-            sourceDefaultHeight = mHeight;
-            sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
-            sourceDefaultTranslateY = 0;
-            sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
-            iSource.setTag(R.id.image_orientation, "vertical");
-        }
-
-        // 此事件执行时间段内 禁止 触摸
-        if (animTransitions != null) animTransitions.cancel();
-        animTransitions = null;
-        animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-        animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float p = (float) animation.getAnimatedValue();
-
-                iSource.getLayoutParams().width = (int) (viewStateOrigin.width + (sourceDefaultWidth - viewStateOrigin.width) * p);
-                iSource.getLayoutParams().height = (int) (viewStateOrigin.height + (sourceDefaultHeight - viewStateOrigin.height) * p);
-                iSource.requestLayout();
-
-                iSource.setTranslationX(viewStateOrigin.translationX + (sourceDefaultTranslateX - viewStateOrigin.translationX) * p);
-                iSource.setTranslationY(viewStateOrigin.translationY + (sourceDefaultTranslateY - viewStateOrigin.translationY) * p);
-                setBackgroundColor(mColorEvaluator.evaluate(p, 0x00000000, 0xFF000000));
-            }
-        });
-        animTransitions.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                ViewState.write(iSource, ViewState.STATE_DEFAULT);
-            }
-        });
-        animTransitions.addListener(mAnimTransitionStateListener);
-        animTransitions.start();
+//        // 此事件执行时间段内 禁止 触摸
+//        if (animTransitions != null) animTransitions.cancel();
+//        animTransitions = null;
+//        animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
+//        animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                float p = (float) animation.getAnimatedValue();
+//
+//                iSource.getLayoutParams().width = (int) (viewStateOrigin.width + (sourceDefaultWidth - viewStateOrigin.width) * p);
+//                iSource.getLayoutParams().height = (int) (viewStateOrigin.height + (sourceDefaultHeight - viewStateOrigin.height) * p);
+//                iSource.requestLayout();
+//
+//                iSource.setTranslationX(viewStateOrigin.translationX + (sourceDefaultTranslateX - viewStateOrigin.translationX) * p);
+//                iSource.setTranslationY(viewStateOrigin.translationY + (sourceDefaultTranslateY - viewStateOrigin.translationY) * p);
+//                setBackgroundColor(mColorEvaluator.evaluate(p, 0x00000000, 0xFF000000));
+//            }
+//        });
+//        animTransitions.addListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                ViewState.write(iSource, ViewState.STATE_DEFAULT);
+//            }
+//        });
+//        animTransitions.addListener(mAnimTransitionStateListener);
+//        animTransitions.start();
     }
 
     static class ViewState {
@@ -851,9 +885,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     private static class GestureHandler extends Handler {
-        WeakReference<ImageWatcher> mRef;
+        WeakReference<ImageWatcher_v> mRef;
 
-        public GestureHandler(ImageWatcher ref) {
+        public GestureHandler(ImageWatcher_v ref) {
             mRef = new WeakReference(ref);
         }
 

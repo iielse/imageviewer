@@ -1,15 +1,21 @@
 package ch.ielse.demo.p02;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +27,11 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
 
     public static final int MAX_DISPLAY_COUNT = 9;
     private final FrameLayout.LayoutParams lpChildImage = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    private final int mSingleMaxSize;
     private final int mSpace;
     private List<ImageView> iPictureList = new ArrayList<>();
+    private TextView tOverflowCount;
+
 
     private Callback mCallback;
     private boolean isInit;
@@ -30,7 +39,9 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
 
     public MessagePicturesLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
         DisplayMetrics mDisplayMetrics = context.getResources().getDisplayMetrics();
+        mSingleMaxSize = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 216, mDisplayMetrics) + 0.5f);
         mSpace = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, mDisplayMetrics) + 0.5f);
 
         for (int i = 0; i < MAX_DISPLAY_COUNT; i++) {
@@ -41,6 +52,14 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
             addView(squareImageView);
             iPictureList.add(squareImageView);
         }
+
+        tOverflowCount = new TextView(context);
+        tOverflowCount.setTextColor(0xFFFFFFFF);
+        tOverflowCount.setTextSize(24);
+        tOverflowCount.setGravity(Gravity.CENTER);
+        tOverflowCount.setBackgroundColor(0x99000000);
+        tOverflowCount.setVisibility(View.GONE);
+        addView(tOverflowCount);
     }
 
     public void set(List<String> urlList) {
@@ -69,21 +88,41 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
             row = 1;
         }
 
-        final int imageSize = (int) ((getWidth() * 1f - mSpace * (column - 1)) / column);
+        final int imageSize = urlListSize == 1 ? mSingleMaxSize :
+                (int) ((getWidth() * 1f - mSpace * (column - 1)) / column);
+
         lpChildImage.width = imageSize;
         lpChildImage.height = lpChildImage.width;
 
+        tOverflowCount.setVisibility(urlListSize > MAX_DISPLAY_COUNT ? View.VISIBLE : View.GONE);
+        tOverflowCount.setText("+ " + (urlListSize - MAX_DISPLAY_COUNT));
+        tOverflowCount.setLayoutParams(lpChildImage);
+
         for (int i = 0; i < iPictureList.size(); i++) {
-            ImageView iPicture = iPictureList.get(i);
+            final ImageView iPicture = iPictureList.get(i);
+            iPicture.setImageResource(R.drawable.default_picture);
+
             if (i < urlListSize) {
                 iPicture.setVisibility(View.VISIBLE);
                 iPicture.setLayoutParams(lpChildImage);
-                Glide.with(getContext()).load(dataList.get(i))
-                        .placeholder(R.drawable.default_picture).into(iPicture);
+                Glide.with(getContext()).load(dataList.get(i)).asBitmap().into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        iPicture.setTag(R.id.image_width, resource.getWidth());
+                        iPicture.setTag(R.id.image_height, resource.getHeight());
+                        iPicture.setTag(R.id.image_bitmap, resource);
+                        iPicture.setImageBitmap(resource);
+                    }
+                });
                 iPicture.setTranslationX((i % column) * (imageSize + mSpace));
                 iPicture.setTranslationY((i / column) * (imageSize + mSpace));
             } else {
                 iPicture.setVisibility(View.GONE);
+            }
+
+            if (i == MAX_DISPLAY_COUNT - 1) {
+                tOverflowCount.setTranslationX((i % column) * (imageSize + mSpace));
+                tOverflowCount.setTranslationY((i / column) * (imageSize + mSpace));
             }
         }
 

@@ -16,7 +16,6 @@
         android:id="@+id/t_nickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/i_avatar"
         android:textColor="#000"
         android:textSize="15sp"/>
@@ -26,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/t_nickname"
-        android:layout_marginTop="1.5dip"
+        android:layout_marginTop="0.5dip"
         android:layout_toRightOf="@+id/i_avatar"
         android:textColor="#777"
         android:textSize="13sp"/>
