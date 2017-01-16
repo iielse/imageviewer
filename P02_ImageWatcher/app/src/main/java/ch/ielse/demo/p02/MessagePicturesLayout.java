@@ -1,8 +1,6 @@
 package ch.ielse.demo.p02;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -14,8 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +25,9 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
     private final FrameLayout.LayoutParams lpChildImage = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
     private final int mSingleMaxSize;
     private final int mSpace;
-    private List<ImageView> iPictureList = new ArrayList<>();
-    private TextView tOverflowCount;
-
+    private final List<ImageView> iPictureList = new ArrayList<>();
+    private final List<ImageView> mVisiblePictureList = new ArrayList<>();
+    private final TextView tOverflowCount;
 
     private Callback mCallback;
     private boolean isInit;
@@ -98,22 +94,26 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
         tOverflowCount.setText("+ " + (urlListSize - MAX_DISPLAY_COUNT));
         tOverflowCount.setLayoutParams(lpChildImage);
 
+        mVisiblePictureList.clear();
         for (int i = 0; i < iPictureList.size(); i++) {
             final ImageView iPicture = iPictureList.get(i);
             iPicture.setImageResource(R.drawable.default_picture);
 
             if (i < urlListSize) {
                 iPicture.setVisibility(View.VISIBLE);
+                mVisiblePictureList.add(iPicture);
                 iPicture.setLayoutParams(lpChildImage);
-                Glide.with(getContext()).load(dataList.get(i)).asBitmap().into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        iPicture.setTag(R.id.image_width, resource.getWidth());
-                        iPicture.setTag(R.id.image_height, resource.getHeight());
-                        iPicture.setTag(R.id.image_bitmap, resource);
-                        iPicture.setImageBitmap(resource);
-                    }
-                });
+//                Glide.with(getContext()).load(dataList.get(i)).asBitmap().into(new SimpleTarget<Bitmap>() {
+//                    @Override
+//                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+////                        iPicture.setTag(R.id.image_width, resource.getWidth());
+////                        iPicture.setTag(R.id.image_height, resource.getHeight());
+//                        iPicture.setTag(R.id.image_bitmap, true);
+//                        iPicture.setImageBitmap(resource);
+//                    }
+//                });
+
+                Glide.with(getContext()).load(dataList.get(i)).asBitmap().into(iPicture);
                 iPicture.setTranslationX((i % column) * (imageSize + mSpace));
                 iPicture.setTranslationY((i / column) * (imageSize + mSpace));
             } else {
@@ -131,14 +131,13 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        int idx = iPictureList.indexOf(v);
-        if (mCallback != null && idx >= 0) {
-            mCallback.onPictureClick((ImageView) v, idx, iPictureList, mDataList);
+        if (mCallback != null) {
+            mCallback.onPictureClick((ImageView) v, mVisiblePictureList, mDataList);
         }
     }
 
     public interface Callback {
-        void onPictureClick(ImageView i, int pos, List<ImageView> imageGroupList, List<String> urlList);
+        void onPictureClick(ImageView i, List<ImageView> imageGroupList, List<String> urlList);
     }
 
     public void setCallback(Callback callback) {

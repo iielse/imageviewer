@@ -7,6 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
@@ -14,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -30,9 +32,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -40,6 +40,7 @@ import java.util.Map;
  */
 public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestureListener, ViewPager.OnPageChangeListener {
     private static final int SINGLE_TAP_UP_CONFIRMED = 1;
+    private static final int EXIT_PAGER_FAST_SLIDE = 2;
     private final Handler mHandler;
 
     static final float MIN_SCALE = 0.5f;
@@ -48,18 +49,20 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     static int MAX_TRANSLATE_Y;
 
     private static final int TOUCH_MODE_NONE = 0; // 无状态
-    private static final int TOUCH_MODE_DRAG = 1; // 单点拖拽
-    private static final int TOUCH_MODE_EXIT = 2; // 退出动作
-    private static final int TOUCH_MODE_SLIDE = 3; // 页面滑动
-    private static final int TOUCH_MODE_SCALE_ROTATE = 4; // 缩放旋转
-    private static final int TOUCH_MODE_LOCK = 8; // 锁定
-    private static final int TOUCH_MODE_AUTO_FLING = 9; // 动画中
+    private static final int TOUCH_MODE_DOWN = 1; // 按下
+    private static final int TOUCH_MODE_DRAG = 2; // 单点拖拽
+    private static final int TOUCH_MODE_EXIT = 3; // 退出动作
+    private static final int TOUCH_MODE_SLIDE = 4; // 页面滑动
+    private static final int TOUCH_MODE_SCALE_ROTATE = 5; // 缩放旋转
+    private static final int TOUCH_MODE_LOCK = 6; // 锁定
+    private static final int TOUCH_MODE_AUTO_FLING = 7; // 动画中
 
     private TextView tCurrentIdx;
     private int mStatusBarHeight;
     private ImageView iSource;
     private ImageView iOrigin;
 
+    private float mDragEdge;
     private int mWidth, mHeight;
     private int mBackgroundColor;
 
@@ -67,14 +70,14 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private float mTouchSlop;
 
     private float mFingersDistance;
-    private double mFingersAngle; // 相对于[东] point0作为起点;point1作为终点
+    private double mFingersAngle; // 相对于[ 东] point0作为起点;point1作为终点
     private float mFingersCenterX;
     private float mFingersCenterY;
 
     private ValueAnimator animTransitions;
+    private boolean isInTransitionsAnimation;
     private final GestureDetector mGestureDetector;
 
-    private boolean isInTransitionsAnimation;
     float mExitScalingRef; // 触摸退出进度
 
     private ImagePagerAdapter adapter;
@@ -98,56 +101,55 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         tCurrentIdx.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         tCurrentIdx.setTranslationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, displayMetrics) + 0.5f);
+
+        mDragEdge = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, displayMetrics) + 0.5f;
     }
 
-    public void show(ImageView i, final int pos, List<ImageView> imageGroupList, final List<String> urlList) {
-        Log.e("TTT", "AAA show!! pos:" + pos + "urllistsize:" + urlList.size());
-
+    public void show(ImageView i, List<ImageView> imageGroupList, final List<String> urlList) {
+        if (i == null || imageGroupList == null || urlList == null || imageGroupList.size() < 1 ||
+                urlList.size() < imageGroupList.size()) {
+            String info = "i[" + i + "]";
+            info += "#imageGroupList " + (imageGroupList == null ? "null" : "size : " + imageGroupList.size());
+            info += "#urlList " + (urlList == null ? "null" : "size :" + urlList.size());
+            throw new IllegalArgumentException("error params \n" + info);
+        }
+        initPosition = imageGroupList.indexOf(i);
+        if (initPosition < 0) {
+            throw new IllegalArgumentException("error params initPosition " + initPosition);
+        }
         mImageGroupList = imageGroupList;
         mUrlList = urlList;
-        iOrigin = i;
-        initPosition = pos;
-        if (iOrigin == null || mImageGroupList == null || mUrlList == null || initPosition < 0 || initPosition >= mImageGroupList.size()) {
-            Log.e("TTT", "AAA 参数错误");
-            return;
-        }
-        if (mImageGroupList.indexOf(iOrigin) != pos) {
-            Log.e("TTT", "AAA originImageView 需要是 list里面的");
-            return;
-        }
 
-        // Log.e("TTT" , "AAA init bitmap width:" + mInitBitmap.getWidth() + "#height:" + mInitBitmap.getHeight() + "##mOriginVie width:" + iOrigin.getWidth() + "#height:" + iOrigin.getHeight());
+        ImageWatcher.this.setVisibility(View.VISIBLE);
         vPager.setAdapter(adapter = new ImagePagerAdapter());
-        vPager.setCurrentItem(pos);
-        refreshCurrentIdx(pos);
+        vPager.setCurrentItem(initPosition);
+        refreshCurrentIdx(initPosition);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.e("TTT", "AAA onTouchEvent");
+        if (iSource == null) return true;
         if (isInTransitionsAnimation) return true;
 
-        final int action = event.getAction();
-        switch (action & MotionEvent.ACTION_MASK) {
+        final int action = event.getAction() & MotionEvent.ACTION_MASK;
+        switch (action) {
             case MotionEvent.ACTION_UP:
                 onUp(event);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-//                Log.e("TTT", "AAA ACTION_POINTER_DOWN 进入多手触摸状态 event.getPointerCount()" + event.getPointerCount());
-                if (mTouchMode != TOUCH_MODE_SCALE_ROTATE) {
-//                    Log.e("TTT", "AAA 记录View状态 至 ->  TOUCH_MODE_SCALE_ROTATE");
-                    mFingersDistance = 0;
-                    mFingersAngle = 0;
-                    mFingersCenterX = 0;
-                    mFingersCenterY = 0;
-                    ViewState.write(iSource, ViewState.STATE_TOUCH_SCALE_ROTATE);
+                if (mTouchMode != TOUCH_MODE_SLIDE) {
+                    if (mTouchMode != TOUCH_MODE_SCALE_ROTATE) {
+                        mFingersDistance = 0;
+                        mFingersAngle = 0;
+                        mFingersCenterX = 0;
+                        mFingersCenterY = 0;
+                        ViewState.write(iSource, ViewState.STATE_TOUCH_SCALE_ROTATE);
+                    }
+                    mTouchMode = TOUCH_MODE_SCALE_ROTATE;
                 }
-                mTouchMode = TOUCH_MODE_SCALE_ROTATE;
                 break;
             case MotionEvent.ACTION_POINTER_UP:
-//                Log.e("TTT", "AAA ACTION_POINTER_UP event.getPointerCount()" + event.getPointerCount());
-                if (event.getPointerCount() - 1 < 2) {
-//                    Log.e("TTT", "AAA 记录View状态 至 ->  TOUCH_MODE_LOCK");
+                if (event.getPointerCount() - 1 < 1 + 1) {
                     mTouchMode = TOUCH_MODE_LOCK;
                 }
                 break;
@@ -156,17 +158,34 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        Log.e("TTT", "AAA onScroll");
-        if (mTouchMode == TOUCH_MODE_AUTO_FLING) return false;
+    public boolean onDown(MotionEvent e) {
+        mTouchMode = TOUCH_MODE_DOWN;
+        ViewState.write(iSource, ViewState.STATE_TOUCH_DOWN);
+        vPager.onTouchEvent(e);
+        return true;
+    }
 
+    public void onUp(MotionEvent e) {
+        if (mTouchMode == TOUCH_MODE_EXIT) {
+            handleExitTouchResult();
+        } else if (mTouchMode == TOUCH_MODE_SCALE_ROTATE
+                || mTouchMode == TOUCH_MODE_LOCK) {
+            handleScaleRotateTouchResult();
+        } else if (mTouchMode == TOUCH_MODE_DRAG) {
+            handleDragTouchResult();
+        } else if (mTouchMode == TOUCH_MODE_SLIDE) {
+        }
+        vPager.onTouchEvent(e);
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         final float moveX = e2.getX() - e1.getX();
         final float moveY = e2.getY() - e1.getY();
-        if (mTouchMode == TOUCH_MODE_NONE) {
+        if (mTouchMode == TOUCH_MODE_DOWN) {
             if (Math.abs(moveX) > mTouchSlop || Math.abs(moveY) > mTouchSlop) {
                 ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
                 ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-
                 if (viewStateCurrent.scaleY > viewStateDefault.scaleY || viewStateCurrent.scaleX > viewStateDefault.scaleX) {
                     // 图片为放大状态，宽或高超出了屏幕尺寸
                     if (mTouchMode != TOUCH_MODE_DRAG) {
@@ -174,6 +193,30 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                     }
                     Log.e("TTT", "AAA 记录View状态 至 ->  TOUCH_MODE_DRAG");
                     mTouchMode = TOUCH_MODE_DRAG;
+
+                    String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
+                    if ("horizontal".equals(imageOrientation)) {
+                        float translateXEdge = viewStateDefault.width * (viewStateCurrent.scaleX - 1) / 2;
+                        if (viewStateCurrent.translationX >= translateXEdge && moveX > 0) {
+                            mTouchMode = TOUCH_MODE_SLIDE;
+                        } else if (viewStateCurrent.translationX <= -translateXEdge && moveX < 0) {
+                            mTouchMode = TOUCH_MODE_SLIDE;
+                        }
+                    } else if ("vertical".equals(imageOrientation)) {
+                        if (viewStateDefault.width * viewStateCurrent.scaleX <= mWidth) {
+                            mTouchMode = TOUCH_MODE_SLIDE;
+                        } else {
+                            float translateXRightEdge = viewStateDefault.width * viewStateCurrent.scaleX / 2 - viewStateDefault.width / 2;
+                            float translateXLeftEdge = mWidth - viewStateDefault.width * viewStateCurrent.scaleX / 2 - viewStateDefault.width / 2;
+                            if (viewStateCurrent.translationX >= translateXRightEdge && moveX > 0) {
+                                mTouchMode = TOUCH_MODE_SLIDE;
+                            } else if (viewStateCurrent.translationX <= translateXLeftEdge && moveX < 0) {
+                                mTouchMode = TOUCH_MODE_SLIDE;
+                            }
+                        }
+                    }
+
+
                 } else if (Math.abs(moveX) < mTouchSlop && moveY > mTouchSlop * 3) {
                     // 图片为原始状态，并且尝试单手垂直下拉
                     Log.e("TTT", "AAA 记录View状态 至 ->  TOUCH_MODE_EXIT");
@@ -185,9 +228,10 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 }
             }
         }
+
         if (mTouchMode == TOUCH_MODE_SLIDE) {
-            if (!vPager.isFakeDragging()) vPager.beginFakeDrag();
-            vPager.fakeDragBy(-distanceX);
+            Log.e("TTT", "AAA onScroll 处理 TOUCH_MODE_SLIDE distanceX:" + distanceX);
+            vPager.onTouchEvent(e2);
         } else if (mTouchMode == TOUCH_MODE_SCALE_ROTATE) {
             handleScaleRotateGesture(e2);
         } else if (mTouchMode == TOUCH_MODE_EXIT) {
@@ -211,24 +255,19 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         return true;
     }
 
-    public boolean onDoubleTap(MotionEvent e) {
-        Log.e("TTT", "AAA onDoubleTap");
-        handleDoubleTapTouchResult();
-        return true;
-    }
-
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         boolean hadTapMessage = mHandler.hasMessages(SINGLE_TAP_UP_CONFIRMED);
         Log.e("TTT", "AAA onSingleTapUp hasTapMessage " + hadTapMessage);
         if (hadTapMessage) {
             mHandler.removeMessages(SINGLE_TAP_UP_CONFIRMED);
-            return onDoubleTap(e);
+            handleDoubleTapTouchResult();
+            return true;
         } else {
             Message msg = Message.obtain();
             msg.what = SINGLE_TAP_UP_CONFIRMED;
             msg.obj = e;
-            mHandler.sendMessageDelayed(msg, 300);
+            mHandler.sendMessageDelayed(msg, 350);
         }
         return false;
     }
@@ -246,32 +285,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        Log.e("TTT", "AAA onFling : velocityX" + velocityX);
+//        Log.e("TTT", "AAA onFling : velocityX" + velocityX);
         return false;
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-//        Log.e("TTT", "AAA onDown x:" + e.getX() + "#y:" + e.getY() + "#rawx:" + e.getRawX() + "#rawy:" + e.getRawY() + "#TransY:" + iSource.getTranslationY());
-        // resetTouchConfigs
-
-        mTouchMode = TOUCH_MODE_NONE;
-        ViewState.write(iSource, ViewState.STATE_TOUCH_DOWN);
-        return true;
-    }
-
-    public void onUp(MotionEvent e) {
-        if (vPager.isFakeDragging()) vPager.endFakeDrag();
-
-        Log.e("TTT", "AAA onUp touchMode:" + mTouchMode);
-        if (mTouchMode == TOUCH_MODE_EXIT) {
-            handleExitTouchResult();
-        } else if (mTouchMode == TOUCH_MODE_SCALE_ROTATE
-                || mTouchMode == TOUCH_MODE_LOCK) {
-            handleScaleRotateTouchResult();
-        } else if (mTouchMode == TOUCH_MODE_DRAG) {
-            handleDragTouchResult();
-        }
     }
 
 
@@ -294,7 +309,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         iSource.setScaleY(viewStateTouchDown.scaleY * mExitScalingRef);
         setBackgroundColor(mColorEvaluator.evaluate(mExitScalingRef, 0x00000000, 0xFF000000));
     }
-
 
     /**
      * 双手拖拽缩放旋转[移动中触摸事件处理]
@@ -355,10 +369,36 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private void handleDragGesture(MotionEvent e2, MotionEvent e1) {
         final float moveY = e2.getY() - e1.getY();
         final float moveX = e2.getX() - e1.getX();
+        final ViewState viewStateTouchDrag = ViewState.read(iSource, ViewState.STATE_DRAG);
+        final ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
 
-        ViewState viewStateTouchDrag = ViewState.read(iSource, ViewState.STATE_DRAG);
-        iSource.setTranslationX(viewStateTouchDrag.translationX + moveX * 1.4f);
-        iSource.setTranslationY(viewStateTouchDrag.translationY + moveY * 1.4f);
+        float translateXValue = viewStateTouchDrag.translationX + moveX * 1.6f;
+
+        String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
+        if ("horizontal".equals(imageOrientation)) {
+            float translateXEdge = viewStateDefault.width * (viewStateTouchDrag.scaleX - 1) / 2;
+            if (translateXValue > translateXEdge) {
+                translateXValue = translateXEdge + (translateXValue - translateXEdge) * 0.12f;
+            } else if (translateXValue < -translateXEdge) {
+                translateXValue = -translateXEdge + (translateXValue - (-translateXEdge)) * 0.12f;
+            }
+        } else if ("vertical".equals(imageOrientation)) {
+            if (viewStateDefault.width * viewStateTouchDrag.scaleX <= mWidth) {
+                mTouchMode = TOUCH_MODE_SLIDE;
+            } else {
+                float translateXRightEdge = viewStateDefault.width * viewStateTouchDrag.scaleX / 2 - viewStateDefault.width / 2;
+                float translateXLeftEdge = mWidth - viewStateDefault.width * viewStateTouchDrag.scaleX / 2 - viewStateDefault.width / 2;
+
+                if (translateXValue > translateXRightEdge) {
+                    translateXValue = translateXRightEdge + (translateXValue - translateXRightEdge) * 0.12f;
+                } else if (translateXValue < translateXLeftEdge) {
+                    translateXValue = translateXLeftEdge + (translateXValue - translateXLeftEdge) * 0.12f;
+                }
+            }
+        }
+
+        iSource.setTranslationX(translateXValue);
+        iSource.setTranslationY(viewStateTouchDrag.translationY + moveY * 1.6f);
     }
 
     /**
@@ -413,7 +453,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float p = (float) animation.getAnimatedValue();
-
 
                     iSource.getLayoutParams().width = (int) (viewStateCurrent.width + (viewStateOrigin.width - viewStateCurrent.width) * p);
                     iSource.getLayoutParams().height = (int) (viewStateCurrent.height + (viewStateOrigin.height - viewStateCurrent.height) * p);
@@ -558,18 +597,26 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 else if (viewStateCurrent.translationY < translateYTopEdge)
                     endTranslateY = translateYTopEdge;
                 else endTranslateY = viewStateCurrent.translationY;
-
             }
-
         } else if ("vertical".equals(imageOrientation)) {
-            Log.i("TTT", "vertical vertical vertical vertical");
-            endTranslateX = viewStateDefault.translationX;
-
             float translateYEdge = viewStateDefault.height * (viewStateCurrent.scaleY - 1) / 2;
             if (viewStateCurrent.translationY > translateYEdge) endTranslateY = translateYEdge;
             else if (viewStateCurrent.translationY < -translateYEdge)
                 endTranslateY = -translateYEdge;
             else endTranslateY = viewStateCurrent.translationY;
+
+            if (viewStateDefault.width * viewStateCurrent.scaleX <= mWidth) {
+                endTranslateX = viewStateDefault.translationX;
+            } else {
+                float translateXRightEdge = viewStateDefault.width * viewStateCurrent.scaleX / 2 - viewStateDefault.width / 2;
+                float translateXLeftEdge = mWidth - viewStateDefault.width * viewStateCurrent.scaleX / 2 - viewStateDefault.width / 2;
+
+                if (viewStateCurrent.translationX > translateXRightEdge)
+                    endTranslateX = translateXRightEdge;
+                else if (viewStateCurrent.translationX < translateXLeftEdge)
+                    endTranslateX = translateXLeftEdge;
+                else endTranslateX = viewStateCurrent.translationX;
+            }
         } else {
             return;
         }
@@ -602,9 +649,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public void onPageSelected(int position) {
-        Log.e("TTT", "AAA onPageSelected pos:" + position);
-        iSource = adapter.mImageMap.get(position);
-
+        iSource = adapter.mImageSparseArray.get(position);
         if (iOrigin != null) {
             iOrigin.setVisibility(View.VISIBLE);
         }
@@ -612,8 +657,12 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             iOrigin = mImageGroupList.get(position);
             iOrigin.setVisibility(View.INVISIBLE);
         }
-
         refreshCurrentIdx(position);
+
+        ImageView mLast = adapter.mImageSparseArray.get(position - 1);
+        if (mLast != null) ViewState.restore(mLast, ViewState.STATE_DEFAULT);
+        ImageView mNext = adapter.mImageSparseArray.get(position + 1);
+        if (mNext != null) ViewState.restore(mNext, ViewState.STATE_DEFAULT);
     }
 
 
@@ -622,7 +671,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     class ImagePagerAdapter extends PagerAdapter {
-        Map<Integer, ImageView> mImageMap = new HashMap<>();
+        private final SparseArray<ImageView> mImageSparseArray = new SparseArray<>();
         private boolean hasPlayBeginAnimation;
 
         @Override
@@ -632,28 +681,22 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            //  Log.e("TTT", "AAA destroyItem ViewPager 销毁:" + position);
             container.removeView((View) object);
-            mImageMap.remove(position);
+            mImageSparseArray.remove(position);
         }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            //    Log.e("TTT", "AAA instantiateItem ViewPager 装载:" + position);
             FrameLayout itemView = new FrameLayout(container.getContext());
             container.addView(itemView);
             ImageView imageView = new ImageView(container.getContext());
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             itemView.addView(imageView);
-            mImageMap.put(position, imageView);
+            mImageSparseArray.put(position, imageView);
 
-            if (position == initPosition && !hasPlayBeginAnimation) {
-                doEnterTransitionAnimation(imageView);
+            if (setDefaultDisplayConfigs(imageView, position, hasPlayBeginAnimation)) {
                 hasPlayBeginAnimation = true;
-            } else {
-                setDefaultDisplayConfigs(imageView, position);
             }
-
             return itemView;
         }
 
@@ -663,154 +706,105 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         }
     }
 
-    private void setDefaultDisplayConfigs(final ImageView imageView, final int pos ) {
-        ImageWatcher.this.setVisibility(View.VISIBLE);
+    private boolean setDefaultDisplayConfigs(final ImageView imageView, final int pos, boolean hasPlayBeginAnimation) {
+        boolean isFindEnterImagePicture = false;
 
-//        final String currentUrl = mUrlList.get(pos);
-//        imageView.setTag(currentUrl);
-
-        ImageView originRef = null;
-        if (pos < mImageGroupList.size()) originRef = mImageGroupList.get(pos);
-        if (originRef != null) {
-            int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY ;
-
+        ViewState viewStateOrigin = null;
+        if (pos < mImageGroupList.size()) {
+            ImageView originRef = mImageGroupList.get(pos);
             int[] location = new int[2];
             originRef.getLocationOnScreen(location);
             imageView.setTranslationX(location[0]);
             int locationYOfFullScreen = location[1];
             locationYOfFullScreen -= mStatusBarHeight;
             imageView.setTranslationY(locationYOfFullScreen);
-            final ViewState viewStateOrigin = ViewState.write(imageView, ViewState.STATE_ORIGIN);
+            viewStateOrigin = ViewState.write(imageView, ViewState.STATE_ORIGIN);
             viewStateOrigin.width = originRef.getWidth();
             viewStateOrigin.height = originRef.getHeight();
+            imageView.getLayoutParams().width = originRef.getWidth();
+            imageView.getLayoutParams().height = originRef.getHeight();
 
-            int originImageWidth = (int) originRef.getTag(R.id.image_width);
-            int originImageHeight = (int) originRef.getTag(R.id.image_height);
+            if (pos == initPosition && !hasPlayBeginAnimation) {
+                isFindEnterImagePicture = true;
 
-            if (originImageWidth * 1f / originRef.getHeight() > mWidth * 1f / mHeight) {
-                sourceDefaultWidth = mWidth;
-                sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
-                sourceDefaultTranslateX = 0;
-                sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
-                imageView.setTag(R.id.image_orientation, "horizontal");
-            } else {
-                sourceDefaultHeight = mHeight;
-                sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
-                sourceDefaultTranslateY = 0;
-                sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
-                imageView.setTag(R.id.image_orientation, "vertical");
+                iSource = imageView;
+                iOrigin = originRef;
+
+                if (originRef.getDrawable() != null && originRef.getDrawable() instanceof BitmapDrawable) {
+                    Bitmap bmpMirror = ((BitmapDrawable) originRef.getDrawable()).getBitmap();
+                    imageView.setImageBitmap(bmpMirror);
+                    iOrigin.setVisibility(View.INVISIBLE);
+                }
             }
-            imageView.setTranslationX(sourceDefaultTranslateX);
-            imageView.setTranslationY(sourceDefaultTranslateY);
-            imageView.getLayoutParams().width = sourceDefaultWidth;
-            imageView.getLayoutParams().height = sourceDefaultHeight;
-            ViewState.write(imageView, ViewState.STATE_DEFAULT);
-            Glide.with(imageView.getContext()).load(mUrlList.get(pos)).into(imageView);
-        } else {
-            Glide.with(imageView.getContext()).load(mUrlList.get(pos)).asBitmap().into(new SimpleTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-//                    if (imageView.getTag() != null &&
-//                            TextUtils.equals(currentUrl, String.valueOf(imageView.getTag()))){
-                    int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
-                    int originImageWidth = resource.getWidth();
-                    int originImageHeight = resource.getHeight();
+        }
 
-                    if (originImageWidth * 1f / originImageHeight > mWidth * 1f / mHeight) {
-                        sourceDefaultWidth = mWidth;
-                        sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
-                        sourceDefaultTranslateX = 0;
-                        sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
-                        imageView.setTag(R.id.image_orientation, "horizontal");
-                    } else {
-                        sourceDefaultHeight = mHeight;
-                        sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
-                        sourceDefaultTranslateY = 0;
-                        sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
-                        imageView.setTag(R.id.image_orientation, "vertical");
-                    }
+        final boolean mPlayEnterAnimation = isFindEnterImagePicture;
+        final ViewState mViewStateOrigin = viewStateOrigin;
+
+        Glide.with(imageView.getContext()).load(mUrlList.get(pos)).asBitmap().into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                final int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
+                int originImageWidth = resource.getWidth();
+                int originImageHeight = resource.getHeight();
+
+                if (originImageWidth * 1f / originImageHeight > mWidth * 1f / mHeight) {
+                    sourceDefaultWidth = mWidth;
+                    sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
+                    sourceDefaultTranslateX = 0;
+                    sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
+                    imageView.setTag(R.id.image_orientation, "horizontal");
+                } else {
+                    sourceDefaultHeight = mHeight;
+                    sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
+                    sourceDefaultTranslateY = 0;
+                    sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
+                    imageView.setTag(R.id.image_orientation, "vertical");
+                }
+
+                if (!mPlayEnterAnimation) {
                     imageView.setTranslationX(sourceDefaultTranslateX);
                     imageView.setTranslationY(sourceDefaultTranslateY);
                     imageView.getLayoutParams().width = sourceDefaultWidth;
                     imageView.getLayoutParams().height = sourceDefaultHeight;
-                    ViewState.write(imageView, ViewState.STATE_DEFAULT);
+                    ViewState viewStateDefault = ViewState.write(imageView, ViewState.STATE_DEFAULT);
+                    viewStateDefault.width = sourceDefaultWidth;
+                    viewStateDefault.height = sourceDefaultHeight;
                     imageView.setImageBitmap(resource);
+                    imageView.setAlpha(0f);
+                    imageView.animate().alpha(1).start();
+                } else {
+                    imageView.setImageBitmap(resource);
+
+                    if (animTransitions != null) animTransitions.cancel();
+                    animTransitions = null;
+                    animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
+                    animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            float p = (float) animation.getAnimatedValue();
+
+                            imageView.getLayoutParams().width = (int) (mViewStateOrigin.width + (sourceDefaultWidth - mViewStateOrigin.width) * p);
+                            imageView.getLayoutParams().height = (int) (mViewStateOrigin.height + (sourceDefaultHeight - mViewStateOrigin.height) * p);
+                            imageView.requestLayout();
+                            imageView.setTranslationX(mViewStateOrigin.translationX + (sourceDefaultTranslateX - mViewStateOrigin.translationX) * p);
+                            imageView.setTranslationY(mViewStateOrigin.translationY + (sourceDefaultTranslateY - mViewStateOrigin.translationY) * p);
+                            setBackgroundColor(mColorEvaluator.evaluate(p, 0x00000000, 0xFF000000));
+                        }
+                    });
+                    animTransitions.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            ViewState.write(iSource, ViewState.STATE_DEFAULT);
+                        }
+                    });
+                    animTransitions.addListener(mAnimTransitionStateListener);
+                    animTransitions.start();
                 }
-            });
-        }
-
-
-    }
-
-    private void doEnterTransitionAnimation(ImageView imageView) {
-        Bitmap mInitBitmap = (Bitmap) iOrigin.getTag(R.id.image_bitmap);
-        if (mInitBitmap == null) {
-            return;
-        }
-        iSource = imageView;
-        iSource.setImageBitmap(mInitBitmap);
-
-        iOrigin.setVisibility(View.INVISIBLE);
-        ImageWatcher.this.setVisibility(View.VISIBLE);
-        int[] location = new int[2];
-        iOrigin.getLocationOnScreen(location);
-
-        iSource.setTranslationX(location[0]);
-        int locationYOfFullScreen = location[1];
-        locationYOfFullScreen -= mStatusBarHeight;
-        iSource.setTranslationY(locationYOfFullScreen);
-
-        final ViewState viewStateOrigin = ViewState.write(iSource, ViewState.STATE_ORIGIN);
-        viewStateOrigin.width = iOrigin.getWidth();
-        viewStateOrigin.height = iOrigin.getHeight();
-
-        final int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
-
-        int originImageWidth = (int) iOrigin.getTag(R.id.image_width);
-        int originImageHeight = (int) iOrigin.getTag(R.id.image_height);
-        Log.e("TTT", "AAA bitmap.getWidth():" + mInitBitmap.getWidth() + "#bitmap.getHeight():" + mInitBitmap.getWidth() + "#iOrigin.getWidth():" + iOrigin.getWidth() + "#iOrigin.getHeight():" + iOrigin.getHeight()
-                + "#originTagWidth:" + originImageWidth + "##originTagHeight:" + originImageHeight);
-
-        if (originImageWidth * 1f / iOrigin.getHeight() > mWidth * 1f / mHeight) {
-            sourceDefaultWidth = mWidth;
-            sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / originImageWidth * originImageHeight);
-            sourceDefaultTranslateX = 0;
-            sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
-            iSource.setTag(R.id.image_orientation, "horizontal");
-        } else {
-            sourceDefaultHeight = mHeight;
-            sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / originImageHeight * originImageWidth);
-            sourceDefaultTranslateY = 0;
-            sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
-            iSource.setTag(R.id.image_orientation, "vertical");
-        }
-
-        // 此事件执行时间段内 禁止 触摸
-        if (animTransitions != null) animTransitions.cancel();
-        animTransitions = null;
-        animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-        animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float p = (float) animation.getAnimatedValue();
-
-                iSource.getLayoutParams().width = (int) (viewStateOrigin.width + (sourceDefaultWidth - viewStateOrigin.width) * p);
-                iSource.getLayoutParams().height = (int) (viewStateOrigin.height + (sourceDefaultHeight - viewStateOrigin.height) * p);
-                iSource.requestLayout();
-
-                iSource.setTranslationX(viewStateOrigin.translationX + (sourceDefaultTranslateX - viewStateOrigin.translationX) * p);
-                iSource.setTranslationY(viewStateOrigin.translationY + (sourceDefaultTranslateY - viewStateOrigin.translationY) * p);
-                setBackgroundColor(mColorEvaluator.evaluate(p, 0x00000000, 0xFF000000));
             }
         });
-        animTransitions.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                ViewState.write(iSource, ViewState.STATE_DEFAULT);
-            }
-        });
-        animTransitions.addListener(mAnimTransitionStateListener);
-        animTransitions.start();
+
+        return mPlayEnterAnimation;
     }
 
     static class ViewState {
@@ -831,6 +825,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         float alpha;
 
         static ViewState write(View view, int tag) {
+            if (view == null) return null;
+
             ViewState viewState = read(view, tag);
             if (viewState == null) view.setTag(tag, viewState = new ViewState());
 
@@ -848,24 +844,38 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         static ViewState read(View view, int tag) {
             return view.getTag(tag) != null ? (ViewState) view.getTag(tag) : null;
         }
+
+        static void restore(View view, int tag) {
+            ViewState viewState = read(view, tag);
+            if (viewState != null) {
+                view.animate().translationX(viewState.translationX).translationY(viewState.translationY)
+                        .scaleX(viewState.scaleX).scaleY(viewState.scaleY).rotation(viewState.rotation)
+                        .alpha(viewState.alpha).start();
+            }
+        }
     }
 
     private static class GestureHandler extends Handler {
         WeakReference<ImageWatcher> mRef;
 
-        public GestureHandler(ImageWatcher ref) {
-            mRef = new WeakReference(ref);
+        GestureHandler(ImageWatcher ref) {
+            mRef = new WeakReference<>(ref);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case SINGLE_TAP_UP_CONFIRMED:
-                    if (mRef.get() != null)
-                        mRef.get().onSingleTapConfirmed((MotionEvent) msg.obj);
-                    break;
-                default:
-                    throw new RuntimeException("Unknown message " + msg); //never
+            if (mRef.get() != null) {
+                ImageWatcher holder = mRef.get();
+                switch (msg.what) {
+                    case SINGLE_TAP_UP_CONFIRMED:
+                        holder.onSingleTapConfirmed((MotionEvent) msg.obj);
+                        break;
+                    case EXIT_PAGER_FAST_SLIDE:
+                        holder.mTouchMode = ImageWatcher.TOUCH_MODE_NONE;
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown message " + msg); //never
+                }
             }
         }
     }
@@ -946,8 +956,14 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         if (isInTransitionsAnimation) return true;
 
         if (getVisibility() == View.VISIBLE) {
-            mExitScalingRef = 0;
-            handleExitTouchResult();
+            ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
+            ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+            if (viewStateCurrent.scaleY <= viewStateDefault.scaleY && viewStateCurrent.scaleX <= viewStateDefault.scaleX) {
+                mExitScalingRef = 0;
+                handleExitTouchResult();
+            } else {
+                handleDoubleTapTouchResult();
+            }
             return true;
         }
         return false;

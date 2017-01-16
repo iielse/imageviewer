@@ -67,7 +67,7 @@ public class Data {
         data4.content = "人与人间的信任，就像是纸片，一旦破损，就不会再回到原来的样子。";
         data4.pictureList = Arrays.asList(
                 "http://img.my.csdn.net/uploads/201701/13/1484296303_7395.png",
-                "http://img.my.csdn.net/uploads/201701/13/1484296303_5044.jpg",
+                "http://img.my.csdn.net/uploads/201701/13/1484296122_9613.jpg",
                 "http://img.my.csdn.net/uploads/201701/13/1484296303_6984.png"
         );
 
@@ -78,7 +78,7 @@ public class Data {
         data5.content = "雪.触之即化..愿永久飘零";
         data5.pictureList = Arrays.asList(
                 "http://img.my.csdn.net/uploads/201701/13/1484296288_3031.png",
-                "http://img.my.csdn.net/uploads/201701/13/1484296122_9613.jpg"
+                "http://img.my.csdn.net/uploads/201701/13/1484296303_5044.jpg"
         );
 
         Data data6 = new Data();

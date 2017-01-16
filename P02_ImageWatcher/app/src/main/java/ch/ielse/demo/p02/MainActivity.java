@@ -49,13 +49,13 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
     }
 
     @Override
-    public void onPictureClick(ImageView i, int pos, List<ImageView> imageGroupList, List<String> urlList) {
-        vImageWatcher.show(i, pos, imageGroupList, urlList);
+    public void onPictureClick(ImageView i, List<ImageView> imageGroupList, List<String> urlList) {
+        vImageWatcher.show(i, imageGroupList, urlList);
     }
 
     @Override
     public void onBackPressed() {
-        if (!vImageWatcher.handleBackPressed()){
+        if (!vImageWatcher.handleBackPressed()) {
             super.onBackPressed();
         }
     }
