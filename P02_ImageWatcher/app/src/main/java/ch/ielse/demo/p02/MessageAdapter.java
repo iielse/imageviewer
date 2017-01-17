@@ -62,7 +62,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
             tNickname.setText(mData.getNickname());
             tTime.setText(mData.getCreateTime());
             tContent.setText(mData.getContent());
-            lPictures.set(mData.getPictureList());
+            lPictures.set(mData.getPictureThumbList(), mData.getPictureList());
         }
     }
 
@@ -73,12 +73,12 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ((ViewHolder) holder).refresh(position);
+        ((ViewHolder) holder).refresh(position % mDataList.size());
     }
 
     @Override
     public int getItemCount() {
-        return mDataList.size();
+        return 99999;
     }
 
 //    @Override

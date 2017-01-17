@@ -32,6 +32,7 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
     private Callback mCallback;
     private boolean isInit;
     private List<String> mDataList;
+    private List<String> mThumbDataList;
 
     public MessagePicturesLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -53,12 +54,13 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
         tOverflowCount.setTextColor(0xFFFFFFFF);
         tOverflowCount.setTextSize(24);
         tOverflowCount.setGravity(Gravity.CENTER);
-        tOverflowCount.setBackgroundColor(0x99000000);
+        tOverflowCount.setBackgroundColor(0x66000000);
         tOverflowCount.setVisibility(View.GONE);
         addView(tOverflowCount);
     }
 
-    public void set(List<String> urlList) {
+    public void set(List<String> urlThumbList, List<String> urlList) {
+        mThumbDataList = urlThumbList;
         mDataList = urlList;
         if (isInit) {
             notifyDataChanged();
@@ -66,8 +68,12 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
     }
 
     private void notifyDataChanged() {
-        final List<String> dataList = mDataList;
-        final int urlListSize = dataList != null ? mDataList.size() : 0;
+        final List<String> dataList = mThumbDataList;
+        final int urlListSize = dataList != null ? mThumbDataList.size() : 0;
+
+        if (mDataList == null || mDataList.size() != urlListSize) {
+            throw new IllegalArgumentException("dataList.size != thumbDataList.size");
+        }
 
         int column = 3;
         if (urlListSize == 1) {
@@ -97,23 +103,12 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
         mVisiblePictureList.clear();
         for (int i = 0; i < iPictureList.size(); i++) {
             final ImageView iPicture = iPictureList.get(i);
-            iPicture.setImageResource(R.drawable.default_picture);
-
             if (i < urlListSize) {
                 iPicture.setVisibility(View.VISIBLE);
                 mVisiblePictureList.add(iPicture);
                 iPicture.setLayoutParams(lpChildImage);
-//                Glide.with(getContext()).load(dataList.get(i)).asBitmap().into(new SimpleTarget<Bitmap>() {
-//                    @Override
-//                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-////                        iPicture.setTag(R.id.image_width, resource.getWidth());
-////                        iPicture.setTag(R.id.image_height, resource.getHeight());
-//                        iPicture.setTag(R.id.image_bitmap, true);
-//                        iPicture.setImageBitmap(resource);
-//                    }
-//                });
-
-                Glide.with(getContext()).load(dataList.get(i)).asBitmap().into(iPicture);
+                iPicture.setBackgroundResource(R.drawable.default_picture);
+                Glide.with(getContext()).load(dataList.get(i)).into(iPicture);
                 iPicture.setTranslationX((i % column) * (imageSize + mSpace));
                 iPicture.setTranslationY((i / column) * (imageSize + mSpace));
             } else {
@@ -125,7 +120,6 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
                 tOverflowCount.setTranslationY((i / column) * (imageSize + mSpace));
             }
         }
-
         getLayoutParams().height = imageSize * row + mSpace * (row - 1);
     }
 
