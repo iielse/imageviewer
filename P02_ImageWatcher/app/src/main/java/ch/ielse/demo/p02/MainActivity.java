@@ -10,11 +10,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.List;
 
 
-public class MainActivity extends Activity implements MessagePicturesLayout.Callback {
+public class MainActivity extends Activity implements MessagePicturesLayout.Callback, ImageWatcher.OnPictureLongPressListener {
 
     private ImageWatcher vImageWatcher;
 
@@ -36,8 +37,6 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Utils.fitsSystemWindows(findViewById(R.id.v_fit));
-
         vRecycler = (RecyclerView) findViewById(R.id.v_recycler);
         vRecycler.setLayoutManager(new LinearLayoutManager(this));
         vRecycler.addItemDecoration(new SpaceItemDecoration(this).setSpace(14).setSpaceColor(0xFFECECEC));
@@ -46,11 +45,20 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
 
         vImageWatcher = (ImageWatcher) findViewById(R.id.v_image_watcher);
         vImageWatcher.setTranslucentStatus(!isTranslucentStatus ? Utils.calcStatusBarHeight(this) : 0);
+        vImageWatcher.setErrorImageRes(R.mipmap.error_picture);
+        vImageWatcher.setOnPictureLongPressListener(this);
+
+        Utils.fitsSystemWindows(isTranslucentStatus, findViewById(R.id.v_fit));
     }
 
     @Override
-    public void onPictureClick(ImageView i, List<ImageView> imageGroupList, List<String> urlList) {
+    public void onThumbPictureClick(ImageView i, List<ImageView> imageGroupList, List<String> urlList) {
         vImageWatcher.show(i, imageGroupList, urlList);
+    }
+
+    @Override
+    public void onPictureLongPress(ImageView v, String url, int pos) {
+        Toast.makeText(v.getContext().getApplicationContext(), "长按了第" + (pos + 1) + "张图片", Toast.LENGTH_SHORT).show();
     }
 
     @Override

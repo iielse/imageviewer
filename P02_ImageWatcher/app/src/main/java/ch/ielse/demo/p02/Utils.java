@@ -1,13 +1,12 @@
 package ch.ielse.demo.p02;
 
 import android.content.Context;
-import android.os.Build;
 import android.view.View;
 
 
 public class Utils {
-    public static void fitsSystemWindows(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    public static void fitsSystemWindows(boolean isTranslucentStatus, View view) {
+        if (isTranslucentStatus) {
             view.getLayoutParams().height = calcStatusBarHeight(view.getContext());
         }
     }

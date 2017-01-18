@@ -52,34 +52,34 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private static final int TOUCH_MODE_EXIT = 3; // 退出动作
     private static final int TOUCH_MODE_SLIDE = 4; // 页面滑动
     private static final int TOUCH_MODE_SCALE_ROTATE = 5; // 缩放旋转
-    private static final int TOUCH_MODE_LOCK = 6; // 锁定
+    private static final int TOUCH_MODE_LOCK = 6; // 缩放旋转锁定
     private static final int TOUCH_MODE_AUTO_FLING = 7; // 动画中
 
     private TextView tCurrentIdx;
-    private int mStatusBarHeight;
     private ImageView iSource;
     private ImageView iOrigin;
 
+    private int mErrorImageRes = R.mipmap.error_picture;
+    private int mStatusBarHeight;
     private int mWidth, mHeight;
-    private int mBackgroundColor;
-
-    private int mTouchMode;
+    private int mBackgroundColor = 0x00000000;
+    private int mTouchMode = TOUCH_MODE_NONE;
     private float mTouchSlop;
 
     private float mFingersDistance;
-    private double mFingersAngle; // 相对于[ 东] point0作为起点;point1作为终点
+    private double mFingersAngle; // 相对于[东] point0作为起点;point1作为终点
     private float mFingersCenterX;
     private float mFingersCenterY;
+    private float mExitScalingRef; // 触摸退出进度
 
-    private ValueAnimator animTransitions;
-    private boolean isInTransitionsAnimation;
+    private ValueAnimator animBackground;
+    private ValueAnimator animImageTransform;
+    private boolean isInTransformAnimation;
     private final GestureDetector mGestureDetector;
 
-    float mExitScalingRef; // 触摸退出进度
-
+    private OnPictureLongPressListener mPictureLongPressListener;
     private ImagePagerAdapter adapter;
     private ViewPager vPager;
-    // private Bitmap mInitBitmap;
     private List<ImageView> mImageGroupList;
     private List<String> mUrlList;
     private int initPosition;
@@ -100,6 +100,11 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         tCurrentIdx.setTranslationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, displayMetrics) + 0.5f);
     }
 
+    /**
+     * @param i              被点击的ImageView
+     * @param imageGroupList 被点击的ImageView的所在列表，加载图片时会提前展示列表中已经下载完成的thumb图片
+     * @param urlList        被加载的图片url列表，数量必须大于等于 imageGroupList.size。 且顺序应当和imageGroupList保持一致
+     */
     public void show(ImageView i, List<ImageView> imageGroupList, final List<String> urlList) {
         if (i == null || imageGroupList == null || urlList == null || imageGroupList.size() < 1 ||
                 urlList.size() < imageGroupList.size()) {
@@ -112,10 +117,11 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         if (initPosition < 0) {
             throw new IllegalArgumentException("error params initPosition " + initPosition);
         }
+
         if (i.getDrawable() == null) return;
 
-        if (animTransitions != null) animTransitions.cancel();
-        animTransitions = null;
+        if (animImageTransform != null) animImageTransform.cancel();
+        animImageTransform = null;
 
         mImageGroupList = imageGroupList;
         mUrlList = urlList;
@@ -132,9 +138,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (iSource == null) return true;
-        if (isInTransitionsAnimation) return true;
+        if (isInTransformAnimation) return true;
 
-        ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+        ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
 
         final int action = event.getAction() & MotionEvent.ACTION_MASK;
         switch (action) {
@@ -142,7 +148,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 onUp(event);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (viewStateDefault != null && mTouchMode != TOUCH_MODE_SLIDE) {
+                if (vsDefault != null && mTouchMode != TOUCH_MODE_SLIDE) {
                     if (mTouchMode != TOUCH_MODE_SCALE_ROTATE) {
                         mFingersDistance = 0;
                         mFingersAngle = 0;
@@ -154,7 +160,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 }
                 break;
             case MotionEvent.ACTION_POINTER_UP:
-                if (viewStateDefault != null && mTouchMode != TOUCH_MODE_SLIDE) {
+                if (vsDefault != null && mTouchMode != TOUCH_MODE_SLIDE) {
                     if (event.getPointerCount() - 1 < 1 + 1) {
                         mTouchMode = TOUCH_MODE_LOCK;
                     }
@@ -189,57 +195,57 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         final float moveX = e2.getX() - e1.getX();
         final float moveY = e2.getY() - e1.getY();
         if (mTouchMode == TOUCH_MODE_DOWN) {
-            Log.e("TTT", "AAA TOUCH_MODE_DOWN 开始鉴别手势");
             if (Math.abs(moveX) > mTouchSlop || Math.abs(moveY) > mTouchSlop) {
-                ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
-                ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+                ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
+                ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
 
-                if (viewStateDefault == null) {
-                    Log.e("TTT", "AAA 没有Default标志，图片正在下载");
+                if (vsDefault == null) {
+                    // 没有vsDefault标志的View说明图标正在下载中。转化为Slide手势，可以进行viewpager的翻页滑动
                     mTouchMode = TOUCH_MODE_SLIDE;
-                } else if (viewStateCurrent.scaleY > viewStateDefault.scaleY || viewStateCurrent.scaleX > viewStateDefault.scaleX) {
-                    // 图片为放大状态，宽或高超出了屏幕尺寸
+                } else if (vsCurrent.scaleY > vsDefault.scaleY || vsCurrent.scaleX > vsDefault.scaleX) {
+                    // 图片当前为放大状态。宽或高超出了屏幕尺寸
                     if (mTouchMode != TOUCH_MODE_DRAG) {
                         ViewState.write(iSource, ViewState.STATE_DRAG);
                     }
-                    Log.e("TTT", "AAA 图片为放大状态，宽或高超出了屏幕尺寸 记录View状态 至 ->TOUCH_MODE_DRAG");
+                    // 转化为Drag手势，可以对图片进行拖拽操作
                     mTouchMode = TOUCH_MODE_DRAG;
-
                     String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
                     if ("horizontal".equals(imageOrientation)) {
-                        float translateXEdge = viewStateDefault.width * (viewStateCurrent.scaleX - 1) / 2;
-                        if (viewStateCurrent.translationX >= translateXEdge && moveX > 0) {
+                        float translateXEdge = vsDefault.width * (vsCurrent.scaleX - 1) / 2;
+                        if (vsCurrent.translationX >= translateXEdge && moveX > 0) {
+                            // 图片位于边界，且仍然尝试向边界外拽动。。转化为Slide手势，可以进行viewpager的翻页滑动
                             mTouchMode = TOUCH_MODE_SLIDE;
-                        } else if (viewStateCurrent.translationX <= -translateXEdge && moveX < 0) {
+                        } else if (vsCurrent.translationX <= -translateXEdge && moveX < 0) {
+                            // 同上
                             mTouchMode = TOUCH_MODE_SLIDE;
                         }
                     } else if ("vertical".equals(imageOrientation)) {
-                        if (viewStateDefault.width * viewStateCurrent.scaleX <= mWidth) {
+                        if (vsDefault.width * vsCurrent.scaleX <= mWidth) {
+                            // 同上
                             mTouchMode = TOUCH_MODE_SLIDE;
                         } else {
-                            float translateXRightEdge = viewStateDefault.width * viewStateCurrent.scaleX / 2 - viewStateDefault.width / 2;
-                            float translateXLeftEdge = mWidth - viewStateDefault.width * viewStateCurrent.scaleX / 2 - viewStateDefault.width / 2;
-                            if (viewStateCurrent.translationX >= translateXRightEdge && moveX > 0) {
+                            float translateXRightEdge = vsDefault.width * vsCurrent.scaleX / 2 - vsDefault.width / 2;
+                            float translateXLeftEdge = mWidth - vsDefault.width * vsCurrent.scaleX / 2 - vsDefault.width / 2;
+                            if (vsCurrent.translationX >= translateXRightEdge && moveX > 0) {
+                                // 同上
                                 mTouchMode = TOUCH_MODE_SLIDE;
-                            } else if (viewStateCurrent.translationX <= translateXLeftEdge && moveX < 0) {
+                            } else if (vsCurrent.translationX <= translateXLeftEdge && moveX < 0) {
+                                // 同上
                                 mTouchMode = TOUCH_MODE_SLIDE;
                             }
                         }
                     }
                 } else if (Math.abs(moveX) < mTouchSlop && moveY > mTouchSlop * 3) {
-                    // 图片为原始状态，并且尝试单手垂直下拉
-                    Log.e("TTT", "AAA 记录View状态 至 ->  TOUCH_MODE_EXIT");
+                    // 单手垂直下拉。转化为Exit手势，可以在下拉过程中看到原始界面;
                     mTouchMode = TOUCH_MODE_EXIT;
                 } else if (Math.abs(moveX) > mTouchSlop) {
-                    // 左右滑动
-                    Log.e("TTT", "AAA 记录View状态 至 ->  TOUCH_MODE_SLIDE");
+                    // 左右滑动。转化为Slide手势，可以进行viewpager的翻页滑动
                     mTouchMode = TOUCH_MODE_SLIDE;
                 }
             }
         }
 
         if (mTouchMode == TOUCH_MODE_SLIDE) {
-            Log.e("TTT", "AAA onScroll 处理 TOUCH_MODE_SLIDE distanceX:" + distanceX);
             vPager.onTouchEvent(e2);
         } else if (mTouchMode == TOUCH_MODE_SCALE_ROTATE) {
             handleScaleRotateGesture(e2);
@@ -251,24 +257,25 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         return false;
     }
 
+    /**
+     * 处理单击的手指事件
+     */
     public boolean onSingleTapConfirmed() {
-        mHandler.removeMessages(SINGLE_TAP_UP_CONFIRMED);
-        Log.e("TTT", "AAA onSingleTapConfirmed");
-        ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
-        ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-        if (viewStateDefault == null || (viewStateCurrent.scaleY <= viewStateDefault.scaleY && viewStateCurrent.scaleX <= viewStateDefault.scaleX)) {
+        if (iSource == null) return false;
+        ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
+        ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+        if (vsDefault == null || (vsCurrent.scaleY <= vsDefault.scaleY && vsCurrent.scaleX <= vsDefault.scaleX)) {
             mExitScalingRef = 0;
-            handleExitTouchResult();
         } else {
-            handleDoubleTapTouchResult();
+            mExitScalingRef = 1;
         }
+        handleExitTouchResult();
         return true;
     }
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         boolean hadTapMessage = mHandler.hasMessages(SINGLE_TAP_UP_CONFIRMED);
-        Log.e("TTT", "AAA onSingleTapUp hasTapMessage " + hadTapMessage);
         if (hadTapMessage) {
             mHandler.removeMessages(SINGLE_TAP_UP_CONFIRMED);
             handleDoubleTapTouchResult();
@@ -281,25 +288,28 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public void onShowPress(MotionEvent e) {
-//        Log.e("TTT", "AAA onShowPress");
     }
 
     @Override
     public void onLongPress(MotionEvent e) {
-//        Log.e("TTT", "AAA onLongPress");
+        if (mPictureLongPressListener != null) {
+            mPictureLongPressListener.onPictureLongPress(iSource, mUrlList.get(vPager.getCurrentItem()), vPager.getCurrentItem());
+        }
     }
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-//        Log.e("TTT", "AAA onFling : velocityX" + velocityX);
         return false;
     }
 
-
     /**
-     * 单手退出图片查看模式[移动中触摸事件处理]
+     * 处理响应退出图片查看
      */
     private void handleExitGesture(MotionEvent e2, MotionEvent e1) {
+        if (iSource == null) return;
+        ViewState vsTouchDown = ViewState.read(iSource, ViewState.STATE_TOUCH_DOWN);
+        if (vsTouchDown == null) return;
+
         mExitScalingRef = 1;
         final float moveY = e2.getY() - e1.getY();
         final float moveX = e2.getX() - e1.getX();
@@ -308,22 +318,20 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         }
         if (mExitScalingRef < MIN_SCALE) mExitScalingRef = MIN_SCALE;
 
-        ViewState viewStateTouchDown = ViewState.read(iSource, ViewState.STATE_TOUCH_DOWN);
-        if (viewStateTouchDown == null) return;
-
-        iSource.setTranslationX(viewStateTouchDown.translationX + moveX);
-        iSource.setTranslationY(viewStateTouchDown.translationY + moveY);
-        iSource.setScaleX(viewStateTouchDown.scaleX * mExitScalingRef);
-        iSource.setScaleY(viewStateTouchDown.scaleY * mExitScalingRef);
+        iSource.setTranslationX(vsTouchDown.translationX + moveX);
+        iSource.setTranslationY(vsTouchDown.translationY + moveY);
+        iSource.setScaleX(vsTouchDown.scaleX * mExitScalingRef);
+        iSource.setScaleY(vsTouchDown.scaleY * mExitScalingRef);
         setBackgroundColor(mColorEvaluator.evaluate(mExitScalingRef, 0x00000000, 0xFF000000));
     }
 
     /**
-     * 双手拖拽缩放旋转[移动中触摸事件处理]
+     * 处理响应双手拖拽缩放旋转
      */
     private void handleScaleRotateGesture(MotionEvent e2) {
-        final ViewState viewStateTouchScaleRotate = ViewState.read(iSource, ViewState.STATE_TOUCH_SCALE_ROTATE);
-        if (viewStateTouchScaleRotate == null) return;
+        if (iSource == null) return;
+        final ViewState vsTouchScaleRotate = ViewState.read(iSource, ViewState.STATE_TOUCH_SCALE_ROTATE);
+        if (vsTouchScaleRotate == null) return;
 
         final float deltaX = e2.getX(1) - e2.getX(0);
         final float deltaY = e2.getY(1) - e2.getY(0);
@@ -332,7 +340,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         if (mFingersAngle == 0) mFingersAngle = angle;
 
         float changedAngle = (float) (mFingersAngle - angle);
-        float changedAngleValue = (viewStateTouchScaleRotate.rotation + changedAngle) % 360;
+        float changedAngleValue = (vsTouchScaleRotate.rotation + changedAngle) % 360;
         if (changedAngleValue > 180) {
             changedAngleValue = changedAngleValue - 360;
         } else if (changedAngleValue < -180) {
@@ -344,11 +352,11 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         if (mFingersDistance == 0) mFingersDistance = distance;
 
         float changedScale = (mFingersDistance - distance) / (mWidth * 0.8f);
-        float scaleResultX = viewStateTouchScaleRotate.scaleX - changedScale;
+        float scaleResultX = vsTouchScaleRotate.scaleX - changedScale;
         if (scaleResultX < MIN_SCALE) scaleResultX = MIN_SCALE;
         else if (scaleResultX > MAX_SCALE) scaleResultX = MAX_SCALE;
         iSource.setScaleX(scaleResultX);
-        float scaleResultY = viewStateTouchScaleRotate.scaleY - changedScale;
+        float scaleResultY = vsTouchScaleRotate.scaleY - changedScale;
         if (scaleResultY < MIN_SCALE) scaleResultY = MIN_SCALE;
         else if (scaleResultY > MAX_SCALE) scaleResultY = MAX_SCALE;
         iSource.setScaleY(scaleResultY);
@@ -360,45 +368,47 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             mFingersCenterY = centerY;
         }
         float changedCenterX = mFingersCenterX - centerX;
-        float changedCenterXValue = viewStateTouchScaleRotate.translationX - changedCenterX;
+        float changedCenterXValue = vsTouchScaleRotate.translationX - changedCenterX;
         if (changedCenterXValue > MAX_TRANSLATE_X) changedCenterXValue = MAX_TRANSLATE_X;
         else if (changedCenterXValue < -MAX_TRANSLATE_X) changedCenterXValue = -MAX_TRANSLATE_X;
         iSource.setTranslationX(changedCenterXValue);
 
         float changedCenterY = mFingersCenterY - centerY;
-        float changedCenterYValue = viewStateTouchScaleRotate.translationY - changedCenterY;
+        float changedCenterYValue = vsTouchScaleRotate.translationY - changedCenterY;
         if (changedCenterYValue > MAX_TRANSLATE_Y) changedCenterYValue = MAX_TRANSLATE_Y;
         else if (changedCenterYValue < -MAX_TRANSLATE_Y) changedCenterYValue = -MAX_TRANSLATE_Y;
         iSource.setTranslationY(changedCenterYValue);
     }
 
     /**
-     * 单手拖拽平移[移动中触摸事件处理]
+     * 处理响应单手拖拽平移
      */
     private void handleDragGesture(MotionEvent e2, MotionEvent e1) {
+        if (iSource == null) return;
         final float moveY = e2.getY() - e1.getY();
         final float moveX = e2.getX() - e1.getX();
-        final ViewState viewStateTouchDrag = ViewState.read(iSource, ViewState.STATE_DRAG);
-        if (viewStateTouchDrag == null) return;
-        final ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-        if (viewStateDefault == null) return;
 
-        float translateXValue = viewStateTouchDrag.translationX + moveX * 1.6f;
+        ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+        if (vsDefault == null) return;
+        ViewState vsTouchDrag = ViewState.read(iSource, ViewState.STATE_DRAG);
+        if (vsTouchDrag == null) return;
+
+        float translateXValue = vsTouchDrag.translationX + moveX * 1.6f;
 
         String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
         if ("horizontal".equals(imageOrientation)) {
-            float translateXEdge = viewStateDefault.width * (viewStateTouchDrag.scaleX - 1) / 2;
+            float translateXEdge = vsDefault.width * (vsTouchDrag.scaleX - 1) / 2;
             if (translateXValue > translateXEdge) {
                 translateXValue = translateXEdge + (translateXValue - translateXEdge) * 0.12f;
             } else if (translateXValue < -translateXEdge) {
                 translateXValue = -translateXEdge + (translateXValue - (-translateXEdge)) * 0.12f;
             }
         } else if ("vertical".equals(imageOrientation)) {
-            if (viewStateDefault.width * viewStateTouchDrag.scaleX <= mWidth) {
+            if (vsDefault.width * vsTouchDrag.scaleX <= mWidth) {
                 mTouchMode = TOUCH_MODE_SLIDE;
             } else {
-                float translateXRightEdge = viewStateDefault.width * viewStateTouchDrag.scaleX / 2 - viewStateDefault.width / 2;
-                float translateXLeftEdge = mWidth - viewStateDefault.width * viewStateTouchDrag.scaleX / 2 - viewStateDefault.width / 2;
+                float translateXRightEdge = vsDefault.width * vsTouchDrag.scaleX / 2 - vsDefault.width / 2;
+                float translateXLeftEdge = mWidth - vsDefault.width * vsTouchDrag.scaleX / 2 - vsDefault.width / 2;
 
                 if (translateXValue > translateXRightEdge) {
                     translateXValue = translateXRightEdge + (translateXValue - translateXRightEdge) * 0.12f;
@@ -408,254 +418,127 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             }
         }
         iSource.setTranslationX(translateXValue);
-        iSource.setTranslationY(viewStateTouchDrag.translationY + moveY * 1.6f);
+        iSource.setTranslationY(vsTouchDrag.translationY + moveY * 1.6f);
     }
 
     /**
-     * 退出模式的手指事件收尾动画
+     * 处理结束下拉退出的手指事件，进行退出图片查看或者恢复到初始状态的收尾动画<br>
+     * 还需要还原背景色
      */
     private void handleExitTouchResult() {
+        if (iSource == null) return;
+
         if (mExitScalingRef > 0.9f) {
-            // 还原
-            final int startBackgroundColor = mBackgroundColor;
-            final int endBackgroundColor = 0xFF000000;
-            final ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
-            final ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-            if (viewStateDefault == null) return;
-
-            if (animTransitions != null) animTransitions.cancel();
-            animTransitions = null;
-            animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-            animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float p = (float) animation.getAnimatedValue();
-                    iSource.setTranslationX(viewStateCurrent.translationX + (viewStateDefault.translationX - viewStateCurrent.translationX) * p);
-                    iSource.setTranslationY(viewStateCurrent.translationY + (viewStateDefault.translationY - viewStateCurrent.translationY) * p);
-                    iSource.setScaleX(viewStateCurrent.scaleX + (viewStateDefault.scaleX - viewStateCurrent.scaleX) * p);
-                    iSource.setScaleY(viewStateCurrent.scaleY + (viewStateDefault.scaleY - viewStateCurrent.scaleY) * p);
-                    iSource.setRotation((viewStateCurrent.rotation + (viewStateDefault.rotation - viewStateCurrent.rotation) * p) % 360);
-                    setBackgroundColor(mColorEvaluator.evaluate(p, startBackgroundColor, endBackgroundColor));
-                }
-            });
-            animTransitions.addListener(mAnimTransitionStateListener);
-            animTransitions.start();
+            ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+            if (vsDefault == null) return;
+            animSourceViewStateTransform(iSource, vsDefault);
+            animBackgroundTransform(0xFF000000);
         } else {
-            // 退出
-            final ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
-            final ViewState viewStateOrigin;
-            ViewState sourceOriginState = ViewState.read(iSource, ViewState.STATE_ORIGIN);
-            if (sourceOriginState != null) {
-                viewStateOrigin = sourceOriginState;
-            } else {
-                // fade out
-                viewStateOrigin = ViewState.write(iSource, ViewState.STATE_ORIGIN);
-                viewStateOrigin.alpha = 0;
-                viewStateOrigin.scaleX *= 1.5f;
-                viewStateOrigin.scaleY *= 1.5f;
-            }
-            final int startBackgroundColor = mBackgroundColor;
-            final int endBackgroundColor = 0x00000000;
+            ViewState vsOrigin = ViewState.read(iSource, ViewState.STATE_ORIGIN);
+            if (vsOrigin == null) return;
+            animSourceViewStateTransform(iSource, vsOrigin);
+            animBackgroundTransform(0x00000000);
 
-            if (animTransitions != null) animTransitions.cancel();
-            animTransitions = null;
-            animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-            animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float p = (float) animation.getAnimatedValue();
-
-                    iSource.getLayoutParams().width = (int) (viewStateCurrent.width + (viewStateOrigin.width - viewStateCurrent.width) * p);
-                    iSource.getLayoutParams().height = (int) (viewStateCurrent.height + (viewStateOrigin.height - viewStateCurrent.height) * p);
-                    iSource.requestLayout();
-
-                    iSource.setTranslationX(viewStateCurrent.translationX + (viewStateOrigin.translationX - viewStateCurrent.translationX) * p);
-                    iSource.setTranslationY(viewStateCurrent.translationY + (viewStateOrigin.translationY - viewStateCurrent.translationY) * p);
-                    iSource.setScaleX(viewStateCurrent.scaleX + (viewStateOrigin.scaleX - viewStateCurrent.scaleX) * p);
-                    iSource.setScaleY(viewStateCurrent.scaleY + (viewStateOrigin.scaleY - viewStateCurrent.scaleY) * p);
-                    iSource.setRotation((viewStateCurrent.rotation + (viewStateOrigin.rotation - viewStateCurrent.rotation) * p) % 360);
-                    iSource.setAlpha(viewStateCurrent.alpha + (viewStateOrigin.alpha - viewStateCurrent.alpha) * p);
-
-                    setBackgroundColor(mColorEvaluator.evaluate(p, startBackgroundColor, endBackgroundColor));
-                }
-            });
-            animTransitions.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    iOrigin.setVisibility(View.VISIBLE);
-                    setVisibility(View.GONE);
-                }
-            });
-            animTransitions.addListener(mAnimTransitionStateListener);
-            animTransitions.start();
+            ((FrameLayout) iSource.getParent()).getChildAt(2).animate().alpha(0).start();
         }
     }
 
     /**
-     * 退出模式的手指事件收尾动画
+     * 处理结束双击的手指事件，进行图片放大到指定大小或者恢复到初始大小的收尾动画
      */
     private void handleDoubleTapTouchResult() {
-        final ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
-        final ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-        if (viewStateDefault == null) return;
+        if (iSource == null) return;
+        ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+        if (vsDefault == null) return;
+        ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
 
-        if (viewStateCurrent.scaleY <= viewStateDefault.scaleY && viewStateCurrent.scaleX <= viewStateDefault.scaleX) {
-            // 放大
-            final int startBackgroundColor = mBackgroundColor;
-            final int endBackgroundColor = 0xFF000000;
-            final float expectedScale = (MAX_SCALE - viewStateDefault.scaleX) * 0.4f + viewStateDefault.scaleX;
-
-            if (animTransitions != null) animTransitions.cancel();
-            animTransitions = null;
-            animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-            animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float p = (float) animation.getAnimatedValue();
-                    iSource.setScaleX(viewStateCurrent.scaleX + (expectedScale - viewStateCurrent.scaleX) * p);
-                    iSource.setScaleY(viewStateCurrent.scaleY + (expectedScale - viewStateCurrent.scaleY) * p);
-                    setBackgroundColor(mColorEvaluator.evaluate(p, startBackgroundColor, endBackgroundColor));
-                }
-            });
-            animTransitions.addListener(mAnimTransitionStateListener);
-            animTransitions.start();
+        if (vsCurrent.scaleY <= vsDefault.scaleY && vsCurrent.scaleX <= vsDefault.scaleX) {
+            final float expectedScale = (MAX_SCALE - vsDefault.scaleX) * 0.4f + vsDefault.scaleX;
+            animSourceViewStateTransform(iSource,
+                    ViewState.write(iSource, ViewState.STATE_TEMP).scaleX(expectedScale).scaleY(expectedScale));
         } else {
-            // 还原
-            final int startBackgroundColor = mBackgroundColor;
-            final int endBackgroundColor = 0xFF000000;
-
-            if (animTransitions != null) animTransitions.cancel();
-            animTransitions = null;
-            animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-            animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float p = (float) animation.getAnimatedValue();
-
-                    iSource.setTranslationX(viewStateCurrent.translationX + (viewStateDefault.translationX - viewStateCurrent.translationX) * p);
-                    iSource.setTranslationY(viewStateCurrent.translationY + (viewStateDefault.translationY - viewStateCurrent.translationY) * p);
-                    iSource.setScaleX(viewStateCurrent.scaleX + (viewStateDefault.scaleX - viewStateCurrent.scaleX) * p);
-                    iSource.setScaleY(viewStateCurrent.scaleY + (viewStateDefault.scaleY - viewStateCurrent.scaleY) * p);
-                    iSource.setRotation((viewStateCurrent.rotation + (viewStateDefault.rotation - viewStateCurrent.rotation) * p) % 360);
-                    setBackgroundColor(mColorEvaluator.evaluate(p, startBackgroundColor, endBackgroundColor));
-                }
-            });
-            animTransitions.addListener(mAnimTransitionStateListener);
-            animTransitions.start();
+            animSourceViewStateTransform(iSource, vsDefault);
         }
     }
 
     /**
-     * 缩放旋转模式的手指事件收尾动画
+     * 处理结束缩放旋转模式的手指事件，进行恢复到零旋转角度和大小收缩到正常范围以内的收尾动画<br>
+     * 如果是从{@link ImageWatcher#TOUCH_MODE_EXIT}半路转化过来的事件 还需要还原背景色
      */
     private void handleScaleRotateTouchResult() {
-        // 缩放旋转恢复
-        final int startBackgroundColor = mBackgroundColor;
-        final int endBackgroundColor = 0xFF000000;
-        final ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
-        final ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-        if (viewStateDefault == null) return;
+        if (iSource == null) return;
+        ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+        if (vsDefault == null) return;
+        ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
 
-        if (animTransitions != null) animTransitions.cancel();
-        animTransitions = null;
-        animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-        animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float p = (float) animation.getAnimatedValue();
-                iSource.setTranslationX(viewStateCurrent.translationX + (viewStateDefault.translationX - viewStateCurrent.translationX) * p);
-                iSource.setTranslationY(viewStateCurrent.translationY + (viewStateDefault.translationY - viewStateCurrent.translationY) * p);
-                if (viewStateCurrent.scaleX < viewStateDefault.scaleX) {
-                    iSource.setScaleX(viewStateCurrent.scaleX + (viewStateDefault.scaleX - viewStateCurrent.scaleX) * p);
-                }
-                if (viewStateCurrent.scaleY < viewStateDefault.scaleY) {
-                    iSource.setScaleY(viewStateCurrent.scaleY + (viewStateDefault.scaleY - viewStateCurrent.scaleY) * p);
-                }
+        final float endScaleX, endScaleY;
+        Log.e("TTT", "AAA  vsCurrent.scaleX :" + vsCurrent.scaleX + "###  vsDefault.scaleX:" + vsDefault.scaleX);
+        endScaleX = vsCurrent.scaleX < vsDefault.scaleX ? vsDefault.scaleX : vsCurrent.scaleX;
+        endScaleY = vsCurrent.scaleY < vsDefault.scaleY ? vsDefault.scaleY : vsCurrent.scaleY;
 
-                iSource.setRotation((viewStateCurrent.rotation + (viewStateDefault.rotation - viewStateCurrent.rotation) * p) % 360);
-                setBackgroundColor(mColorEvaluator.evaluate(p, startBackgroundColor, endBackgroundColor));
-            }
-        });
-        animTransitions.addListener(mAnimTransitionStateListener);
-        animTransitions.start();
+        ViewState vsTemp = ViewState.copy(vsDefault, ViewState.STATE_TEMP).scaleX(endScaleX).scaleY(endScaleY);
+        iSource.setTag(ViewState.STATE_TEMP, vsTemp);
+        animSourceViewStateTransform(iSource, vsTemp);
+        animBackgroundTransform(0xFF000000);
     }
 
     /**
-     * 拖拽模式的手指事件收尾动画
+     * 处理结束拖拽模式的手指事件，进行超过边界则恢复到边界的收尾动画
      */
     private void handleDragTouchResult() {
-        // 拖拽恢复
-        final int startBackgroundColor = mBackgroundColor;
-        final int endBackgroundColor = 0xFF000000;
-
-        ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-        if (viewStateDefault == null) return;
-        final ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
+        if (iSource == null) return;
+        ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+        if (vsDefault == null) return;
+        ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
 
         final float endTranslateX, endTranslateY;
         String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
         if ("horizontal".equals(imageOrientation)) {
-            float translateXEdge = viewStateDefault.width * (viewStateCurrent.scaleX - 1) / 2;
-            if (viewStateCurrent.translationX > translateXEdge) endTranslateX = translateXEdge;
-            else if (viewStateCurrent.translationX < -translateXEdge)
+            float translateXEdge = vsDefault.width * (vsCurrent.scaleX - 1) / 2;
+            if (vsCurrent.translationX > translateXEdge) endTranslateX = translateXEdge;
+            else if (vsCurrent.translationX < -translateXEdge)
                 endTranslateX = -translateXEdge;
-            else endTranslateX = viewStateCurrent.translationX;
+            else endTranslateX = vsCurrent.translationX;
 
-            if (viewStateDefault.height * viewStateCurrent.scaleY <= mHeight) {
-                endTranslateY = viewStateDefault.translationY;
+            if (vsDefault.height * vsCurrent.scaleY <= mHeight) {
+                endTranslateY = vsDefault.translationY;
             } else {
-                float translateYBottomEdge = viewStateDefault.height * viewStateCurrent.scaleY / 2 - viewStateDefault.height / 2;
-                float translateYTopEdge = mHeight - viewStateDefault.height * viewStateCurrent.scaleY / 2 - viewStateDefault.height / 2;
+                float translateYBottomEdge = vsDefault.height * vsCurrent.scaleY / 2 - vsDefault.height / 2;
+                float translateYTopEdge = mHeight - vsDefault.height * vsCurrent.scaleY / 2 - vsDefault.height / 2;
 
-                if (viewStateCurrent.translationY > translateYBottomEdge)
+                if (vsCurrent.translationY > translateYBottomEdge)
                     endTranslateY = translateYBottomEdge;
-                else if (viewStateCurrent.translationY < translateYTopEdge)
+                else if (vsCurrent.translationY < translateYTopEdge)
                     endTranslateY = translateYTopEdge;
-                else endTranslateY = viewStateCurrent.translationY;
+                else endTranslateY = vsCurrent.translationY;
             }
         } else if ("vertical".equals(imageOrientation)) {
-            float translateYEdge = viewStateDefault.height * (viewStateCurrent.scaleY - 1) / 2;
-            if (viewStateCurrent.translationY > translateYEdge) endTranslateY = translateYEdge;
-            else if (viewStateCurrent.translationY < -translateYEdge)
+            float translateYEdge = vsDefault.height * (vsCurrent.scaleY - 1) / 2;
+            if (vsCurrent.translationY > translateYEdge) endTranslateY = translateYEdge;
+            else if (vsCurrent.translationY < -translateYEdge)
                 endTranslateY = -translateYEdge;
-            else endTranslateY = viewStateCurrent.translationY;
+            else endTranslateY = vsCurrent.translationY;
 
-            if (viewStateDefault.width * viewStateCurrent.scaleX <= mWidth) {
-                endTranslateX = viewStateDefault.translationX;
+            if (vsDefault.width * vsCurrent.scaleX <= mWidth) {
+                endTranslateX = vsDefault.translationX;
             } else {
-                float translateXRightEdge = viewStateDefault.width * viewStateCurrent.scaleX / 2 - viewStateDefault.width / 2;
-                float translateXLeftEdge = mWidth - viewStateDefault.width * viewStateCurrent.scaleX / 2 - viewStateDefault.width / 2;
+                float translateXRightEdge = vsDefault.width * vsCurrent.scaleX / 2 - vsDefault.width / 2;
+                float translateXLeftEdge = mWidth - vsDefault.width * vsCurrent.scaleX / 2 - vsDefault.width / 2;
 
-                if (viewStateCurrent.translationX > translateXRightEdge)
+                if (vsCurrent.translationX > translateXRightEdge)
                     endTranslateX = translateXRightEdge;
-                else if (viewStateCurrent.translationX < translateXLeftEdge)
+                else if (vsCurrent.translationX < translateXLeftEdge)
                     endTranslateX = translateXLeftEdge;
-                else endTranslateX = viewStateCurrent.translationX;
+                else endTranslateX = vsCurrent.translationX;
             }
         } else {
             return;
         }
-
-        if (viewStateCurrent.translationX == endTranslateX && viewStateCurrent.translationY == endTranslateY) {
-            return;// 动画跳过
+        if (vsCurrent.translationX == endTranslateX && vsCurrent.translationY == endTranslateY) {
+            return;// 如果没有变化跳过动画实行时间的触摸锁定
         }
-
-        if (animTransitions != null) animTransitions.cancel();
-        animTransitions = null;
-        animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-        animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float p = (float) animation.getAnimatedValue();
-
-                iSource.setTranslationX(viewStateCurrent.translationX + (endTranslateX - viewStateCurrent.translationX) * p);
-                iSource.setTranslationY(viewStateCurrent.translationY + (endTranslateY - viewStateCurrent.translationY) * p);
-
-                setBackgroundColor(mColorEvaluator.evaluate(p, startBackgroundColor, endBackgroundColor));
-            }
-        });
-        animTransitions.addListener(mAnimTransitionStateListener);
-        animTransitions.start();
+        animSourceViewStateTransform(iSource,
+                ViewState.write(iSource, ViewState.STATE_TEMP).translationX(endTranslateX).translationY(endTranslateY));
     }
 
     @Override
@@ -670,14 +553,18 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         }
         if (position < mImageGroupList.size()) {
             iOrigin = mImageGroupList.get(position);
-            iOrigin.setVisibility(View.INVISIBLE);
+            if (iOrigin.getDrawable() != null) iOrigin.setVisibility(View.INVISIBLE);
         }
         refreshCurrentIdx(position);
 
         ImageView mLast = adapter.mImageSparseArray.get(position - 1);
-        if (mLast != null) ViewState.restore(mLast, ViewState.STATE_DEFAULT);
+        if (ViewState.read(mLast, ViewState.STATE_DEFAULT) != null) {
+            ViewState.restoreByAnim(mLast, ViewState.STATE_DEFAULT).create().start();
+        }
         ImageView mNext = adapter.mImageSparseArray.get(position + 1);
-        if (mNext != null) ViewState.restore(mNext, ViewState.STATE_DEFAULT);
+        if (ViewState.read(mNext, ViewState.STATE_DEFAULT) != null) {
+            ViewState.restoreByAnim(mNext, ViewState.STATE_DEFAULT).create().start();
+        }
     }
 
 
@@ -714,6 +601,11 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             lpCenter.gravity = Gravity.CENTER;
             loadView.setLayoutParams(lpCenter);
             itemView.addView(loadView);
+            ImageView errorView = new ImageView(container.getContext());
+            errorView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            errorView.setImageResource(mErrorImageRes);
+            itemView.addView(errorView);
+            errorView.setVisibility(View.GONE);
 
             if (setDefaultDisplayConfigs(imageView, position, hasPlayBeginAnimation)) {
                 hasPlayBeginAnimation = true;
@@ -726,7 +618,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             return view == object;
         }
 
-        void notifyItemChangeLoadingState(int position, boolean loading) {
+        void notifyItemChangedState(int position, boolean loading, boolean error) {
             ImageView imageView = mImageSparseArray.get(position);
             if (imageView != null) {
                 FrameLayout itemView = (FrameLayout) imageView.getParent();
@@ -738,215 +630,103 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                     loadView.stop();
                     loadView.setVisibility(View.GONE);
                 }
-            }
-        }
-    }
 
-    private boolean setDefaultDisplayConfigs(final ImageView imageView, final int pos, boolean hasPlayBeginAnimation) {
-        boolean isFindEnterImagePicture = false;
-
-        ViewState viewStateOrigin = null;
-        Drawable bmpMirror = null;
-        if (pos < mImageGroupList.size()) {
-            ImageView originRef = mImageGroupList.get(pos);
-            int[] location = new int[2];
-            originRef.getLocationOnScreen(location);
-            imageView.setTranslationX(location[0]);
-            int locationYOfFullScreen = location[1];
-            locationYOfFullScreen -= mStatusBarHeight;
-            imageView.setTranslationY(locationYOfFullScreen);
-            viewStateOrigin = ViewState.write(imageView, ViewState.STATE_ORIGIN);
-            viewStateOrigin.width = originRef.getWidth();
-            viewStateOrigin.height = originRef.getHeight();
-            imageView.getLayoutParams().width = originRef.getWidth();
-            imageView.getLayoutParams().height = originRef.getHeight();
-
-            bmpMirror = originRef.getDrawable();
-            if (pos == initPosition && !hasPlayBeginAnimation) {
-                isFindEnterImagePicture = true;
-                iSource = imageView;
-                iOrigin = originRef;
+                ImageView errorView = (ImageView) itemView.getChildAt(2);
+                errorView.setAlpha(1f);
+                errorView.setVisibility(error ? View.VISIBLE : View.GONE);
             }
         }
 
-        final boolean mPlayEnterAnimation = isFindEnterImagePicture;
-        final ViewState mViewStateOrigin = viewStateOrigin;
-        if (bmpMirror != null) {
-            final int sourceTmpWidth, sourceTmpHeight, sourceTmpTranslateX, sourceTmpTranslateY;
-            sourceTmpWidth = bmpMirror.getBounds().width();
-            sourceTmpHeight = bmpMirror.getBounds().height();
-            sourceTmpTranslateX = (mWidth - sourceTmpWidth) / 2;
-            sourceTmpTranslateY = (mHeight - sourceTmpHeight) / 2;
-            imageView.setImageDrawable(bmpMirror);
+        private boolean setDefaultDisplayConfigs(final ImageView imageView, final int pos, boolean hasPlayBeginAnimation) {
+            boolean isFindEnterImagePicture = false;
 
-            if (mPlayEnterAnimation) {
-                if (animTransitions != null) animTransitions.cancel();
-                animTransitions = null;
-                animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-                animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        float p = (float) animation.getAnimatedValue();
-                        imageView.getLayoutParams().width = (int) (mViewStateOrigin.width + (sourceTmpWidth - mViewStateOrigin.width) * p);
-                        imageView.getLayoutParams().height = (int) (mViewStateOrigin.height + (sourceTmpHeight - mViewStateOrigin.height) * p);
-                        imageView.requestLayout();
-                        imageView.setTranslationX(mViewStateOrigin.translationX + (sourceTmpTranslateX - mViewStateOrigin.translationX) * p);
-                        imageView.setTranslationY(mViewStateOrigin.translationY + (sourceTmpTranslateY - mViewStateOrigin.translationY) * p);
-                    }
-                });
-                animTransitions.addListener(mAnimTransitionStateListener);
-                animTransitions.start();
-            } else {
-                imageView.getLayoutParams().width = sourceTmpWidth;
-                imageView.getLayoutParams().height = sourceTmpHeight;
-                imageView.requestLayout();
-                imageView.setTranslationX(sourceTmpTranslateX);
-                imageView.setTranslationY(sourceTmpTranslateY);
-            }
-        }
-        // loadHighDefinitionPicture
-        Glide.with(imageView.getContext()).load(mUrlList.get(pos)).asBitmap().into(new SimpleTarget<Bitmap>() {
-            @Override
-            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                final int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
-                int resourceImageWidth = resource.getWidth();
-                int resourceImageHeight = resource.getHeight();
-                if (resourceImageWidth * 1f / resourceImageHeight > mWidth * 1f / mHeight) {
-                    sourceDefaultWidth = mWidth;
-                    sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / resourceImageWidth * resourceImageHeight);
-                    sourceDefaultTranslateX = 0;
-                    sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
-                    imageView.setTag(R.id.image_orientation, "horizontal");
-                } else {
-                    sourceDefaultHeight = mHeight;
-                    sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / resourceImageHeight * resourceImageWidth);
-                    sourceDefaultTranslateY = 0;
-                    sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
-                    imageView.setTag(R.id.image_orientation, "vertical");
+            ViewState.write(imageView, ViewState.STATE_ORIGIN).alpha(0).scaleXBy(1.5f).scaleYBy(1.5f);
+            if (pos < mImageGroupList.size()) {
+                ImageView originRef = mImageGroupList.get(pos);
+                if (pos == initPosition && !hasPlayBeginAnimation) {
+                    isFindEnterImagePicture = true;
+                    iSource = imageView;
+                    iOrigin = originRef;
                 }
-                imageView.setImageBitmap(resource);
-                adapter.notifyItemChangeLoadingState(pos, false);
 
-                final ViewState viewStateOrigin = ViewState.read(imageView, ViewState.STATE_ORIGIN);
-                if (mPlayEnterAnimation && viewStateOrigin != null) {
-                    final ViewState viewStateCurrent = ViewState.write(imageView, ViewState.STATE_CURRENT);
-                    if (viewStateCurrent.width == 0 && viewStateCurrent.height == 0) {
-                        viewStateCurrent.width = viewStateOrigin.width;
-                        viewStateCurrent.height = viewStateOrigin.height;
+                int[] location = new int[2];
+                originRef.getLocationOnScreen(location);
+                imageView.setTranslationX(location[0]);
+                int locationYOfFullScreen = location[1];
+                locationYOfFullScreen -= mStatusBarHeight;
+                imageView.setTranslationY(locationYOfFullScreen);
+                imageView.getLayoutParams().width = originRef.getWidth();
+                imageView.getLayoutParams().height = originRef.getHeight();
+
+                ViewState.write(imageView, ViewState.STATE_ORIGIN).width(originRef.getWidth()).height(originRef.getHeight());
+
+                Drawable bmpMirror = originRef.getDrawable();
+                if (bmpMirror != null) {
+                    int bmpMirrorWidth = bmpMirror.getBounds().width();
+                    int bmpMirrorHeight = bmpMirror.getBounds().height();
+                    ViewState vsThumb = ViewState.write(imageView, ViewState.STATE_THUMB).width(bmpMirrorWidth).height(bmpMirrorHeight)
+                            .translationX((mWidth - bmpMirrorWidth) / 2).translationY((mHeight - bmpMirrorHeight) / 2);
+                    imageView.setImageDrawable(bmpMirror);
+
+                    if (isFindEnterImagePicture) {
+                        animSourceViewStateTransform(imageView, vsThumb);
+                    } else {
+                        ViewState.restore(imageView, vsThumb.mTag);
                     }
-                    if (animTransitions != null) animTransitions.cancel();
-                    animTransitions = null;
-                    animTransitions = ValueAnimator.ofFloat(0, 1).setDuration(300);
-                    animTransitions.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            float p = (float) animation.getAnimatedValue();
-                            imageView.getLayoutParams().width = (int) (viewStateCurrent.width + (sourceDefaultWidth - viewStateCurrent.width) * p);
-                            imageView.getLayoutParams().height = (int) (viewStateCurrent.height + (sourceDefaultHeight - viewStateCurrent.height) * p);
-                            imageView.requestLayout();
-                            imageView.setTranslationX(viewStateCurrent.translationX + (sourceDefaultTranslateX - viewStateCurrent.translationX) * p);
-                            imageView.setTranslationY(viewStateCurrent.translationY + (sourceDefaultTranslateY - viewStateCurrent.translationY) * p);
-                        }
-                    });
-                    animTransitions.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            ViewState.write(imageView, ViewState.STATE_DEFAULT);
-                        }
-                    });
-                    animTransitions.addListener(mAnimTransitionStateListener);
-                    animTransitions.start();
-                } else {
-                    imageView.getLayoutParams().width = sourceDefaultWidth;
-                    imageView.getLayoutParams().height = sourceDefaultHeight;
-                    imageView.requestLayout();
-                    imageView.setTranslationX(sourceDefaultTranslateX);
-                    imageView.setTranslationY(sourceDefaultTranslateY);
-                    ViewState viewStateDefault = ViewState.write(imageView, ViewState.STATE_DEFAULT);
-                    viewStateDefault.width = sourceDefaultWidth;
-                    viewStateDefault.height = sourceDefaultHeight;
-                    imageView.setAlpha(0f);
-                    imageView.animate().alpha(1).start();
                 }
             }
 
-            @Override
-            public void onLoadStarted(Drawable placeholder) {
-                adapter.notifyItemChangeLoadingState(pos, true);
-            }
-
-            @Override
-            public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                adapter.notifyItemChangeLoadingState(pos, false);
-            }
-        });
-
-
-        if (mPlayEnterAnimation) {
-            ValueAnimator animBackground = ValueAnimator.ofFloat(0, 1).setDuration(300);
-            animBackground.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            final boolean isPlayEnterAnimation = isFindEnterImagePicture;
+            // loadHighDefinitionPicture
+            Glide.with(imageView.getContext()).load(mUrlList.get(pos)).asBitmap().into(new SimpleTarget<Bitmap>() {
                 @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float p = (float) animation.getAnimatedValue();
-                    setBackgroundColor(mColorEvaluator.evaluate(p, 0x00000000, 0xFF000000));
+                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                    final int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
+                    int resourceImageWidth = resource.getWidth();
+                    int resourceImageHeight = resource.getHeight();
+                    if (resourceImageWidth * 1f / resourceImageHeight > mWidth * 1f / mHeight) {
+                        sourceDefaultWidth = mWidth;
+                        sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / resourceImageWidth * resourceImageHeight);
+                        sourceDefaultTranslateX = 0;
+                        sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
+                        imageView.setTag(R.id.image_orientation, "horizontal");
+                    } else {
+                        sourceDefaultHeight = mHeight;
+                        sourceDefaultWidth = (int) (sourceDefaultHeight * 1f / resourceImageHeight * resourceImageWidth);
+                        sourceDefaultTranslateY = 0;
+                        sourceDefaultTranslateX = (mWidth - sourceDefaultWidth) / 2;
+                        imageView.setTag(R.id.image_orientation, "vertical");
+                    }
+                    imageView.setImageBitmap(resource);
+                    notifyItemChangedState(pos, false, false);
+
+                    ViewState vsDefault = ViewState.write(imageView, ViewState.STATE_DEFAULT).width(sourceDefaultWidth).height(sourceDefaultHeight)
+                            .translationX(sourceDefaultTranslateX).translationY(sourceDefaultTranslateY);
+                    if (isPlayEnterAnimation) {
+                        animSourceViewStateTransform(imageView, vsDefault);
+                    } else {
+                        ViewState.restore(imageView, vsDefault.mTag);
+                        imageView.setAlpha(0f);
+                        imageView.animate().alpha(1).start();
+                    }
+                }
+
+                @Override
+                public void onLoadStarted(Drawable placeholder) {
+                    notifyItemChangedState(pos, true, false);
+                }
+
+                @Override
+                public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                    notifyItemChangedState(pos, false, imageView.getDrawable() == null);
                 }
             });
-            animBackground.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    iOrigin.setVisibility(View.INVISIBLE);
-                }
-            });
-            animBackground.start();
-        }
-        return mPlayEnterAnimation;
-    }
 
-    static class ViewState {
-        static final int STATE_ORIGIN = R.id.state_origin;
-        static final int STATE_DEFAULT = R.id.state_default;
-        static final int STATE_CURRENT = R.id.state_current;
-        static final int STATE_DRAG = R.id.state_touch_drag;
-        static final int STATE_TOUCH_DOWN = R.id.state_touch_down;
-        static final int STATE_TOUCH_SCALE_ROTATE = R.id.state_touch_scale_rotate;
-
-        int width;
-        int height;
-        float translationX;
-        float translationY;
-        float scaleX;
-        float scaleY;
-        float rotation;
-        float alpha;
-
-        static ViewState write(View view, int tag) {
-            if (view == null) return null;
-
-            ViewState viewState = read(view, tag);
-            if (viewState == null) view.setTag(tag, viewState = new ViewState());
-
-            viewState.width = view.getWidth();
-            viewState.height = view.getHeight();
-            viewState.translationX = view.getTranslationX();
-            viewState.translationY = view.getTranslationY();
-            viewState.scaleX = view.getScaleX();
-            viewState.scaleY = view.getScaleY();
-            viewState.rotation = view.getRotation();
-            viewState.alpha = view.getAlpha();
-            return viewState;
-        }
-
-        static ViewState read(View view, int tag) {
-            return view.getTag(tag) != null ? (ViewState) view.getTag(tag) : null;
-        }
-
-        static void restore(View view, int tag) {
-            ViewState viewState = read(view, tag);
-            if (viewState != null) {
-                view.animate().translationX(viewState.translationX).translationY(viewState.translationY)
-                        .scaleX(viewState.scaleX).scaleY(viewState.scaleY).rotation(viewState.rotation)
-                        .alpha(viewState.alpha).start();
+            if (isPlayEnterAnimation) {
+                iOrigin.setVisibility(View.INVISIBLE);
+                animBackgroundTransform(0xFF000000);
             }
+            return isPlayEnterAnimation;
         }
     }
 
@@ -980,18 +760,18 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     final AnimatorListenerAdapter mAnimTransitionStateListener = new AnimatorListenerAdapter() {
         @Override
         public void onAnimationCancel(Animator animation) {
-            isInTransitionsAnimation = false;
+            isInTransformAnimation = false;
         }
 
         @Override
         public void onAnimationStart(Animator animation) {
-            isInTransitionsAnimation = true;
+            isInTransformAnimation = true;
             mTouchMode = TOUCH_MODE_AUTO_FLING;
         }
 
         @Override
         public void onAnimationEnd(Animator animation) {
-            isInTransitionsAnimation = false;
+            isInTransformAnimation = false;
         }
     };
 
@@ -1011,6 +791,10 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     public void setTranslucentStatus(int statusBarHeight) {
         mStatusBarHeight = statusBarHeight;
+    }
+
+    public void setErrorImageRes(int resErrorImage) {
+        mErrorImageRes = resErrorImage;
     }
 
     private void refreshCurrentIdx(int position) {
@@ -1040,25 +824,63 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (animTransitions != null) animTransitions.cancel();
-        animTransitions = null;
+        if (animImageTransform != null) animImageTransform.cancel();
+        animImageTransform = null;
+        if (animBackground != null) animBackground.cancel();
+        animBackground = null;
     }
 
     public boolean handleBackPressed() {
-        if (isInTransitionsAnimation) return true;
+        return isInTransformAnimation || (iSource != null && getVisibility() == View.VISIBLE && onSingleTapConfirmed());
+    }
 
-        if (getVisibility() == View.VISIBLE) {
-            ViewState viewStateCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
-            ViewState viewStateDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-
-            if (viewStateDefault == null || (viewStateCurrent.scaleY <= viewStateDefault.scaleY && viewStateCurrent.scaleX <= viewStateDefault.scaleX)) {
-                mExitScalingRef = 0;
-                handleExitTouchResult();
-            } else {
-                handleDoubleTapTouchResult();
+    /**
+     * 将指定的ImageView形态(尺寸大小，缩放，旋转，平移，透明度)逐步转化到期望值
+     */
+    private void animSourceViewStateTransform(ImageView view, final ViewState vsResult) {
+        if (view == null) return;
+        if (animImageTransform != null) animImageTransform.cancel();
+        Log.e("TTT", "AAA animSourceViewStateTransform tag " + vsResult.mTag);
+        animImageTransform = ViewState.restoreByAnim(view, vsResult.mTag).addListener(mAnimTransitionStateListener).create();
+        Log.e("TTT", "AAA animSourceViewStateTransform animImageTransform " + animImageTransform);
+        if (animImageTransform != null) {
+            if (vsResult.mTag == ViewState.STATE_ORIGIN) {
+                animImageTransform.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (iOrigin != null) iOrigin.setVisibility(View.VISIBLE);
+                        setVisibility(View.GONE);
+                    }
+                });
             }
-            return true;
+            animImageTransform.start();
         }
-        return false;
+    }
+
+    /**
+     * 自身的背景色渐变至期望值[colorResult]
+     */
+    private void animBackgroundTransform(final int colorResult) {
+        if (colorResult == mBackgroundColor) return;
+        if (animBackground != null) animBackground.cancel();
+        final int mCurrentBackgroundColor = mBackgroundColor;
+        animBackground = ValueAnimator.ofFloat(0, 1).setDuration(300);
+        animBackground.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float p = (float) animation.getAnimatedValue();
+                setBackgroundColor(mColorEvaluator.evaluate(p, mCurrentBackgroundColor, colorResult));
+            }
+        });
+        animBackground.start();
+    }
+
+
+    public interface OnPictureLongPressListener {
+        void onPictureLongPress(ImageView v, String url, int pos);
+    }
+
+    public void setOnPictureLongPressListener(OnPictureLongPressListener listener) {
+        mPictureLongPressListener = listener;
     }
 }

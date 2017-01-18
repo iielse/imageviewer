@@ -80,12 +80,4 @@ public class MessageAdapter extends RecyclerView.Adapter {
     public int getItemCount() {
         return 99999;
     }
-
-//    @Override
-//    public int getItemViewType(int position) {
-//        // recyclerView嵌套卡顿优化方案，依旧卡顿
-//        return position;
-//    }
-
-
 }

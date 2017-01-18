@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * QQ 517309507
  * 至尊流畅;daLao专用;/斜眼笑
  */
 public class MessagePicturesLayout extends FrameLayout implements View.OnClickListener {
@@ -126,12 +127,12 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (mCallback != null) {
-            mCallback.onPictureClick((ImageView) v, mVisiblePictureList, mDataList);
+            mCallback.onThumbPictureClick((ImageView) v, mVisiblePictureList, mDataList);
         }
     }
 
     public interface Callback {
-        void onPictureClick(ImageView i, List<ImageView> imageGroupList, List<String> urlList);
+        void onThumbPictureClick(ImageView i, List<ImageView> imageGroupList, List<String> urlList);
     }
 
     public void setCallback(Callback callback) {

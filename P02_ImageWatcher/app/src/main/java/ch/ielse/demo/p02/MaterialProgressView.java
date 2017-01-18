@@ -21,7 +21,10 @@ import android.view.animation.Transformation;
 
 import java.util.ArrayList;
 
-
+/**
+ * QQ 517309507
+ * PtrFrameLayout 源码微调
+ */
 public class MaterialProgressView extends View {
 
     private MaterialProgressDrawable mDrawable;

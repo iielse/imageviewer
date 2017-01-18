@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by LY on 2017/1/4.
- */
-
 public class Data {
 
     private String avatar;
