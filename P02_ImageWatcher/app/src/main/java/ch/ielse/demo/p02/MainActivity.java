@@ -67,7 +67,6 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
 
     @Override
     public void onBackPressed() {
-        //
         if (!vImageWatcher.handleBackPressed()) {
             super.onBackPressed();
         }

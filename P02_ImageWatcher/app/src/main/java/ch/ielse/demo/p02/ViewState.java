@@ -2,11 +2,12 @@ package ch.ielse.demo.p02;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.util.Log;
 import android.view.View;
 
 /**
- * QQ 517309507
+ * QQ 517309507 <br/>
+ * ViewState包含记录了一个View的瞬时UI状态<br/>
+ * 并且提供了给View新增状态，抓取View的当前状态，复制View的状态，将View还原至该状态等便捷方法
  */
 public class ViewState {
     static final int STATE_ORIGIN = R.id.state_origin; // 缩略图初始
@@ -94,7 +95,6 @@ public class ViewState {
                 if (vsOrigin != null) vsCurrent.width(vsOrigin.width).height(vsOrigin.height);
             }
             final ViewState vsResult = read(view, tag);
-            Log.e("TTT", "AAA restoreByAnim vsResult " + vsResult + "###tag " + tag + "###vsCurrent.scaleX " +vsCurrent.scaleX + "### vsResult.scaleX " + vsResult.scaleX);
             if (vsResult != null) {
                 animator = ValueAnimator.ofFloat(0, 1).setDuration(300);
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

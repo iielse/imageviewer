@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -36,6 +37,12 @@ import java.util.List;
 
 /**
  * QQ 517309507
+ * <p>
+ * 图片查看器，为各位追求用户体验的daLao提供更优质的服务<br/>
+ * <b>它能够</b><br/>
+ * 1、点击图片时以一种无缝顺畅的动画切换到图片查看的界面，同样以一种无缝顺畅的动画退出图片查看界面
+ * 2、支持多图查看，快速翻页，双击放大，单击退出，双手缩放旋转图片
+ * 3、下拽退出查看图片的操作，以及效果是本View的最大卖点(仿微信)
  */
 public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestureListener, ViewPager.OnPageChangeListener {
     private static final int SINGLE_TAP_UP_CONFIRMED = 1;
@@ -545,6 +552,10 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
 
+    /**
+     * 每当ViewPager滑动到新的一页后，此方法会被触发<br/>
+     * 此刻必不可少的需要同步更新顶部索引，还原前一项后一项的状态等
+     */
     @Override
     public void onPageSelected(int position) {
         iSource = adapter.mImageSparseArray.get(position);
@@ -618,6 +629,13 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             return view == object;
         }
 
+        /**
+         * 更新ViewPager中每项的当前状态，比如是否加载，比如是否加载失败
+         *
+         * @param position 当前项的位置
+         * @param loading  是否显示加载中
+         * @param error    是否显示加载失败
+         */
         void notifyItemChangedState(int position, boolean loading, boolean error) {
             ImageView imageView = mImageSparseArray.get(position);
             if (imageView != null) {
@@ -757,6 +775,10 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         return true;
     }
 
+    /**
+     * 动画执行时加入这个监听器后会自动记录标记 {@link ImageWatcher#isInTransformAnimation} 的状态<br/>
+     * isInTransformAnimation值为true的时候可以达到在动画执行时屏蔽触摸操作的目的
+     */
     final AnimatorListenerAdapter mAnimTransitionStateListener = new AnimatorListenerAdapter() {
         @Override
         public void onAnimationCancel(Animator animation) {
@@ -830,6 +852,14 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         animBackground = null;
     }
 
+    /**
+     * 当界面处于图片查看状态需要在Activity中的{@link Activity#onBackPressed()}
+     * 将事件传递给ImageWatcher优先处理<br/>
+     * 1、当处于收尾动画执行状态时，消费返回键事件<br/>
+     * 2、当图片处于放大状态时，执行图片缩放到原始大小的动画，消费返回键事件<br/>
+     * 3、当图片处于原始状态时，退出图片查看，消费返回键事件<br/>
+     * 4、其他情况，ImageWatcher并没有展示图片
+     */
     public boolean handleBackPressed() {
         return isInTransformAnimation || (iSource != null && getVisibility() == View.VISIBLE && onSingleTapConfirmed());
     }
@@ -840,14 +870,15 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private void animSourceViewStateTransform(ImageView view, final ViewState vsResult) {
         if (view == null) return;
         if (animImageTransform != null) animImageTransform.cancel();
-        Log.e("TTT", "AAA animSourceViewStateTransform tag " + vsResult.mTag);
+
         animImageTransform = ViewState.restoreByAnim(view, vsResult.mTag).addListener(mAnimTransitionStateListener).create();
-        Log.e("TTT", "AAA animSourceViewStateTransform animImageTransform " + animImageTransform);
+
         if (animImageTransform != null) {
             if (vsResult.mTag == ViewState.STATE_ORIGIN) {
                 animImageTransform.addListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        // 如果是退出查看操作，动画执行完后，原始被点击的ImageView恢复可见
                         if (iOrigin != null) iOrigin.setVisibility(View.VISIBLE);
                         setVisibility(View.GONE);
                     }
@@ -858,7 +889,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     /**
-     * 自身的背景色渐变至期望值[colorResult]
+     * 执行ImageWatcher自身的背景色渐变至期望值[colorResult]的动画
      */
     private void animBackgroundTransform(final int colorResult) {
         if (colorResult == mBackgroundColor) return;
@@ -875,8 +906,15 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         animBackground.start();
     }
 
-
+    /**
+     * 当前展示图片长按的回调
+     */
     public interface OnPictureLongPressListener {
+        /**
+         * @param v   当前被按的ImageView
+         * @param url 当前ImageView加载展示的图片url地址
+         * @param pos 当前ImageView在展示组中的位置
+         */
         void onPictureLongPress(ImageView v, String url, int pos);
     }
 
