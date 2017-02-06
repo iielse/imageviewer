@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/activity_main"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/b_open_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="open photo"
+        android:textAllCaps="false"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/b_open_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="open camera"
+        android:textAllCaps="false"
+        android:visibility="gone"/>
+
+
+    <ch.ielse.demo.p01.CropView
+        android:id="@+id/v_crop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</FrameLayout>

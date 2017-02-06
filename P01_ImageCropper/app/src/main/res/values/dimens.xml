@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="edge_padding">10dip</dimen>
+    <dimen name="line_space_picture">3dip</dimen>
+    <dimen name="title_height">48dip</dimen>
+</resources>
