@@ -90,6 +90,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private List<ImageView> mImageGroupList;
     private List<String> mUrlList;
     private int initPosition;
+    private int mPagerPositionOffsetPixels;
 
     public ImageWatcher(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -155,7 +156,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 onUp(event);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (vsDefault != null && mTouchMode != TOUCH_MODE_SLIDE) {
+                if (vsDefault != null && (mTouchMode != TOUCH_MODE_SLIDE) || mPagerPositionOffsetPixels == 0) {
                     if (mTouchMode != TOUCH_MODE_SCALE_ROTATE) {
                         mFingersDistance = 0;
                         mFingersAngle = 0;
@@ -443,6 +444,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         } else {
             ViewState vsOrigin = ViewState.read(iSource, ViewState.STATE_ORIGIN);
             if (vsOrigin == null) return;
+            if (vsOrigin.alpha == 0)
+                vsOrigin.translationX(iSource.getTranslationX()).translationY(iSource.getTranslationY());
+
             animSourceViewStateTransform(iSource, vsOrigin);
             animBackgroundTransform(0x00000000);
 
@@ -550,6 +554,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        mPagerPositionOffsetPixels = positionOffsetPixels;
     }
 
     /**
@@ -772,7 +777,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return true;
+        return mPagerPositionOffsetPixels == 0;
     }
 
     /**
