@@ -65,7 +65,7 @@ public class ImageHelper {
     }
 
     public void cropImage(Uri data) {
-        ImageCropper.crop(mHolder, data.getPath());
+        // ImageCropper.crop(mHolder, data.getPath());
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

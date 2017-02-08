@@ -23,6 +23,14 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
         bOpenCamera.setOnClickListener(this);
 
         mImageHelper = new ImageHelper(this);
+
+        final ImageCropper vImageCropper = (ImageCropper) findViewById(R.id.v_image_cropper);
+        vImageCropper.post(new Runnable() {
+            @Override
+            public void run() {
+            vImageCropper.show();
+            }
+        });
     }
 
     @Override
@@ -33,7 +41,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
             mImageHelper.openPhotos();
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

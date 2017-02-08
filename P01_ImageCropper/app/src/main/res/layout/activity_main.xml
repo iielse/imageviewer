@@ -24,8 +24,8 @@
         android:visibility="gone"/>
 
 
-    <ch.ielse.demo.p01.CropView
-        android:id="@+id/v_crop"
+    <ch.ielse.demo.p01.ImageCropper
+        android:id="@+id/v_image_cropper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
