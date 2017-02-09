@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/P01_ImageCropper.iml" filepath="$PROJECT_DIR$/P01_ImageCropper.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imagecropper/imagecropper.iml" filepath="$PROJECT_DIR$/imagecropper/imagecropper.iml" />
     </modules>
   </component>
 </project>

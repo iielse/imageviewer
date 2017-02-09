@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-    android:id="@+id/activity_main"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000"
-    android:orientation="vertical">
+    android:background="#F99B44">
 
-    <Button
-        android:id="@+id/b_open_photo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="open photo"
-        android:textAllCaps="false"
-        android:visibility="gone"/>
+    <ImageView
+        android:id="@+id/i_background"
+        android:layout_width="240dip"
+        android:layout_height="150dip"
+        android:layout_gravity="center"
+        android:layout_marginBottom="80dip"
+        android:background="@drawable/default_picture"
+        android:textAllCaps="false"/>
 
-    <Button
-        android:id="@+id/b_open_camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="open camera"
-        android:textAllCaps="false"
-        android:visibility="gone"/>
+    <ImageView
+        android:id="@+id/i_avatar"
+        android:layout_width="80dip"
+        android:layout_height="80dip"
+        android:layout_gravity="center"
+        android:layout_marginTop="80dip"
+        android:background="@drawable/default_avatar"
+        android:textAllCaps="false"/>
 
 
-    <ch.ielse.demo.p01.ImageCropper
+    <ch.ielse.view.imagecropper.ImageCropper
         android:id="@+id/v_image_cropper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
 </FrameLayout>
