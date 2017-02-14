@@ -1,6 +1,5 @@
 <resources>
     <item name="image_orientation" type="id"/>
-
     <item name="state_origin" type="id"/>
     <item name="state_default" type="id"/>
     <item name="state_current" type="id"/>
@@ -9,6 +8,4 @@
     <item name="state_touch_down" type="id"/>
     <item name="state_touch_drag" type="id"/>
     <item name="state_touch_scale_rotate" type="id"/>
-
-
 </resources>

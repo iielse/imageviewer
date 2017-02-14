@@ -1,4 +1,4 @@
-package ch.ielse.demo.p02;
+package ch.ielse.view.imagewatcher;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;

@@ -1,4 +1,4 @@
-package ch.ielse.demo.p02;
+package ch.ielse.view.imagewatcher;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -53,11 +53,6 @@ public class MaterialProgressView extends View {
         } else {
             super.invalidateDrawable(dr);
         }
-    }
-
-    public void setColorSchemeColors(int[] colors) {
-        mDrawable.setColorSchemeColors(colors);
-        invalidate();
     }
 
     public void start() {
@@ -172,18 +167,6 @@ public class MaterialProgressView extends View {
             ring.setCenterRadius(centerRadius * screenDensity);
             ring.setColorIndex(0);
             ring.setInsets((int) mWidth, (int) mHeight);
-        }
-
-        /**
-         * Set the colors used in the progress animation from color resources.
-         * The first color will also be the color of the bar that grows in response
-         * to a user swipe gesture.
-         *
-         * @param colors
-         */
-        public void setColorSchemeColors(int... colors) {
-            mRing.setColors(colors);
-            mRing.setColorIndex(0);
         }
 
         @Override

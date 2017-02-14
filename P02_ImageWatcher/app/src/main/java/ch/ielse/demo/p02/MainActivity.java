@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import ch.ielse.view.imagewatcher.ImageWatcher;
+
 
 public class MainActivity extends Activity implements MessagePicturesLayout.Callback, ImageWatcher.OnPictureLongPressListener {
 
