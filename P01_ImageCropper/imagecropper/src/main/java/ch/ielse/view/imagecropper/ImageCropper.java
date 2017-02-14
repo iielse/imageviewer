@@ -54,6 +54,17 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * 裁剪图片 (输出图片目前只有输出比例是按照入参outputWidth和outputHeight宽高比例获得的，尺寸大小并没有，按照指定的尺寸大小图片可能极度失真) <br>
+     * 见{@link ImageCropper#onClick(View)} output = mOutputWidth * mOutputHeight != 0 ? clip.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) <br>
+     * createScaledBitmap 可能失真 55555555<br>
+     *
+     * @param sourceFilePath  原图片路径
+     * @param outputWidth     输出宽度
+     * @param outputHeight    输出高度
+     * @param isCircleOverlay 遮罩蒙板是否为圆形，为圆形的条件时在isCircleOverlay为true的同时，outputWidth等于outputHeight才行
+     * @param tag             若同一界面有多处裁剪功能，对此传递一个tag标志避免混淆
+     */
     public void crop(String sourceFilePath, int outputWidth, int outputHeight, boolean isCircleOverlay, String tag) {
         final int mWidth = getWidth();
         final int mHeight = getHeight();

@@ -37,6 +37,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
         iBackground = (ImageView) findViewById(R.id.i_background);
         iBackground.setOnClickListener(this);
         vImageCropper = (ImageCropper) findViewById(R.id.v_image_cropper);
+        // 实现裁剪结果回调
         vImageCropper.setCallback(this);
 
         mPictureInquirer = new PictureInquirer(this);
@@ -88,9 +89,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
             @Override
             public void onPictureQueryOut(String path, String tag) {
                 if ("avatar".equals(tag)) {
-                    vImageCropper.crop(path, 100, 100, true, tag);
+                    vImageCropper.crop(path, iAvatar.getWidth(), iAvatar.getHeight(), true, tag);
                 } else if ("background".equals(tag)) {
-                    vImageCropper.crop(path, 240, 150, false, tag);
+                    vImageCropper.crop(path, iBackground.getWidth(), iBackground.getHeight(), false, tag);
                 }
             }
         });
@@ -133,6 +134,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
         if ("avatar".equals(tag)) {
             iAvatar.setImageBitmap(transformCropCircle(bitmap));
         } else if ("background".equals(tag)) {
+            findViewById(R.id.t_hint).setVisibility(View.GONE);
             iBackground.setImageBitmap(bitmap);
         }
     }
