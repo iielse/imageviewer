@@ -1,19 +1,30 @@
 package ch.ielse.demo.p01;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+
+import java.util.List;
 
 import ch.ielse.view.imagecropper.ImageCropper;
 
 public class MainActivity extends Activity implements View.OnClickListener, ImageCropper.Callback {
+    private static final String TAG = "MainActivity";
+
+    private PictureInquirer mPictureInquirer;
     private ImageView iAvatar, iBackground;
     private ImageCropper vImageCropper;
 
@@ -27,34 +38,94 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
         iBackground.setOnClickListener(this);
         vImageCropper = (ImageCropper) findViewById(R.id.v_image_cropper);
         vImageCropper.setCallback(this);
+
+        mPictureInquirer = new PictureInquirer(this);
     }
 
     @Override
     public void onClick(View v) {
+        final String tag;
         if (v == iAvatar) {
-            vImageCropper.queryPicture("avatar");
+            tag = "avatar";
         } else if (v == iBackground) {
-            vImageCropper.queryPicture("background");
+            tag = "background";
+        } else {
+            return;
         }
+
+        new SheetDialog.Builder(v.getContext()).setTitle("更换图片")
+                .addMenu("从手机相册选择", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        if (!PermissionUtils.hasPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            PermissionUtils.requestPermissions(MainActivity.this, PermissionUtils.PERMISSION_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+                            Log.d(TAG, "ActivityCompat.requestPermissions READ_EXTERNAL_STORAGE");
+                            return;
+                        }
+                        mPictureInquirer.queryPictureFromAlbum(tag);
+                    }
+                })
+                .addMenu("拍一张", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        if (!PermissionUtils.hasPermission(MainActivity.this, Manifest.permission.CAMERA)) {
+                            PermissionUtils.requestPermissions(MainActivity.this, PermissionUtils.PERMISSION_CAMERA, Manifest.permission.CAMERA);
+                            Log.d(TAG, "ActivityCompat.requestPermissions CAMERA");
+                            return;
+                        }
+                        mPictureInquirer.queryPictureFromCamera(tag);
+                    }
+                }).create().show();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        vImageCropper.onActivityResult(requestCode, resultCode, data);
+        mPictureInquirer.onActivityResult(requestCode, resultCode, data, new PictureInquirer.Callback() {
+            @Override
+            public void onPictureQueryOut(String path, String tag) {
+                if ("avatar".equals(tag)) {
+                    vImageCropper.crop(path, 100, 100, true, tag);
+                } else if ("background".equals(tag)) {
+                    vImageCropper.crop(path, 240, 150, false, tag);
+                }
+            }
+        });
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        vImageCropper.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
-    public void onPictureQueryOut(String path, String tag) {
-        if ("avatar".equals(tag)) {
-            vImageCropper.crop(path, 100, 100, true, tag);
-        } else if ("background".equals(tag)) {
-            vImageCropper.crop(path, 240, 150, false, tag);
-        }
+        PermissionUtils.onRequestPermissionsResult(requestCode, permissions, grantResults, new PermissionUtils.Callback() {
+            @Override
+            public void onResult(final int requestCode, List<String> grantPermissions, List<String> deniedPermissions) {
+                if (PermissionUtils.hasAlwaysDeniedPermission(MainActivity.this, deniedPermissions)) {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("权限提示").setMessage("我们需要的一些权限被您拒绝或者系统发生错误申请失败，请您到设置页面手动授权，否则功能无法正常使用！")
+                            .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                    intent.setData(uri);
+                                    startActivityForResult(intent, requestCode);
+                                }
+                            })
+                            .setNegativeButton("知道了", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).create().show();
+                } else {
+                    // 一部分权限是暂时拒绝(仍为询问状态)，可以提示权限工作原理来告知用户为什么要此权限。
+                    // 来增加下次用户同意该权限申请的可能性
+                }
+            }
+        });
     }
 
     @Override

@@ -17,7 +17,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/title_height">
+        android:layout_height="48dip">
 
         <ImageView
             android:id="@+id/i_back"

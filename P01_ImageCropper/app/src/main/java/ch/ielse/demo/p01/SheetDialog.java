@@ -1,4 +1,4 @@
-package ch.ielse.view.imagecropper;
+package ch.ielse.demo.p01;
 
 import android.app.Dialog;
 import android.content.Context;
