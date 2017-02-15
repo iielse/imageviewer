@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
     private PictureInquirer mPictureInquirer;
     private ImageView iAvatar, iBackground;
     private ImageCropper vImageCropper;
+    private String mTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
         iAvatar.setOnClickListener(this);
         iBackground = (ImageView) findViewById(R.id.i_background);
         iBackground.setOnClickListener(this);
+
         vImageCropper = (ImageCropper) findViewById(R.id.v_image_cropper);
+        // 设置是否按照vImageCropper.crop()方法入参outputWidth和outputHeight来输出，false表示仅只按其比例输出，true为绝对尺寸输出
+        // 默认值为false，一般情况下不一定要设置这个API
+        vImageCropper.setOutputFixedSize(false);
         // 实现裁剪结果回调
         vImageCropper.setCallback(this);
 
@@ -45,42 +51,41 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
 
     @Override
     public void onClick(View v) {
-        final String tag;
         if (v == iAvatar) {
-            tag = "avatar";
+            mTag = "avatar";
         } else if (v == iBackground) {
-            tag = "background";
-        } else {
-            return;
+            mTag = "background";
         }
 
-        new SheetDialog.Builder(v.getContext()).setTitle("更换图片")
-                .addMenu("从手机相册选择", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+        if (!TextUtils.isEmpty(mTag)) {
+            new SheetDialog.Builder(v.getContext()).setTitle("更换图片")
+                    .addMenu("从手机相册选择", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
 
-                        if (!PermissionUtils.hasPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                            PermissionUtils.requestPermissions(MainActivity.this, PermissionUtils.PERMISSION_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
-                            Log.d(TAG, "ActivityCompat.requestPermissions READ_EXTERNAL_STORAGE");
-                            return;
+                            if (!PermissionUtils.hasPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                                PermissionUtils.requestPermissions(MainActivity.this, PermissionUtils.PERMISSION_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+                                Log.d(TAG, "requestPermissions READ_EXTERNAL_STORAGE");
+                                return;
+                            }
+                            mPictureInquirer.queryPictureFromAlbum(mTag);
                         }
-                        mPictureInquirer.queryPictureFromAlbum(tag);
-                    }
-                })
-                .addMenu("拍一张", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                    })
+                    .addMenu("拍一张", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
 
-                        if (!PermissionUtils.hasPermission(MainActivity.this, Manifest.permission.CAMERA)) {
-                            PermissionUtils.requestPermissions(MainActivity.this, PermissionUtils.PERMISSION_CAMERA, Manifest.permission.CAMERA);
-                            Log.d(TAG, "ActivityCompat.requestPermissions CAMERA");
-                            return;
+                            if (!PermissionUtils.hasPermission(MainActivity.this, Manifest.permission.CAMERA)) {
+                                PermissionUtils.requestPermissions(MainActivity.this, PermissionUtils.PERMISSION_CAMERA, Manifest.permission.CAMERA);
+                                Log.d(TAG, "requestPermissions CAMERA");
+                                return;
+                            }
+                            mPictureInquirer.queryPictureFromCamera(mTag);
                         }
-                        mPictureInquirer.queryPictureFromCamera(tag);
-                    }
-                }).create().show();
+                    }).create().show();
+        }
     }
 
     @Override
@@ -121,9 +126,17 @@ public class MainActivity extends Activity implements View.OnClickListener, Imag
                                     dialog.dismiss();
                                 }
                             }).create().show();
+                } else if (!deniedPermissions.isEmpty()) {
+                    Log.e(TAG, "一部分权限是暂时拒绝(仍为询问状态)，可以提示权限工作原理来告知用户为什么要此权限。来增加下次用户同意该权限申请的可能性");
                 } else {
-                    // 一部分权限是暂时拒绝(仍为询问状态)，可以提示权限工作原理来告知用户为什么要此权限。
-                    // 来增加下次用户同意该权限申请的可能性
+                    Log.e(TAG, "申请的权限用户全部都允许了");
+                    for (String grant : grantPermissions) {
+                        if (Manifest.permission.READ_EXTERNAL_STORAGE.equals(grant)) {
+                            mPictureInquirer.queryPictureFromAlbum(mTag);
+                        } else if (Manifest.permission.CAMERA.equals(grant)) {
+                            mPictureInquirer.queryPictureFromCamera(mTag);
+                        }
+                    }
                 }
             }
         });

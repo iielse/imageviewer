@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,16 +16,23 @@ import android.view.ViewPropertyAnimator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+/**
+ * 该View用于对位图进行局部采集，之后输出新的位图
+ */
 public class ImageCropper extends FrameLayout implements GestureDetector.OnGestureListener, View.OnClickListener {
 
-    private boolean isMultiTouch = false;
     private View iBack;
     private View iSubmit;
     private ImageView iSource;
     private OverlayView vOverlay;
+
+    private float initMinScale;
     private int mOutputWidth;
     private int mOutputHeight;
     private String mTag;
+
+    boolean isOutputFixedSize;
+    private boolean isMultiTouch = false;
     private float mLastScale;
     private float mLastTranslateX;
     private float mLastTranslateY;
@@ -34,9 +40,9 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
     private float mLastFingersCenterX;
     private float mLastFingersCenterY;
     private final GestureDetector mGestureDetector;
+
     private Callback mCallback;
     private ViewPropertyAnimator animRestore;
-    private float initMinScale;
     private Bitmap bmpSource;
 
     public ImageCropper(Context context, AttributeSet attrs) {
@@ -55,9 +61,17 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
     }
 
     /**
-     * 裁剪图片 (输出图片目前只有输出比例是按照入参outputWidth和outputHeight宽高比例获得的，尺寸大小并没有，按照指定的尺寸大小图片可能极度失真) <br>
-     * 见{@link ImageCropper#onClick(View)} output = mOutputWidth * mOutputHeight != 0 ? clip.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) <br>
-     * createScaledBitmap 可能失真 55555555<br>
+     * @param outputFixedSize 是否按照vImageCropper.crop()方法入参outputWidth和outputHeight来输出，false表示仅只按其比例输出，true为绝对尺寸输出
+     */
+    public void setOutputFixedSize(boolean outputFixedSize) {
+        isOutputFixedSize = outputFixedSize;
+    }
+
+    /**
+     * 裁剪图片(输出的图片默认只有比例是按照入参outputWidth和outputHeight获得的，尺寸大小并没有按照指定的尺寸大小。<br>
+     * 如果要求大小也为入参请调用{@link ImageCropper#setOutputFixedSize(boolean)} 设置值为true) <br>
+     * 逻辑见{@link ImageCropper#onClick(View)} output = mOutputWidth * mOutputHeight != 0 ? Bitmap.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) : clip <br>
+     * ps: createScaledBitmap (小图变大图会造成内容的失真) 55555555<br>
      *
      * @param sourceFilePath  原图片路径
      * @param outputWidth     输出宽度
@@ -71,6 +85,7 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         if (mWidth * mHeight == 0) return;
         setVisibility(View.VISIBLE);
         mTag = tag;
+
         mOutputWidth = outputWidth;
         mOutputHeight = outputHeight;
 
@@ -79,30 +94,22 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(sourceFilePath, options);
-        Log.e("TTT", "AAA  BitmapFactory.decodeFile w " + options.outWidth + "#h " + options.outHeight);
         options.inSampleSize = Utils.calculateInSampleSize(options, mWidth, mHeight);
         options.inJustDecodeBounds = false;
         bmpSource = BitmapFactory.decodeFile(sourceFilePath, options);
-        Log.e("TTT", "AAA  bmpSource width" + bmpSource.getWidth());
 
         if (1f * bmpSource.getWidth() / bmpSource.getHeight() > 1f * iSource.getWidth() / iSource.getHeight()) {
-            Log.e("TTT", "AAA  横图");
             int bitmapHeightAfterFitCenter = (int) (1f * bmpSource.getHeight() * iSource.getWidth() / bmpSource.getWidth());
             bmpSource = Bitmap.createScaledBitmap(bmpSource, iSource.getWidth(), bitmapHeightAfterFitCenter, true);
             float initMinScaleX = 1f * vOverlay.getOverlayWidth() / iSource.getWidth();
             float initMinScaleY = 1f * vOverlay.getOverlayHeight() / bitmapHeightAfterFitCenter;
             initMinScale = Math.max(initMinScaleX, initMinScaleY);
         } else {
-            Log.e("TTT", "AAA  竖图");
             int bitmapWidthAfterFitCenter = (int) (1f * bmpSource.getWidth() * iSource.getHeight() / bmpSource.getHeight());
             bmpSource = Bitmap.createScaledBitmap(bmpSource, bitmapWidthAfterFitCenter, iSource.getHeight(), true);
-
             float initMinScaleX = 1f * vOverlay.getOverlayWidth() / bitmapWidthAfterFitCenter;
             float initMinScaleY = 1f * vOverlay.getOverlayHeight() / iSource.getHeight();
             initMinScale = Math.max(initMinScaleX, initMinScaleY);
-            Log.e("TTT", "AAA  initMinScale " + initMinScale + "##initMinScaleX " + initMinScaleX + "##initMinScaleY " + initMinScaleY + "##vOverlay.getOverlayWidth()" + vOverlay.getOverlayWidth()
-                    + "###bitmapWidthAfterFitCenter " + bitmapWidthAfterFitCenter);
-            Log.e("TTT", "AAA  mWidth" + mWidth + "##iSourceWidth:" + iSource.getWidth());
         }
 
         final float defaultScale = initMinScale > 1 ? initMinScale : 1;
@@ -232,16 +239,14 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         if (animRestore != null) animRestore.cancel();
 
         if (v == iSubmit) {
-            final float x = ((bmpSource.getWidth() * iSource.getScaleX() - vOverlay.getOverlayWidth()) / 2 - iSource.getTranslationX()) / iSource.getScaleX();
-            final float width = vOverlay.getOverlayWidth() / iSource.getScaleX();
-            final float y = ((bmpSource.getHeight() * iSource.getScaleY() - vOverlay.getOverlayHeight()) / 2 - iSource.getTranslationY()) / iSource.getScaleY();
-            final float height = vOverlay.getOverlayHeight() / iSource.getScaleY();
-            Log.e("TTT", "AAA x " + x + "##width " + width + "##y " + y + "##height " + height);
-            Log.e("TTT", "AAA bmpSource w " + bmpSource.getWidth() + " ## h " + bmpSource.getHeight());
-            Bitmap clip = Bitmap.createBitmap(bmpSource, (int) x, (int) y, (int) width, (int) (height));
-            Bitmap output = clip;
-            // output = mOutputWidth * mOutputHeight != 0 ? clip.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) :
             if (mCallback != null) {
+                final float x = ((bmpSource.getWidth() * iSource.getScaleX() - vOverlay.getOverlayWidth()) / 2 - iSource.getTranslationX()) / iSource.getScaleX();
+                final float width = vOverlay.getOverlayWidth() / iSource.getScaleX();
+                final float y = ((bmpSource.getHeight() * iSource.getScaleY() - vOverlay.getOverlayHeight()) / 2 - iSource.getTranslationY()) / iSource.getScaleY();
+                final float height = vOverlay.getOverlayHeight() / iSource.getScaleY();
+                Bitmap clip = Bitmap.createBitmap(bmpSource, (int) x, (int) y, (int) width, (int) (height));
+                Bitmap output = (isOutputFixedSize && mOutputWidth * mOutputHeight != 0) ? Bitmap.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) : clip;
+
                 mCallback.onPictureCropOut(output, mTag);
                 animate().alpha(0).setListener(new AnimatorListenerAdapter() {
                     @Override

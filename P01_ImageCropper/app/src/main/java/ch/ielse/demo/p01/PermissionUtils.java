@@ -16,6 +16,8 @@ import java.util.List;
 /**
  * https://github.com/yanzhenjie/AndPermission/blob/master/permission/src/main/java/com/yanzhenjie/permission/AndPermission.java
  * 参考AndPermission
+ * <p>
+ * 对处理android6.0动态权限的需要任务，提供了简单的API封装
  */
 public class PermissionUtils {
     static int PERMISSION_CAMERA = 102;
@@ -23,6 +25,9 @@ public class PermissionUtils {
 
     private static final String TAG = "PermissionUtils";
 
+    /**
+     * 是否拥有权限
+     */
     public static boolean hasPermission(Context context, String... permissions) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true;
 
@@ -35,6 +40,7 @@ public class PermissionUtils {
     }
 
     /**
+     * 请求权限
      * <pre>
      * if (!PermissionUtils.hasPermission()) {
      *         PermissionUtils.requestPermissions();
@@ -76,6 +82,7 @@ public class PermissionUtils {
     }
 
     /**
+     * 请求权限的结果
      * <pre>
      * @Override
      * public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -89,7 +96,6 @@ public class PermissionUtils {
      *         }
      *     });
      * }
-     *
      * </pre>
      */
     public static void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults, Callback callback) {

@@ -13,7 +13,23 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by LY on 2017/2/14.
+ * 获得图片，主要手段方式如下<br>
+ * 1、相册文件获取 {@link PictureInquirer#queryPictureFromAlbum(String)}
+ * 2、即时拍摄获取 {@link PictureInquirer#queryPictureFromCamera(String)}
+ * <p>
+ * 需要覆写activity onActivityResult的方法 <br>
+ * <pre>
+ * @Override
+ * protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+ *     mPictureInquirer.onActivityResult(requestCode, resultCode, data, new PictureInquirer.Callback() {
+ *         @Override
+ *         public void onPictureQueryOut(String path, String tag) {
+ *         }
+ *     });
+ * }
+ *
+ * ps:PictureInquirer中的requestCode的常量值是可以修改的，如果与其它功能的requestCode的值是冲突的话
+ * </pre>
  */
 
 public class PictureInquirer {
@@ -34,6 +50,9 @@ public class PictureInquirer {
         mHolder = activity;
     }
 
+    /**
+     * 相册目录获取图片
+     */
     public void queryPictureFromAlbum(String tag) {
         mTag = tag;
         Intent intentPick = new Intent(Intent.ACTION_PICK);
@@ -52,6 +71,9 @@ public class PictureInquirer {
         }
     }
 
+    /**
+     * 即时拍摄获取图片
+     */
     public void queryPictureFromCamera(String tag) {
         mTag = tag;
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -100,6 +122,12 @@ public class PictureInquirer {
     }
 
     public interface Callback {
+        /**
+         * 获得了一张新的图片
+         *
+         * @param path 新图片的路径
+         * @param tag  自设标志
+         */
         void onPictureQueryOut(String path, String tag);
     }
 }
