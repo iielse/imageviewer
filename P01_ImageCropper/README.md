@@ -17,6 +17,11 @@
 
 ## 实现步骤
 
+在module的gradle
+```
+compile 'ch.ielse:imagecropper:1.0.0'
+```
+
 首先在xml布局中
 ```
 <FrameLayout
