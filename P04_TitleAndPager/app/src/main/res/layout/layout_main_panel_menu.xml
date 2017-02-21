@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dip"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/l_conversation"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/i_conversation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@mipmap/skin_tab_icon_conversation_selected"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/l_contact"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/i_contact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@mipmap/skin_tab_icon_contact_normal"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/l_plugin"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/skin_tab_icon_plugin_normal">
+
+            <ImageView
+                android:id="@+id/i_plugin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@mipmap/skin_tab_icon_plugin_normal"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dip"
+        android:background="#BFBFBF"/>
+
+</FrameLayout>

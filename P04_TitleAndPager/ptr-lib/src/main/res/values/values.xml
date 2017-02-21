@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PtrClassicHeader"><attr format="integer" name="ptr_rotate_ani_time"/></declare-styleable>
+    <declare-styleable name="PtrFrameLayout"><attr format="reference" name="ptr_header"/><attr format="reference" name="ptr_content"/><attr format="float" name="ptr_resistance"/><attr format="float" name="ptr_ratio_of_header_height_to_refresh"/><attr format="integer" name="ptr_duration_to_close"/><attr format="integer" name="ptr_duration_to_close_header"/><attr format="boolean" name="ptr_pull_to_fresh"/><attr format="boolean" name="ptr_keep_header_when_refresh"/></declare-styleable>
+    <!-- From: file:/Users/srain/git/android-Ultra-Pull-To-Refresh/ptr-lib/res/values/cube_ptr_string.xml -->
+    <eat-comment/>
+    <string name="cube_ptr_hours_ago"> hours ago</string>
+    <string name="cube_ptr_last_update">last update: </string>
+    <string name="cube_ptr_minutes_ago"> minutes ago</string>
+    <string name="cube_ptr_pull_down">Pull Down</string>
+    <string name="cube_ptr_pull_down_to_refresh">Pull Down to Refresh</string>
+    <string name="cube_ptr_refresh_complete">Updated.</string>
+    <string name="cube_ptr_refreshing">Updating...</string>
+    <string name="cube_ptr_release_to_refresh">Release To Refresh</string>
+    <string name="cube_ptr_seconds_ago"> seconds ago</string>
+</resources>

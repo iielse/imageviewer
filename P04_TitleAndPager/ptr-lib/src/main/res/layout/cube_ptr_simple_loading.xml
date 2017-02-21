@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProgressBar
+    style="@android:style/Widget.ProgressBar.Small"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center" />
+
+<!-- From: file:/Users/srain/git/android-Ultra-Pull-To-Refresh/ptr-lib/res/layout/cube_ptr_simple_loading.xml -->
