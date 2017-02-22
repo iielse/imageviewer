@@ -3,18 +3,20 @@
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+
+
     android:layout_height="match_parent">
 
-    <ch.ielse.view.stackview.StackPageLayout
+    <ch.ielse.view.stack.PageLayout
         android:id="@+id/l_stack_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <FrameLayout
-        android:id="@+id/lay_left_menu"
+    <ch.ielse.demo.p04.business.profile.MainProfileLayout
+        android:id="@+id/l_main_profile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="left"
-        android:tag="LEFT" />
+        android:tag="LEFT"/>
 </android.support.v4.widget.DrawerLayout>
 

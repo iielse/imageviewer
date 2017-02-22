@@ -5,11 +5,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import ch.ielse.view.stackview.StackPageLayout;
+import ch.ielse.view.stack.PageLayout;
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
-    private StackPageLayout lStackPage;
+    private PageLayout lStackPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,11 +26,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 View mContent = mDrawerLayout.getChildAt(0);
-                final float contentScale = 1 - slideOffset * 0.1f;
-
                 if (drawerView.getTag().equals("LEFT")) {
                     mContent.setTranslationX(drawerView.getMeasuredWidth() * slideOffset);
-                    mContent.setScaleY(contentScale);
                 }
             }
 
@@ -44,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        lStackPage = (StackPageLayout) findViewById(R.id.l_stack_page);
+        lStackPage = (PageLayout) findViewById(R.id.l_stack_page);
         lStackPage.put(new MainPanelLayout(this));
     }
 

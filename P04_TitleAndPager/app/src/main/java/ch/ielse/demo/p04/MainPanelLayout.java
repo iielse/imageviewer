@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import ch.ielse.demo.p04.business.contact.MainContactLayout;
+
 public class MainPanelLayout extends LinearLayout implements MainPanelMenuLayout.Callback {
 
     private MainPanelMenuLayout lMainPanelMenu;
@@ -22,12 +24,10 @@ public class MainPanelLayout extends LinearLayout implements MainPanelMenuLayout
         (lMainPanelMenu = (MainPanelMenuLayout) findViewById(R.id.l_main_panel_menu)).addCallback(this);
 
         lMainContent = (FrameLayout) findViewById(R.id.l_main_content);
-
-        lMainContent.addView(new PluginLayout(context));
+        lMainContent.addView(new MainContactLayout(context));
     }
 
     @Override
     public void onPanelMenuClick(String which) {
-
     }
 }

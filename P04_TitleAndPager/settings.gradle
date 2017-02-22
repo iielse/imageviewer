@@ -1,1 +1,1 @@
-include ':app', ':stackview', ':ptr-lib'
+include ':app', ':stackview'

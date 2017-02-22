@@ -1,4 +1,4 @@
-<manifest package="ielse.ch.stack"
+<manifest package="ch.ielse.view.stack"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application android:allowBackup="true"
