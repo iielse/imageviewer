@@ -69,11 +69,18 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
     }
 
     private void notifyDataChanged() {
-        final List<String> dataList = mThumbDataList;
-        final int urlListSize = dataList != null ? mThumbDataList.size() : 0;
+        final List<String> thumbList = mThumbDataList;
+        final int urlListSize = thumbList != null ? mThumbDataList.size() : 0;
 
-        if (mDataList == null || mDataList.size() != urlListSize) {
-            throw new IllegalArgumentException("dataList.size != thumbDataList.size");
+        if (thumbList == null || thumbList.size() < 1) {
+            setVisibility(View.GONE);
+            return;
+        } else {
+            setVisibility(View.VISIBLE);
+        }
+
+        if (thumbList.size() > mDataList.size()) {
+            throw new IllegalArgumentException("dataList.size(" + mDataList.size() + ") > thumbDataList.size(" + thumbList.size() + ")");
         }
 
         int column = 3;
@@ -109,7 +116,7 @@ public class MessagePicturesLayout extends FrameLayout implements View.OnClickLi
                 mVisiblePictureList.add(iPicture);
                 iPicture.setLayoutParams(lpChildImage);
                 iPicture.setBackgroundResource(R.drawable.default_picture);
-                Glide.with(getContext()).load(dataList.get(i)).into(iPicture);
+                Glide.with(getContext()).load(thumbList.get(i)).into(iPicture);
                 iPicture.setTranslationX((i % column) * (imageSize + mSpace));
                 iPicture.setTranslationY((i / column) * (imageSize + mSpace));
             } else {
