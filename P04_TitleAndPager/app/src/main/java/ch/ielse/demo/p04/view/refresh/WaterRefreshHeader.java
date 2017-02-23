@@ -18,7 +18,6 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
 
 import ch.ielse.demo.p04.R;
-import ch.ielse.demo.p04.utils.Logger;
 import in.srain.cube.views.ptr.PtrFrameLayout;
 import in.srain.cube.views.ptr.PtrUIHandler;
 import in.srain.cube.views.ptr.indicator.PtrIndicator;
@@ -45,9 +44,10 @@ public class WaterRefreshHeader extends View implements PtrUIHandler {
     private final int mSpacing;
     private final int mCircleWaterHeightWithSpacing;
 
+    private int adjustLoadingOffsetY;
+
     private int mOffsetToKeepHeaderWhileLoading;
     private int mHeight;
-    private int mWidth;
     private int mCenterX;
     private int initialWaterPosY;
     private int mWaterCurrentPosY;
@@ -94,8 +94,7 @@ public class WaterRefreshHeader extends View implements PtrUIHandler {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         mHeight = h;
-        mWidth = w;
-        mCenterX = mWidth / 2;
+        mCenterX = w / 2;
         initialWaterPosY = mHeight - mCircleWaterHeightWithSpacing;
     }
 
@@ -187,7 +186,6 @@ public class WaterRefreshHeader extends View implements PtrUIHandler {
 
     @Override
     public void onUIReset(PtrFrameLayout frame) {
-        Logger.e("AAA onUIPositionChange STATE_NONE");
         mState = STATE_NONE;
 
         clearAnimation();
@@ -198,13 +196,11 @@ public class WaterRefreshHeader extends View implements PtrUIHandler {
     public void onUIRefreshPrepare(PtrFrameLayout frame) {
         frame.setRatioOfHeaderHeightToRefresh(1);
         frame.setOffsetToKeepHeaderWhileLoading(mOffsetToKeepHeaderWhileLoading);
-        Logger.e("AAA onUIRefreshPrepare STATE_DRAGGED");
         mState = STATE_DRAGGED;
     }
 
     @Override
     public void onUIRefreshBegin(final PtrFrameLayout frame) {
-        Logger.e("AAA onUIRefreshBegin STATE_LOADING");
         if (mState != STATE_LOADING) {
             mState = STATE_LOADING;
             startAnimation(mLoadingAnimation);
@@ -213,7 +209,6 @@ public class WaterRefreshHeader extends View implements PtrUIHandler {
 
     @Override
     public void onUIRefreshComplete(PtrFrameLayout frame) {
-        Logger.e("AAA onUIRefreshComplete");
     }
 
     @Override
@@ -223,7 +218,6 @@ public class WaterRefreshHeader extends View implements PtrUIHandler {
         setTranslationY(1f * (ptrIndicator.getCurrentPercent() > 1 ? -getTop() : 0));
 
         if (mState == STATE_DRAGGED && ptrIndicator.getCurrentPercent() >= 1) {
-            Logger.e("AAA onUIPositionChange STATE_DRAGGED_RELEASE");
             mState = STATE_DRAGGED_RELEASE;
             startAnimation(mDragReleaseAnimation);
         }
@@ -246,11 +240,7 @@ public class WaterRefreshHeader extends View implements PtrUIHandler {
                 adjustLoadingOffsetY *= (ptrIndicator.getCurrentPercent() - mCircleWaterCriticalPercent) / (1 - mCircleWaterCriticalPercent);
             }
         }
-
-        Logger.e("AAA s [" + mState + "] adjustLoadingOffsetY " + adjustLoadingOffsetY + "##ptrIndicator.getCurrentPercent()" + ptrIndicator.getCurrentPercent() + "##mCircleWaterCriticalPercent " + mCircleWaterCriticalPercent);
     }
-
-    int adjustLoadingOffsetY;
 
     private void ensureCriticalValueOfShapeChange() {
         if (mCircleWaterCriticalPercent == 0) {

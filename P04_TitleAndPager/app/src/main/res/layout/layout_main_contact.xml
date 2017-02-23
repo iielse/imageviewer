@@ -4,9 +4,23 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/v_recycler"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/v_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="20dip"/>
+
+        <ch.ielse.demo.p04.business.contact.StickyGroupLayout
+            android:id="@+id/l_sticky_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"/>
+    </FrameLayout>
 
 </in.srain.cube.views.ptr.PtrFrameLayout>

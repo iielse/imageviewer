@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/l_pull_to_refresh"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+
+              android:background="#FFF"
+              android:orientation="vertical">
+
+    <FrameLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dip"
+        android:background="@drawable/shape_search_background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawableLeft="@mipmap/search"
+            android:drawablePadding="6dip"
+            android:paddingBottom="8dip"
+            android:paddingTop="8dip"
+            android:text="搜索"
+            android:textColor="#A6A6A6"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dip"
+        android:orientation="horizontal">
+
+
+        <FrameLayout
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="8dip"
+                android:drawableTop="@mipmap/qq_contact_list_newfriend_enter_icon_theme_version2"
+                android:gravity="center"
+                android:text="新朋友"
+                android:textColor="#000"
+                android:textSize="14sp"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="8dip"
+                android:drawableTop="@mipmap/qq_contact_list_troop_entry_icon_theme_version2"
+                android:gravity="center"
+                android:text="群聊"
+                android:textColor="#000"
+                android:textSize="14sp"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawablePadding="8dip"
+                android:drawableTop="@mipmap/qq_contact_list_pbaccount_entry_icon_theme_version2"
+                android:gravity="center"
+                android:text="公众号"
+                android:textColor="#000"
+                android:textSize="14sp"/>
+        </FrameLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dip"
+        android:background="#DFDFE0"/>
+
+
+</LinearLayout>

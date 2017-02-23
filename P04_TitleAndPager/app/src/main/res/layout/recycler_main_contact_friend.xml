@@ -1,18 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="63dip"
-    android:background="@drawable/selector_item_white">
+    android:background="@drawable/selector_item_white"
+    android:paddingLeft="20dip"
+    android:paddingRight="20dip">
 
     <ImageView
         android:id="@+id/i_avatar"
-        android:layout_width="40dip"
-        android:layout_height="40dip"/>
+        android:layout_width="45dip"
+        android:layout_height="45dip"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dip"/>
+
+    <View
+        android:id="@+id/v_flag"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dip"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/i_avatar"/>
+
+    <View
+        android:id="@+id/v_divide_line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dip"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/i_avatar"
+        android:background="#DFDFE0"/>
 
     <TextView
         android:id="@+id/t_nickname"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/v_flag"
+        android:layout_toRightOf="@+id/i_avatar"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#000"
+        android:textSize="15sp"/>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/t_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/v_flag"
+        android:layout_toRightOf="@+id/i_avatar"
+        android:textColor="#777"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/t_motto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/v_flag"
+        android:layout_toRightOf="@+id/t_state"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#777"
+        android:textSize="14sp"/>
+
+</RelativeLayout>

@@ -2,16 +2,15 @@ package ch.ielse.demo.p04.business.contact;
 
 
 import android.support.annotation.NonNull;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.bignerdranch.expandablerecyclerview.ExpandableRecyclerAdapter;
+import com.bignerdranch.expandablerecyclerview.model.ExpandableWrapper;
 
 import java.util.List;
 
-import ch.ielse.demo.p04.R;
-
 public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, GroupViewHolder, FriendViewHolder> {
+    public static final int TYPE_HEADER = 2;
 
     public ContactAdapter(@NonNull List<Group> parentList) {
         super(parentList);
@@ -20,15 +19,13 @@ public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, Gro
     @NonNull
     @Override
     public GroupViewHolder onCreateParentViewHolder(@NonNull ViewGroup parentViewGroup, int viewType) {
-        return new GroupViewHolder(LayoutInflater.from(parentViewGroup.getContext())
-                .inflate(R.layout.recycler_main_contact_group, parentViewGroup, false));
+        return new GroupViewHolder(parentViewGroup, viewType);
     }
 
     @NonNull
     @Override
     public FriendViewHolder onCreateChildViewHolder(@NonNull ViewGroup childViewGroup, int viewType) {
-        return new FriendViewHolder(LayoutInflater.from(childViewGroup.getContext())
-                .inflate(R.layout.recycler_main_contact_friend, childViewGroup, false));
+        return new FriendViewHolder(childViewGroup);
     }
 
     @Override
@@ -39,5 +36,25 @@ public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, Gro
     @Override
     public void onBindChildViewHolder(@NonNull FriendViewHolder childViewHolder, int parentPosition, int childPosition, @NonNull Friend child) {
         childViewHolder.refresh(child);
+    }
+
+    @Override
+    public int getParentViewType(int parentPosition) {
+        if (mFlatItemList.get(parentPosition).isParent()) {
+            if (Group.TYPE_HEADER == mFlatItemList.get(parentPosition).getParent().getType()) {
+                return TYPE_HEADER;
+            }
+        }
+        return super.getParentViewType(parentPosition);
+    }
+
+    @Override
+    public boolean isParentViewType(int viewType) {
+        if (viewType == TYPE_HEADER) return true;
+        return super.isParentViewType(viewType);
+    }
+
+    public ExpandableWrapper<Group, Friend> getItemByPosition(int flatPosition) {
+        return mFlatItemList.get(flatPosition);
     }
 }
