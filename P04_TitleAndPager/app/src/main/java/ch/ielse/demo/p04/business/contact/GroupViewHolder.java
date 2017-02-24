@@ -51,13 +51,12 @@ public class GroupViewHolder extends ParentViewHolder {
         }
     }
 
-    public void refresh(Group group) {
+    public void refresh(Group group , int  parentPosition ) { // , boolean isExpanded
         switch (mViewType) {
             case ExpandableRecyclerAdapter.TYPE_PARENT:
-                tTitle.setText(group.getTitle());
-
+                tTitle.setText("["+parentPosition+"]"+group.getTitle());
+                iGroup.setRotation(isExpanded() ? 180 : 90);
                 ((ViewGroup.MarginLayoutParams)itemView.getLayoutParams()).topMargin = group.isHasTopSpace()? topSpacing : 0;
-                // vTopSpace.setVisibility(group.isHasTopSpace() ? View.VISIBLE : View.GONE);
                 break;
         }
     }

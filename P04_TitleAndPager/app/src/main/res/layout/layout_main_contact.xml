@@ -16,7 +16,7 @@
             android:clipToPadding="false"
             android:paddingBottom="20dip"/>
 
-        <ch.ielse.demo.p04.business.contact.StickyGroupLayout
+        <ch.ielse.demo.p04.business.contact.StickyHeaderLayout
             android:id="@+id/l_sticky_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
