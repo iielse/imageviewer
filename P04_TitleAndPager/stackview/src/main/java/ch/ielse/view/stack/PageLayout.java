@@ -57,7 +57,7 @@ public class PageLayout extends FrameLayout {
         layShadow = new FrameLayout(context);
         addView(layShadow);
         viewShadow = new View(context);
-        viewShadow.setBackgroundResource(R.drawable.shpe_stack_page_shadow);
+        viewShadow.setBackgroundResource(R.drawable.shpe_page_shadow);
         final float scale = context.getResources().getDisplayMetrics().density;
         int shadowWidth = (int) (28 * scale + 0.5f);
         LayoutParams lpShadow = new LayoutParams(shadowWidth, ViewGroup.LayoutParams.MATCH_PARENT);

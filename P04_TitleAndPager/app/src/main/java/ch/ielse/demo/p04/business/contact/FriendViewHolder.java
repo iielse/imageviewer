@@ -35,9 +35,8 @@ public class FriendViewHolder extends ChildViewHolder implements View.OnClickLis
         itemView.setOnClickListener(this);
     }
 
-    public void refresh(Friend friend, int parentPosition, int childPosition) {
-
-        tNickname.setText("[" + parentPosition + "]" + "[" + childPosition + "]" + friend.getNickname());
+    public void refresh(Friend friend) {
+        tNickname.setText(friend.getNickname());
         tState.setText(friend.getState());
         tMotto.setText(friend.getMotto());
         Glide.with(iAvatar.getContext()).load(friend.getAvatar())

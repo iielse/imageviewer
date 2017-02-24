@@ -12,10 +12,12 @@ import com.bumptech.glide.Glide;
 import ch.ielse.demo.p04.App;
 import ch.ielse.demo.p04.MainPanelMenuLayout;
 import ch.ielse.demo.p04.R;
+import ch.ielse.demo.p04.utils.Utils;
 
 public class MainProfileLayout extends LinearLayout implements MainPanelMenuLayout.Callback {
 
     private ImageView iAvatar;
+    private ImageView iQr;
 
 
     public MainProfileLayout(Context context) {
@@ -29,6 +31,11 @@ public class MainProfileLayout extends LinearLayout implements MainPanelMenuLayo
         iAvatar = (ImageView) findViewById(R.id.i_avatar);
         Glide.with(getContext()).load(R.mipmap.avatar).bitmapTransform(App.i().getCropCircleTransformation())
                 .into(iAvatar);
+
+        iQr = (ImageView) findViewById(R.id.i_qr);
+        if (Utils.isTranslucentStatus(context)) {
+            ((MarginLayoutParams) iQr.getLayoutParams()).topMargin += Utils.calculateStatusBarHeight(context);
+        }
     }
 
     @Override

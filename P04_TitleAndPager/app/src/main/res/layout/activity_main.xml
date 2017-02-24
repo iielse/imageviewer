@@ -3,14 +3,24 @@
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-
-
     android:layout_height="match_parent">
 
-    <ch.ielse.view.stack.PageLayout
-        android:id="@+id/l_stack_page"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <ch.ielse.view.stack.PageLayout
+            android:id="@+id/l_stack_page"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ch.ielse.view.stack.TitleLayout
+            android:id="@+id/l_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </FrameLayout>
+
 
     <ch.ielse.demo.p04.business.profile.MainProfileLayout
         android:id="@+id/l_main_profile"

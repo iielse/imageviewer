@@ -2,7 +2,6 @@ package ch.ielse.demo.p04.business.contact;
 
 import com.bignerdranch.expandablerecyclerview.model.Parent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

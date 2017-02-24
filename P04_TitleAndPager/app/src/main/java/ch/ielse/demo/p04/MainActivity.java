@@ -1,18 +1,38 @@
 package ch.ielse.demo.p04;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
+import ch.ielse.demo.p04.business.contact.ContactTitleLayout;
 import ch.ielse.view.stack.PageLayout;
+import ch.ielse.view.stack.TitleLayout;
 
 public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
+
+    private TitleLayout lTitle;
+
     private PageLayout lStackPage;
+    private MainPanelLayout lMainPanel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+            window.setNavigationBarColor(Color.BLACK);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -41,8 +61,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        lTitle = (TitleLayout) findViewById(R.id.l_title);
         lStackPage = (PageLayout) findViewById(R.id.l_stack_page);
-        lStackPage.put(new MainPanelLayout(this));
+        lStackPage.put(lMainPanel = new MainPanelLayout(this).attach(lTitle));
     }
 
 }

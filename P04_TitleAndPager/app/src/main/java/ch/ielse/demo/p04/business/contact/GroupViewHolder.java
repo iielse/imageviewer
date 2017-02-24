@@ -1,6 +1,5 @@
 package ch.ielse.demo.p04.business.contact;
 
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +18,10 @@ public class GroupViewHolder extends ParentViewHolder {
     private int mViewType;
     private ViewPropertyAnimator animExpansionToggled;
 
-//    private View vTopSpace;
     private TextView tTitle;
     private ImageView iGroup;
 
-    private int topSpacing;
+    private int mTopMargin;
 
     public GroupViewHolder(ViewGroup parent, int viewType) {
         super(initialByViewType(parent, viewType));
@@ -32,12 +30,11 @@ public class GroupViewHolder extends ParentViewHolder {
             case ExpandableRecyclerAdapter.TYPE_PARENT:
                 tTitle = (TextView) itemView.findViewById(R.id.t_title);
                 iGroup = (ImageView) itemView.findViewById(R.id.i_group);
-//                vTopSpace = itemView.findViewById(R.id.v_top_space);
                 break;
         }
-       DisplayMetrics mDisplayMetrics = parent.getResources().getDisplayMetrics();
-        topSpacing = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 22.5f, mDisplayMetrics) + 0.5f);
 
+        mTopMargin = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 22.5f,
+                parent.getResources().getDisplayMetrics()) + 0.5f);
     }
 
     @Override
@@ -51,12 +48,12 @@ public class GroupViewHolder extends ParentViewHolder {
         }
     }
 
-    public void refresh(Group group , int  parentPosition ) { // , boolean isExpanded
+    public void refresh(Group group) {
         switch (mViewType) {
             case ExpandableRecyclerAdapter.TYPE_PARENT:
-                tTitle.setText("["+parentPosition+"]"+group.getTitle());
+                tTitle.setText(group.getTitle());
                 iGroup.setRotation(isExpanded() ? 180 : 90);
-                ((ViewGroup.MarginLayoutParams)itemView.getLayoutParams()).topMargin = group.isHasTopSpace()? topSpacing : 0;
+                ((ViewGroup.MarginLayoutParams) itemView.getLayoutParams()).topMargin = group.isHasTopSpace() ? mTopMargin : 0;
                 break;
         }
     }

@@ -7,7 +7,6 @@
     android:orientation="vertical">
 
     <FrameLayout
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dip"
@@ -21,7 +20,7 @@
             android:drawablePadding="6dip"
             android:paddingBottom="8dip"
             android:paddingTop="8dip"
-            android:text="搜索"
+            android:text="搜索电影/音乐/商品..."
             android:textColor="#A6A6A6"/>
     </FrameLayout>
 
@@ -41,9 +40,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawablePadding="8dip"
-                android:drawableTop="@mipmap/qq_contact_list_newfriend_enter_icon_theme_version2"
+                android:drawableTop="@mipmap/qq_plugin_list_haoyoudongtai"
                 android:gravity="center"
-                android:text="新朋友"
+                android:text="好友动态"
                 android:textColor="#000"
                 android:textSize="14sp"/>
         </FrameLayout>
@@ -58,9 +57,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawablePadding="8dip"
-                android:drawableTop="@mipmap/qq_contact_list_troop_entry_icon_theme_version2"
+                android:drawableTop="@mipmap/qq_plugin_list_fujin"
                 android:gravity="center"
-                android:text="群聊"
+                android:text="附近"
                 android:textColor="#000"
                 android:textSize="14sp"/>
         </FrameLayout>
@@ -75,9 +74,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:drawablePadding="8dip"
-                android:drawableTop="@mipmap/qq_contact_list_pbaccount_entry_icon_theme_version2"
+                android:drawableTop="@mipmap/qq_plugin_list_xingqubuluo"
                 android:gravity="center"
-                android:text="公众号"
+                android:text="兴趣部落"
                 android:textColor="#000"
                 android:textSize="14sp"/>
         </FrameLayout>

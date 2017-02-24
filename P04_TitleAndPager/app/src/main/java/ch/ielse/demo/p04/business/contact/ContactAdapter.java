@@ -10,8 +10,6 @@ import com.bignerdranch.expandablerecyclerview.model.ExpandableWrapper;
 
 import java.util.List;
 
-import ch.ielse.demo.p04.utils.Logger;
-
 public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, GroupViewHolder, FriendViewHolder> {
     public static final int TYPE_HEADER = 2;
 
@@ -33,20 +31,18 @@ public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, Gro
 
     @Override
     public void onBindParentViewHolder(@NonNull GroupViewHolder parentViewHolder, int parentPosition, @NonNull Group parent) {
-        parentViewHolder.refresh(parent, parentPosition);
+        parentViewHolder.refresh(parent);
     }
 
     @Override
     public void onBindChildViewHolder(@NonNull FriendViewHolder childViewHolder, int parentPosition, int childPosition, @NonNull Friend child) {
-        childViewHolder.refresh(child, parentPosition, childPosition);
+        childViewHolder.refresh(child);
     }
 
     @Override
     public int getParentViewType(int parentPosition) {
-        if (mFlatItemList.get(parentPosition).isParent()) {
-            if (Group.TYPE_HEADER == mFlatItemList.get(parentPosition).getParent().getType()) {
-                return TYPE_HEADER;
-            }
+        if (Group.TYPE_HEADER == getParentList().get(parentPosition).getType()) {
+            return TYPE_HEADER;
         }
         return super.getParentViewType(parentPosition);
     }
@@ -61,15 +57,6 @@ public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, Gro
         return mFlatItemList;
     }
 
-    public void printListInfo() {
-        for (int i = 0; i < mFlatItemList.size(); i++) {
-            final ExpandableWrapper<Group, Friend> item = mFlatItemList.get(i);
-            String info = "";
-            if (item.isParent()) info += "[" + i + "]" + item.getParent().getTitle();
-            else info += "[" + i + "]" + item.getChild().getNickname();
-            Logger.e("AAA " + info);
-        }
-    }
 
     @UiThread
     public int getNearestParentPosition(int flatPosition) {
@@ -83,13 +70,13 @@ public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, Gro
         return parentCount;
     }
 
-    public ExpandableWrapper<Group, Friend> getParentByParentPosition(int parentPosition) {
-        int parentCount = - 1;
+    public ExpandableWrapper<Group, Friend> getParentWrapper(int parentPosition) {
+        int parentCount = -1;
         for (int i = 0; i < mFlatItemList.size(); i++) {
             ExpandableWrapper<Group, Friend> listItem = mFlatItemList.get(i);
             if (listItem.isParent() && listItem.getParent().getType() == Group.TYPE_NORMAL) {
                 parentCount++;
-                if( parentCount == parentPosition) {
+                if (parentCount == parentPosition) {
                     return listItem;
                 }
             }
