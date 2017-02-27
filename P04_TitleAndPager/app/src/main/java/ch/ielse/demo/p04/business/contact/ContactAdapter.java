@@ -11,7 +11,9 @@ import com.bignerdranch.expandablerecyclerview.model.ExpandableWrapper;
 import java.util.List;
 
 public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, GroupViewHolder, FriendViewHolder> {
+    protected static final int INVALID_FLAT_POSITION = -1;
     public static final int TYPE_HEADER = 2;
+    public static final int TYPE_UNHANDLED = 99;
 
     public ContactAdapter(@NonNull List<Group> parentList) {
         super(parentList);
@@ -41,7 +43,9 @@ public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, Gro
 
     @Override
     public int getParentViewType(int parentPosition) {
-        if (Group.TYPE_HEADER == getParentList().get(parentPosition).getType()) {
+        if (parentPosition == INVALID_FLAT_POSITION) {
+            return TYPE_UNHANDLED;
+        } else if (Group.TYPE_HEADER == getParentList().get(parentPosition).getType()) {
             return TYPE_HEADER;
         }
         return super.getParentViewType(parentPosition);
@@ -49,7 +53,7 @@ public class ContactAdapter extends ExpandableRecyclerAdapter<Group, Friend, Gro
 
     @Override
     public boolean isParentViewType(int viewType) {
-        if (viewType == TYPE_HEADER) return true;
+        if (viewType == TYPE_HEADER || viewType == TYPE_UNHANDLED) return true;
         return super.isParentViewType(viewType);
     }
 

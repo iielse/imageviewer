@@ -64,6 +64,8 @@ public class GroupViewHolder extends ParentViewHolder {
                 return LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_main_contact_group, parent, false);
             case ContactAdapter.TYPE_HEADER:
                 return LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_main_contact_header, parent, false);
+            case ContactAdapter.TYPE_UNHANDLED:
+                return LayoutInflater.from(parent.getContext()).inflate(R.layout.view_empty, parent, false);
             default:
                 throw new IllegalArgumentException("unhandled viewType " + viewType);
         }

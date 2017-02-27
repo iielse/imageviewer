@@ -26,4 +26,18 @@
 
 
 ####更多
-P04 撸码中...
+P04 [ImageWatcher](https://github.com/iielse/DemoProjects/tree/master/P04_TitleAndPager)
+
+撸码中...
+
+彩蛋
+* WaterRefreshHeader 高仿iOS QQ 水滴下拉
+
+![image](https://github.com/iielse/DemoProjects/blob/master/P04_TitleAndPager/previews/222.gif)
+
+
+* expandable + stickyheader RecyclerView 
+![image](https://github.com/iielse/DemoProjects/blob/master/P04_TitleAndPager/previews/333.gif)
+
+
+撸码中...
