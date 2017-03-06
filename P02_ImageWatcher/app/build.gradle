@@ -23,7 +23,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.3.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'jp.wasabeef:glide-transformations:2.0.1'
-    compile project(':imagewatcher')
+//    compile project(':imagewatcher')
 
-//    compile 'ch.ielse:imagewatcher:1.0.0'
+    compile 'ch.ielse:imagewatcher:1.0.1'
 }

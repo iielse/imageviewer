@@ -2,9 +2,9 @@
 图片查看器，为各位追求用户体验的daLao提供更优质的服务
 它能够
 
-*点击图片时以一种无缝顺畅的动画切换到图片查看的界面，同样以一种无缝顺畅的动画退出图片查看界面
-*支持多图查看，快速翻页，双击放大，单击退出，双手缩放旋转图片
-*下拽退出查看图片的操作，以及效果是本View的最大卖点(仿微信)
+* 点击图片时以一种无缝顺畅的动画切换到图片查看的界面，同样以一种无缝顺畅的动画退出图片查看界面
+* 支持多图查看，快速翻页，双击放大，单击退出，双手缩放旋转图片
+* 下拽退出查看图片的操作，以及效果是本View的最大卖点(仿微信)
 
 ![image](https://github.com/iielse/DemoProjects/blob/master/P02_ImageWatcher/previews/111.gif)
 ![image](https://github.com/iielse/DemoProjects/blob/master/P02_ImageWatcher/previews/222.gif)
@@ -21,7 +21,7 @@
 
 在module的gradle
 ```
-compile 'ch.ielse:imagewatcher:1.0.0'
+compile 'ch.ielse:imagewatcher:1.0.1'
 ```
 
 首先在xml布局中
