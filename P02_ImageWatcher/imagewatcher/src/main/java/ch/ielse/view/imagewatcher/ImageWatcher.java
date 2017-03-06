@@ -50,8 +50,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     static final float MIN_SCALE = 0.5f;
     static final float MAX_SCALE = 3.8f;
-    static int MAX_TRANSLATE_X;
-    static int MAX_TRANSLATE_Y;
+    private int maxTranslateX;
+    private int maxTranslateY;
 
     private static final int TOUCH_MODE_NONE = 0; // 无状态
     private static final int TOUCH_MODE_DOWN = 1; // 按下
@@ -102,10 +102,12 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         setVisibility(View.INVISIBLE);
 
         addView(tCurrentIdx = new TextView(context));
+        LayoutParams lpCurrentIdx = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lpCurrentIdx.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+        tCurrentIdx.setLayoutParams(lpCurrentIdx);
         tCurrentIdx.setTextColor(0xFFFFFFFF);
-        tCurrentIdx.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        tCurrentIdx.setTranslationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, displayMetrics) + 0.5f);
+        tCurrentIdx.setTranslationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, displayMetrics) + 0.5f);
     }
 
     /**
@@ -200,8 +202,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        final float moveX = e2.getX() - e1.getX();
-        final float moveY = e2.getY() - e1.getY();
+        final float moveX = (e1 != null) ? e2.getX() - e1.getX() : 0;
+        final float moveY = (e1 != null) ? e2.getY() - e1.getY() : 0;
         if (mTouchMode == TOUCH_MODE_DOWN) {
             if (Math.abs(moveX) > mTouchSlop || Math.abs(moveY) > mTouchSlop) {
                 ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
@@ -338,9 +340,12 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
      */
     private void handleScaleRotateGesture(MotionEvent e2) {
         if (iSource == null) return;
+        final ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+        if (vsDefault == null) return;
         final ViewState vsTouchScaleRotate = ViewState.read(iSource, ViewState.STATE_TOUCH_SCALE_ROTATE);
         if (vsTouchScaleRotate == null) return;
 
+        if (e2.getPointerCount() < 2) return;
         final float deltaX = e2.getX(1) - e2.getX(0);
         final float deltaY = e2.getY(1) - e2.getY(0);
         double angle = Math.toDegrees(Math.atan(deltaX / deltaY));
@@ -377,14 +382,14 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         }
         float changedCenterX = mFingersCenterX - centerX;
         float changedCenterXValue = vsTouchScaleRotate.translationX - changedCenterX;
-        if (changedCenterXValue > MAX_TRANSLATE_X) changedCenterXValue = MAX_TRANSLATE_X;
-        else if (changedCenterXValue < -MAX_TRANSLATE_X) changedCenterXValue = -MAX_TRANSLATE_X;
+        if (changedCenterXValue > maxTranslateX) changedCenterXValue = maxTranslateX;
+        else if (changedCenterXValue < -maxTranslateX) changedCenterXValue = -maxTranslateX;
         iSource.setTranslationX(changedCenterXValue);
 
         float changedCenterY = mFingersCenterY - centerY;
         float changedCenterYValue = vsTouchScaleRotate.translationY - changedCenterY;
-        if (changedCenterYValue > MAX_TRANSLATE_Y) changedCenterYValue = MAX_TRANSLATE_Y;
-        else if (changedCenterYValue < -MAX_TRANSLATE_Y) changedCenterYValue = -MAX_TRANSLATE_Y;
+        if (changedCenterYValue > maxTranslateY) changedCenterYValue = maxTranslateY;
+        else if (changedCenterYValue < -maxTranslateY) changedCenterYValue = -maxTranslateY;
         iSource.setTranslationY(changedCenterYValue);
     }
 
@@ -701,6 +706,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
             final boolean isPlayEnterAnimation = isFindEnterImagePicture;
             // loadHighDefinitionPicture
+            ViewState.clear(imageView, ViewState.STATE_DEFAULT);
             Glide.with(imageView.getContext()).load(mUrlList.get(pos)).asBitmap().into(new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -844,8 +850,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         super.onSizeChanged(w, h, oldw, oldh);
         mWidth = w;
         mHeight = h;
-        MAX_TRANSLATE_X = mWidth / 2;
-        MAX_TRANSLATE_Y = mHeight / 2;
+        maxTranslateX = mWidth / 2;
+        maxTranslateY = mHeight / 2;
     }
 
     @Override

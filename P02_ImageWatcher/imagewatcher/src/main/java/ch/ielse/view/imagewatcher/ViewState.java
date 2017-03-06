@@ -56,6 +56,11 @@ public class ViewState {
         return view.getTag(tag) != null ? (ViewState) view.getTag(tag) : null;
     }
 
+    static void clear(View view, int tag) {
+        if (view == null) return;
+        view.setTag(tag, null);
+    }
+
     static ViewState copy(ViewState mir, int tag) {
         ViewState vs = new ViewState(tag);
         vs.width = mir.width;
