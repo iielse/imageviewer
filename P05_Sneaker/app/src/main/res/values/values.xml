@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--主题颜色-->
+    <color name="colorPrimary">#FFB834</color>
+    <color name="colorPrimaryDark">#FFB834</color>
+    <color name="colorAccent">#FFB834</color>
+    <string name="app_name">P05_Sneaker</string>
+    <!--标题栏高度-->
+    <dimen name="title_height">48.5dp</dimen>
+    <!--标题正文字号-->
+    <dimen name="title">19sp</dimen>
+    <!--随处可见的正文字号-->
+    <dimen name="normal">14.5sp</dimen>
+    <!--随处可见的正文字色-->
+    <color name="normal">#2C2C2C</color>
+    <!--副文本字色[深灰]-->
+    <color name="sub">#888888</color>
+    <!--提示文本字色[浅灰]-->
+    <color name="hint">#C2C2C2</color>
+    <!--提示文本字号-->
+    <dimen name="small">12sp</dimen>
+    <!--按钮的高度-->
+    <dimen name="button_height">40dp</dimen>
+    <!--按钮文本字号-->
+    <dimen name="button">17sp</dimen>
+    <!--通用背景底色-->
+    <color name="background_gray">#EFEEEA</color>
+    <!--通用的边缘间距[一般为屏幕左右边缘间距]-->
+    <dimen name="edge">12dp</dimen>
+    <!--通用分割线颜色-->
+    <color name="divide">#E2E2E2</color>
+    <item name="v_tag" type="id" />
+</resources>

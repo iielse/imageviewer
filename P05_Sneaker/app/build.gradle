@@ -1,0 +1,65 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'org.greenrobot.greendao'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        applicationId  rootProject.ext.applicationId
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode Integer.parseInt(VERSION_CODE)
+        versionName VERSION_NAME
+
+        multiDexEnabled true
+
+        ndk {
+            abiFilters 'armeabi'
+        }
+
+        manifestPlaceholders = [
+                "channel"       : "",
+                "jpush_appkey"  : "",
+                "easemob_appkey": "",
+                "amap_key"      : "",
+                "tencentAuthId" : "",
+                "bugly_appkey"  : "",
+                "bugly_app_version"  : Integer.parseInt(VERSION_CODE),
+                "debug"         : true,
+        ]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+greendao {
+    schemaVersion Integer.parseInt(VERSION_CODE)
+    daoPackage "${rootProject.ext.applicationId}.db"
+    targetGenDir 'src/main/java'
+}
+
+dependencies {
+    compile rootProject.ext.support_multidex
+    compile rootProject.ext.support_appcompat_v7
+    compile rootProject.ext.kotlin
+    compile rootProject.ext.rxJava2
+    compile rootProject.ext.rxJava2_android
+    compile rootProject.ext.rxPermissions2
+    compile rootProject.ext.retrofit
+    compile rootProject.ext.retrofit_converter_gson
+    compile rootProject.ext.retrofit_adater_rxJava2
+    compile rootProject.ext.retrofit_logging_interceptor
+    compile rootProject.ext.glide
+    compile rootProject.ext.eventbus
+    compile rootProject.ext.greendao
+}
+
+repositories {
+    mavenCentral()
+}

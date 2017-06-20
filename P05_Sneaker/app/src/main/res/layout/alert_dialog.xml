@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_dialog_background"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingTop="20dp">
+
+    <TextView
+        android:id="@+id/t_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/normal"
+        android:textSize="18sp" />
+
+
+    <TextView
+        android:id="@+id/t_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="15dp"
+        android:textColor="#000000"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="end"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <TextView
+            android:id="@+id/t_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/selector_btn_white"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:paddingLeft="@dimen/edge"
+            android:paddingRight="@dimen/edge"
+            android:paddingTop="5dp"
+            android:text="取消"
+            android:textColor="@color/sub"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/t_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selector_btn_white"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:paddingLeft="@dimen/edge"
+            android:paddingRight="@dimen/edge"
+            android:paddingTop="5dp"
+            android:text="好"
+            android:textColor="#FF8E2C"
+            android:textSize="15sp" />
+    </LinearLayout>
+</LinearLayout>
