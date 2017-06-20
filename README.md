@@ -10,16 +10,16 @@
 ![image](https://github.com/iielse/DemoProjects/blob/master/P01_ImageCropper/previews/111.gif)
 
 彩蛋
-* ~~内含对Android6.0动态权限的申请的处理 
-[`PermissionUtils`](https://github.com/iielse/DemoProjects/blob/master/P01_ImageCropper/app/src/main/java/ch/ielse/demo/p01/PermissionUtils.java)
+
+~~内含对Android6.0动态权限的申请的处理~~
+~~[`PermissionUtils`](https://github.com/iielse/DemoProjects/blob/master/P01_ImageCropper/app/src/main/java/ch/ielse/demo/p01/PermissionUtils.java)~~
 
 推荐使用 `'com.tbruyelle.rxpermissions2:rxpermissions:0.9.3@aar'`
 
-* 封装了获得图片的逻辑，调用炒鸡简单
-[`PictureInquirer`]
-(https://github.com/iielse/DemoProjects/blob/master/P01_ImageCropper/app/src/main/java/ch/ielse/demo/p01/PictureInquirer.java)
+~~封装了获得图片的逻辑，调用炒鸡简单~~
+~~[`PictureInquirer`](https://github.com/iielse/DemoProjects/blob/master/P01_ImageCropper/app/src/main/java/ch/ielse/demo/p01/PictureInquirer.java)~~
 
-那么根据`rxpermissions`的`rxFragment`实现思路， `PictureInquirer`也可以出rx版的。github上已有的`rxPicker` 学习中
+那么根据`rxpermissions`的`rxFragment`实现思路， `PictureInquirer`也可以出rx版的。github上已有各种`rxPicker` 学习中
 
 ### P02 [ImageWatcher](https://github.com/iielse/DemoProjects/tree/master/P02_ImageWatcher)
 图片查看器，为各位追求用户体验的daLao提供更优质的服务 它能够
