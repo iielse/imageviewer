@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -62,7 +63,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private static final int TOUCH_MODE_LOCK = 6; // 缩放旋转锁定
     private static final int TOUCH_MODE_AUTO_FLING = 7; // 动画中
 
-    private TextView tCurrentIdx;
+    private final float tCurrentIdxTransY;
+    private final TextView tCurrentIdx;
     private ImageView iSource;
     private ImageView iOrigin;
 
@@ -71,7 +73,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private int mWidth, mHeight;
     private int mBackgroundColor = 0x00000000;
     private int mTouchMode = TOUCH_MODE_NONE;
-    private float mTouchSlop;
+    private final float mTouchSlop;
 
     private float mFingersDistance;
     private double mFingersAngle; // 相对于[东] point0作为起点;point1作为终点
@@ -86,11 +88,15 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     private OnPictureLongPressListener mPictureLongPressListener;
     private ImagePagerAdapter adapter;
-    private ViewPager vPager;
+    private final ViewPager vPager;
     private List<ImageView> mImageGroupList;
     private List<String> mUrlList;
     private int initPosition;
     private int mPagerPositionOffsetPixels;
+
+    public ImageWatcher(Context context) {
+        this(context, null);
+    }
 
     public ImageWatcher(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -107,7 +113,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         tCurrentIdx.setLayoutParams(lpCurrentIdx);
         tCurrentIdx.setTextColor(0xFFFFFFFF);
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        tCurrentIdx.setTranslationY(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, displayMetrics) + 0.5f);
+        tCurrentIdxTransY = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, displayMetrics) + 0.5f;
+        tCurrentIdx.setTranslationY(tCurrentIdxTransY);
     }
 
     /**
@@ -125,7 +132,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         }
         initPosition = imageGroupList.indexOf(i);
         if (initPosition < 0) {
-            throw new IllegalArgumentException("error params initPosition " + initPosition);
+            throw new IllegalArgumentException("param ImageView i must be a member of the List <ImageView> imageGroupList!");
         }
 
         if (i.getDrawable() == null) return;
@@ -197,7 +204,10 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         } else if (mTouchMode == TOUCH_MODE_DRAG) {
             handleDragTouchResult();
         }
-        vPager.onTouchEvent(e);
+        try {
+            vPager.onTouchEvent(e);
+        } catch (Exception err) {
+        }
     }
 
     @Override
@@ -824,6 +834,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     public void setTranslucentStatus(int statusBarHeight) {
         mStatusBarHeight = statusBarHeight;
+        tCurrentIdx.setTranslationY(tCurrentIdxTransY - statusBarHeight);
     }
 
     public void setErrorImageRes(int resErrorImage) {
@@ -931,5 +942,54 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     public void setOnPictureLongPressListener(OnPictureLongPressListener listener) {
         mPictureLongPressListener = listener;
+    }
+
+    public static class Helper {
+        private static final int VIEW_IMAGE_WATCHER_ID = R.id.view_image_watcher;
+        private final ViewGroup activityDecorView;
+        private final ImageWatcher mImageWatcher;
+
+        private Helper(Activity activity) {
+            mImageWatcher = new ImageWatcher(activity);
+            mImageWatcher.setId(VIEW_IMAGE_WATCHER_ID);
+            activityDecorView = (ViewGroup) activity.getWindow().getDecorView();
+        }
+
+        public static Helper with(Activity activity) {
+            return new Helper(activity);
+        }
+
+        public Helper setTranslucentStatus(int statusBarHeight) {
+            mImageWatcher.mStatusBarHeight = statusBarHeight;
+            return this;
+        }
+
+        public Helper setErrorImageRes(int resErrorImage) {
+            mImageWatcher.mErrorImageRes = resErrorImage;
+            return this;
+        }
+
+        public Helper setOnPictureLongPressListener(OnPictureLongPressListener listener) {
+            mImageWatcher.setOnPictureLongPressListener(listener);
+            return this;
+        }
+
+        public ImageWatcher create() {
+            removeExistingOverlayInView(activityDecorView);
+            activityDecorView.addView(mImageWatcher);
+            return mImageWatcher;
+        }
+
+        void removeExistingOverlayInView(ViewGroup parent) {
+            for (int i = 0; i < parent.getChildCount(); i++) {
+                View child = parent.getChildAt(i);
+                if (child.getId() == VIEW_IMAGE_WATCHER_ID) {
+                    parent.removeView(child);
+                }
+                if (child instanceof ViewGroup) {
+                    removeExistingOverlayInView((ViewGroup) child);
+                }
+            }
+        }
     }
 }

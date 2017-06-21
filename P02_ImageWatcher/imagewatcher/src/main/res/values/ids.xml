@@ -8,4 +8,6 @@
     <item name="state_touch_down" type="id"/>
     <item name="state_touch_drag" type="id"/>
     <item name="state_touch_scale_rotate" type="id"/>
+
+    <item name="view_image_watcher" type="id" />
 </resources>

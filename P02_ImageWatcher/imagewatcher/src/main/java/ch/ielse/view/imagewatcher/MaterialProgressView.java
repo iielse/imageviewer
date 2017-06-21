@@ -87,7 +87,7 @@ public class MaterialProgressView extends View {
         canvas.restoreToCount(saveCount);
     }
 
-    public static class MaterialProgressDrawable extends Drawable implements Animatable {
+    static class MaterialProgressDrawable extends Drawable implements Animatable {
         private static final Interpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
         private static final Interpolator END_CURVE_INTERPOLATOR = new EndCurveInterpolator();
         private static final Interpolator START_CURVE_INTERPOLATOR = new StartCurveInterpolator();
