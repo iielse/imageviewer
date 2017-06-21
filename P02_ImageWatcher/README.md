@@ -21,8 +21,9 @@
 
 在module的gradle
 ```
-compile 'ch.ielse:imagewatcher:x.y.z'
+compile 'ch.ielse:imagewatcher:1.0.2'
 ```
+
 
 ~~首先在xml布局中~~
 ```
