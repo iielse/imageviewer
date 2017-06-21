@@ -1,4 +1,4 @@
-#ImageWatcher
+# ImageWatcher
 图片查看器，为各位追求用户体验的daLao提供更优质的服务
 它能够
 
@@ -11,20 +11,20 @@
 ![image](https://github.com/iielse/DemoProjects/blob/master/P02_ImageWatcher/previews/333.gif)
 ![image](https://github.com/iielse/DemoProjects/blob/master/P02_ImageWatcher/previews/444.gif)
 
-## 下载（强烈推荐下载体验）
+### 下载（强烈推荐下载体验）
 
 [DemoApp.apk](https://github.com/iielse/DemoProjects/blob/master/P02_ImageWatcher/previews/app-debug.apk)
 
 至尊体验;daLao专用;上图Gif不够看？下载apk自行体验; /doge
 
-## 实现步骤
+#### 实现步骤
 
 在module的gradle
 ```
-compile 'ch.ielse:imagewatcher:1.0.1'
+compile 'ch.ielse:imagewatcher:x.y.z'
 ```
 
-首先在xml布局中
+~~首先在xml布局中~~
 ```
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -42,7 +42,7 @@ compile 'ch.ielse:imagewatcher:1.0.1'
 </FrameLayout>
 ```
 
-蓝后在Activity onCreate里面 一般需要调用这3个API简单的初始化一下
+~~然后在Activity onCreate里面 一般需要调用这3个API简单的初始化一下~~
 
 ```
 // 一般来讲， ImageWatcher 需要占据全屏的位置
@@ -54,6 +54,23 @@ vImageWatcher.setErrorImageRes(R.mipmap.error_picture);
 // 长按图片的回调，你可以显示一个框继续提供一些复制，发送等功能
 vImageWatcher.setOnPictureLongPressListener(this);
 ```
+
+#### 此处强势插入新的初始化方式
+```
+vImageWatcher = ImageWatcher.Helper.with(this) // 一般来讲， ImageWatcher 需要占据全屏的位置
+                .setTranslucentStatus(!isTranslucentStatus ? Utils.calcStatusBarHeight(this) : 0) // 如果是透明状态栏，你需要给ImageWatcher标记 一个偏移值，以修正点击ImageView查看的启动动画的Y轴起点的不正确
+                .setErrorImageRes(R.mipmap.error_picture) // 配置error图标
+                .setOnPictureLongPressListener(this) // 长按图片的回调，你可以显示一个框继续提供一些复制，发送等功能
+                .create();
+```
+由于一般图片查看会占据全屏
+
+持有activity引用后 调用`activity.getWindow().getDecorView()`拿到根FrameLayout
+
+即可动态插入ImageWatcher -> 使用 `ImageWatcher.Helper.with(activity)` 插入ImageWatcher
+
+非入侵式 不再需要在布局文件中加入&lt;ImageWatcher&gt;标签 减少布局嵌套
+
 
 这个时候你的所有准备工作已经完成
 ```
@@ -68,13 +85,10 @@ public void show(ImageView i, List<ImageView> imageGroupList, final List<String>
 最后只要调用 `vImageWatcher.show()` 方法就可以了
 可以具体看源码demo，这个项目是可以运行的，这个项目是可以运行的，这个项目是可以运行的
 
-## 写在最后
+#### 写在最后
 为什么要写这个Demo？
+* 能够给在项目上有这个功能需求而又愿意试水的各位daLao节约一些开发时间
+* 怕长时间不写代码，会慢慢忘记，于是反复练习
+* 为了更好的视觉体验
 
-*能够给在项目上有这个功能需求而又愿意试水此库的各位daLao节约一些开发时间
-*怕长时间不写代码，会慢慢忘记，于是反复练习
-*为了更好的视觉体验
-
-ps:如果此裤对你提供了帮助，你的Star是对本宝最大的支持。  谢 /舔
-
-Q群274306954(可以找到我)
+如果这些代码对你提供了帮助，你的Star是对本宝最大的支持。  谢 /舔
