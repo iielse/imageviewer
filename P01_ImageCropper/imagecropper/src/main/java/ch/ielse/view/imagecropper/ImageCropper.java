@@ -12,20 +12,23 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * 该View用于对位图进行局部采集，之后输出新的位图
  */
 public class ImageCropper extends FrameLayout implements GestureDetector.OnGestureListener, View.OnClickListener {
 
-    private View iBack;
-    private View iSubmit;
-    private ImageView iSource;
-    private OverlayView vOverlay;
-
+    private final View iBack;
+    private final View iSubmit;
+    private final ImageView iSource;
+    private final OverlayView vOverlay;
+    private final TextView tTitle;
     private float initMinScale;
     private int mOutputWidth;
     private int mOutputHeight;
@@ -45,15 +48,18 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
     private ViewPropertyAnimator animRestore;
     private Bitmap bmpSource;
 
+    public ImageCropper(Context context) {
+        this(context, null);
+    }
+
     public ImageCropper(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         mGestureDetector = new GestureDetector(context, this);
         LayoutInflater.from(context).inflate(R.layout.layout_image_cropper, this);
-        iBack = findViewById(R.id.i_back);
-        iBack.setOnClickListener(this);
-        iSubmit = findViewById(R.id.i_submit);
-        iSubmit.setOnClickListener(this);
+        (iBack = findViewById(R.id.i_back)).setOnClickListener(this);
+        (iSubmit = findViewById(R.id.i_submit)).setOnClickListener(this);
+        tTitle = (TextView) findViewById(R.id.t_title);
         iSource = (ImageView) findViewById(R.id.i_source);
         vOverlay = (OverlayView) findViewById(R.id.v_overlay);
         setBackgroundColor(Color.BLACK);
@@ -67,22 +73,16 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         isOutputFixedSize = outputFixedSize;
     }
 
-    /**
-     * 裁剪图片(输出的图片默认只有比例是按照入参outputWidth和outputHeight获得的，尺寸大小并没有按照指定的尺寸大小。<br>
-     * 如果要求大小也为入参请调用{@link ImageCropper#setOutputFixedSize(boolean)} 设置值为true) <br>
-     * 逻辑见{@link ImageCropper#onClick(View)} output = mOutputWidth * mOutputHeight != 0 ? Bitmap.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) : clip <br>
-     * ps: createScaledBitmap (小图变大图会造成内容的失真) 55555555<br>
-     *
-     * @param sourceFilePath  原图片路径
-     * @param outputWidth     输出宽度
-     * @param outputHeight    输出高度
-     * @param isCircleOverlay 遮罩蒙板是否为圆形，为圆形的条件时在isCircleOverlay为true的同时，outputWidth等于outputHeight才行
-     * @param tag             若同一界面有多处裁剪功能，对此传递一个tag标志避免混淆
-     */
-    public void crop(String sourceFilePath, int outputWidth, int outputHeight, boolean isCircleOverlay, String tag) {
+    public void setTranslucentStatus(int statusBarHeight) {
+        findViewById(R.id.v_fit).setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusBarHeight));
+    }
+
+
+    private void cropInternal(String sourceFilePath, int outputWidth, int outputHeight, boolean isCircleOverlay, String tag) {
         final int mWidth = getWidth();
-        final int mHeight = getHeight();
+        final int mHeight = getWidth();
         if (mWidth * mHeight == 0) return;
+
         setVisibility(View.VISIBLE);
         mTag = tag;
 
@@ -119,6 +119,28 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
         iSource.setScaleY(defaultScale);
         iSource.setImageBitmap(bmpSource);
     }
+
+    /**
+     * 裁剪图片(输出的图片默认只有比例是按照入参outputWidth和outputHeight获得的，尺寸大小并没有按照指定的尺寸大小。<br>
+     * 如果要求大小也为入参请调用{@link ImageCropper#setOutputFixedSize(boolean)} 设置值为true) <br>
+     * 逻辑见{@link ImageCropper#onClick(View)} output = mOutputWidth * mOutputHeight != 0 ? Bitmap.createScaledBitmap(clip, mOutputWidth, mOutputHeight, true) : clip <br>
+     * ps: createScaledBitmap (小图变大图会造成内容的失真) 55555555<br>
+     *
+     * @param sourceFilePath  原图片路径
+     * @param outputWidth     输出宽度
+     * @param outputHeight    输出高度
+     * @param isCircleOverlay 遮罩蒙板是否为圆形，为圆形的条件时在isCircleOverlay为true的同时，outputWidth等于outputHeight才行
+     * @param tag             若同一界面有多处裁剪功能，对此传递一个tag标志避免混淆
+     */
+    public void crop(final String sourceFilePath, final int outputWidth, final int outputHeight, final boolean isCircleOverlay, final String tag) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                cropInternal(sourceFilePath, outputWidth, outputHeight, isCircleOverlay, tag);
+            }
+        });
+    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -267,5 +289,61 @@ public class ImageCropper extends FrameLayout implements GestureDetector.OnGestu
 
     public void setCallback(Callback cb) {
         mCallback = cb;
+    }
+
+
+    public static class Helper {
+        private static final int VIEW_IMAGE_CROPPER_ID = R.id.view_image_cropper;
+        private final ViewGroup activityDecorView;
+        private final ImageCropper mImageCropper;
+
+        private Helper(Activity activity) {
+            mImageCropper = new ImageCropper(activity);
+            mImageCropper.setId(VIEW_IMAGE_CROPPER_ID);
+            activityDecorView = (ViewGroup) activity.getWindow().getDecorView();
+        }
+
+        public static Helper with(Activity activity) {
+            return new Helper(activity);
+        }
+
+
+        public Helper setCallback(Callback cb) {
+            mImageCropper.mCallback = cb;
+            return this;
+        }
+
+        public Helper setOutputFixedSize(boolean isOutputFixedSize) {
+            mImageCropper.isOutputFixedSize = isOutputFixedSize;
+            return this;
+        }
+
+        public Helper setTitle(String title) {
+            mImageCropper.tTitle.setText(title);
+            return this;
+        }
+
+        public Helper setTranslucentStatusHeight(int translucentStatusHeight) {
+            mImageCropper.setTranslucentStatus(translucentStatusHeight);
+            return this;
+        }
+
+        public ImageCropper create() {
+            removeExistingOverlayInView(activityDecorView);
+            activityDecorView.addView(mImageCropper);
+            return mImageCropper;
+        }
+
+        void removeExistingOverlayInView(ViewGroup parent) {
+            for (int i = 0; i < parent.getChildCount(); i++) {
+                View child = parent.getChildAt(i);
+                if (child.getId() == VIEW_IMAGE_CROPPER_ID) {
+                    parent.removeView(child);
+                }
+                if (child instanceof ViewGroup) {
+                    removeExistingOverlayInView((ViewGroup) child);
+                }
+            }
+        }
     }
 }

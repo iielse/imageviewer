@@ -1,11 +1,14 @@
-<manifest package="ch.ielse.view.imagecropper"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ch.ielse.view.imagecropper">
 
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        >
+        android:supportsRtl="true">
+
+        <activity
+            android:name=".MultiAlbumActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
     </application>
 

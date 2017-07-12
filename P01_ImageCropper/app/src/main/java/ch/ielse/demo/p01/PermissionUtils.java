@@ -18,7 +18,11 @@ import java.util.List;
  * 参考AndPermission
  * <p>
  * 对处理android6.0动态权限的需要任务，提供了简单的API封装
+ *
+ * 推荐使用 rxPermission
+ *
  */
+@SuppressWarnings("unused")
 public class PermissionUtils {
     static int PERMISSION_CAMERA = 102;
     static int PERMISSION_EXTERNAL_STORAGE = 103;

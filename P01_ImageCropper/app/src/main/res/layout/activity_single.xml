@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#E8D167"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:text="->确认或申请权限\n->从系统相册或拍照\n->根据ImageView大小裁剪图片文件\n->质量压缩图片文件\n->可上传可显示"
+        android:textAllCaps="false"
+        android:textColor="#333"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="#fAc"
+        android:padding="4dp"
+        android:text="↓↓点击以下图片单选 [裁剪+压缩]↓↓"
+        android:textAllCaps="false"
+        android:textColor="#333"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp">
+
+        <ImageView
+            android:id="@+id/i_avatar"
+            android:layout_width="120dip"
+            android:layout_height="120dip"
+            android:background="@mipmap/default_avatar" />
+
+
+        <ImageView
+            android:id="@+id/i_background"
+            android:layout_width="170dip"
+            android:layout_height="75dip"
+            android:layout_marginLeft="30dp"
+            android:background="@drawable/default_picture" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/t_multi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#fAc"
+        android:padding="4dp"
+        android:text="↓↓↓点击此处图片多选↓↓↓"
+        android:textAllCaps="false"
+        android:textColor="#333"
+        android:textSize="16sp" />
+
+    <ch.ielse.demo.p01.MessagePicturesLayout
+        android:id="@+id/l_multi"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

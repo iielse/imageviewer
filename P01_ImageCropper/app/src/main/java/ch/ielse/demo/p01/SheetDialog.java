@@ -112,18 +112,19 @@ public class SheetDialog  extends Dialog{
             }
 
             for (int i = 0; i < p.menuList.size(); i++) {
-                final Sheet sheet = p.menuList.get(i);
+                final int currentIndex = i;
+                final Sheet sheet = p.menuList.get(currentIndex);
                 TextView bbm = new TextView(p.context);
                 bbm.setLayoutParams(lpItem);
                 int backgroundResId = R.drawable.selector_dialog_sheet_center;
                 if (p.menuList.size() > 1) {
-                    if (i == 0) {
+                    if (currentIndex == 0) {
                         if (hasTitle) {
                             backgroundResId = R.drawable.selector_dialog_sheet_center;
                         } else {
                             backgroundResId = R.drawable.selector_dialog_sheet_top;
                         }
-                    } else if (i == p.menuList.size() - 1) {
+                    } else if (currentIndex == p.menuList.size() - 1) {
                         backgroundResId = R.drawable.selector_dialog_sheet_bottom;
                     }
                 } else if (p.menuList.size() == 1) {
@@ -138,12 +139,12 @@ public class SheetDialog  extends Dialog{
                 bbm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        sheet.listener.onClick(dialog , 0);
+                        sheet.listener.onClick(dialog , currentIndex);
                     }
                 });
                 layContainer.addView(bbm);
 
-                if (i != p.menuList.size() - 1) {
+                if (currentIndex != p.menuList.size() - 1) {
                     View viewDivider = new View(p.context);
                     viewDivider.setLayoutParams(lpDivider);
                     viewDivider.setBackgroundColor(0xFFCED2D6);
