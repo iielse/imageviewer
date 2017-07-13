@@ -31,7 +31,7 @@ import java.io.IOException;
  * ps:PictureInquirer中的requestCode的常量值是可以修改的，如果与其它功能的requestCode的值是冲突的话
  * </pre>
  */
-
+@SuppressWarnings("unused")
 public class PictureInquirer {
 
     static final String TAG = "PictureInquirer";

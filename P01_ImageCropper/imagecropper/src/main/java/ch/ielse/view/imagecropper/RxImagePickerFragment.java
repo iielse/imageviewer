@@ -14,6 +14,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,13 +26,14 @@ import io.reactivex.subjects.PublishSubject;
 public class RxImagePickerFragment extends Fragment {
     final String SUBJECT_ALBUM = "album";
     final String SUBJECT_CAMERA = "camera";
-    final String SUBJECT_MULTI = "multi";
+    final String SUBJECT_MULTI = "multiple";
 
     final String TAG = "PictureInquirer";
     final String IMAGE_FROM_CONTENT = "content";
     final String IMAGE_FROM_FILE = "file";
     final int REQUEST_CODE_CAPTURE_PICTURE = 412;
     final int REQUEST_CODE_PICK_IMAGE = 413;
+    final int REQUEST_CODE_PICK_MULTI = 414;
 
     private ImageCropper mImageCropper;
     private int mTranslucentStatusHeight;
@@ -61,7 +63,7 @@ public class RxImagePickerFragment extends Fragment {
                         pickerTask.subject.onComplete();
                     }
                 }
-            } else if ("multiple".equals(type)) {
+            } else if (SUBJECT_MULTI.equals(type)) {
                 pickerTask.subject.onNext(pictures);
                 pickerTask.subject.onComplete();
             }
@@ -108,6 +110,12 @@ public class RxImagePickerFragment extends Fragment {
             if (resultCode == Activity.RESULT_OK) {
                 Log.d(TAG, "openCamera " + fCapture.getAbsolutePath());
                 onQueryOrTakeSuccess(SUBJECT_CAMERA, Collections.singletonList(fCapture.getAbsolutePath()));
+            }
+        } else if (requestCode == REQUEST_CODE_PICK_MULTI) {
+            if (resultCode == Activity.RESULT_OK) {
+                String[] selected = data.getStringArrayExtra("extra_multi_selected");
+                Log.d(TAG, "queryMulti " + Arrays.toString(selected));
+                onQueryOrTakeSuccess(SUBJECT_MULTI, Arrays.asList(selected));
             }
         }
     }
@@ -160,7 +168,7 @@ public class RxImagePickerFragment extends Fragment {
             fCapture = File.createTempFile("TEMP", ".jpg", cacheFolder);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fCapture));
             startActivityForResult(intent, REQUEST_CODE_CAPTURE_PICTURE);
-        } catch (IOException e) {
+        } catch (Exception e) {
             onResultFailure(SUBJECT_CAMERA, e);
         }
 
@@ -186,24 +194,15 @@ public class RxImagePickerFragment extends Fragment {
         final PublishSubject subject;
         if (pickerTask == null) {
             pickerTask = new ImagePickerInfo(subject = PublishSubject.create());
-            mPickerTasks.put(SUBJECT_CAMERA, pickerTask);
+            mPickerTasks.put(SUBJECT_MULTI, pickerTask);
         } else {
             subject = pickerTask.subject;
         }
 
-        try {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            File cacheFolder = Utils.getDiskCacheDir(getActivity(), "rxPicker");
-            fCapture = File.createTempFile("TEMP", ".jpg", cacheFolder);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fCapture));
-            startActivityForResult(intent, REQUEST_CODE_CAPTURE_PICTURE);
-        } catch (IOException e) {
-            onResultFailure(SUBJECT_CAMERA, e);
-        }
+        Intent intent = new Intent(getActivity(), MultiAlbumActivity.class);
+        intent.putExtra("extra_fetch_count", fetchCount);
+        startActivityForResult(intent, REQUEST_CODE_PICK_MULTI);
 
         return subject;
-
     }
-
-
 }

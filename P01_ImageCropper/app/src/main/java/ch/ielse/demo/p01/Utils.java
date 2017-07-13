@@ -14,6 +14,7 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import com.zxy.tiny.Tiny;
 import com.zxy.tiny.callback.FileCallback;
@@ -38,41 +39,51 @@ public class Utils {
     }
 
 
-    public static void handlePermissionRequest(final Activity activity, String deniedPermission) {
-        String deniedPermissionName = "一些";
-        if (Manifest.permission.ACCESS_COARSE_LOCATION.equalsIgnoreCase(deniedPermission)) {
-            deniedPermissionName = "位置信息";
-        } else if (Manifest.permission.CAMERA.equalsIgnoreCase(deniedPermission)) {
-            deniedPermissionName = "相机";
-        } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equalsIgnoreCase(deniedPermission)) {
-            deniedPermissionName = "存储空间";
-        } else if (Manifest.permission.READ_CONTACTS.equalsIgnoreCase(deniedPermission)) {
-            deniedPermissionName = "通讯录";
-        } else if (Manifest.permission.CALL_PHONE.equalsIgnoreCase(deniedPermission)) {
-            deniedPermissionName = "电话";
-        } else if (Manifest.permission.RECORD_AUDIO.equalsIgnoreCase(deniedPermission)) {
-            deniedPermissionName = "麦克风";
+    static boolean handlePermissionRequestResult(final Activity activity, com.tbruyelle.rxpermissions2.Permission permission) {
+        if (permission.granted) {
+            // `permission.name` is granted !
+            Log.d("app", "handlePermissionRequest " + permission.name + " granted !");
+            return true;
+        } else if (permission.shouldShowRequestPermissionRationale) {
+            // Denied permission without ask never again
+            Log.d("app", "handlePermissionRequest " + permission.name + " denied without never ask again !");
+        } else {
+            String deniedPermissionName = "一些";
+            if (Manifest.permission.ACCESS_COARSE_LOCATION.equalsIgnoreCase(permission.name)) {
+                deniedPermissionName = "位置信息";
+            } else if (Manifest.permission.CAMERA.equalsIgnoreCase(permission.name)) {
+                deniedPermissionName = "相机";
+            } else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equalsIgnoreCase(permission.name)) {
+                deniedPermissionName = "存储空间";
+            } else if (Manifest.permission.READ_CONTACTS.equalsIgnoreCase(permission.name)) {
+                deniedPermissionName = "通讯录";
+            } else if (Manifest.permission.CALL_PHONE.equalsIgnoreCase(permission.name)) {
+                deniedPermissionName = "电话";
+            } else if (Manifest.permission.RECORD_AUDIO.equalsIgnoreCase(permission.name)) {
+                deniedPermissionName = "麦克风";
+            }
+            new AlertDialog.Builder(activity).setTitle("权限提示")
+                    .setMessage("我们需要的 " + deniedPermissionName + " 权限被您拒绝或者系统发生错误申请失败，请您到设置页面手动授权，否则部分功能无法正常使用！")
+                    .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
+                            activity.startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .create().show();
         }
 
-        new AlertDialog.Builder(activity).setTitle("权限提示")
-                .setMessage("我们需要的 " + deniedPermissionName + " 权限被您拒绝或者系统发生错误申请失败，请您到设置页面手动授权，否则部分功能无法正常使用！")
-                .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
-                        activity.startActivity(intent);
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                })
-                .create().show();
+        return false;
     }
 
     public static Observable<String> compressFile(final String originalUrl) {
@@ -94,7 +105,7 @@ public class Utils {
         });
     }
 
-    public static  Bitmap transformCropCircle(Bitmap resource) {
+    public static Bitmap transformCropCircle(Bitmap resource) {
         Bitmap source = resource;
         int size = Math.min(source.getWidth(), source.getHeight());
 

@@ -64,6 +64,7 @@
 
     <ch.ielse.demo.p01.MessagePicturesLayout
         android:id="@+id/l_multi"
+        android:padding="2dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

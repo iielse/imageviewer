@@ -5,7 +5,8 @@
 图片裁剪器，为各位追求用户体验的daLao提供更优质的服务
 它能够
 * 按需求比例裁剪图片，或者按照指定尺寸输出
-* 它是一个view不是activity，所以并不需要在AndroidManifest.xml中注册
+* ~~它是一个view不是activity，所以并不需要在AndroidManifest.xml中注册~~
+* RxImagePicker 搞到图片只要1行代码
 
 ![image](https://github.com/iielse/DemoProjects/blob/master/P01_ImageCropper/previews/111.gif)
 
@@ -19,7 +20,20 @@
 ~~封装了获得图片的逻辑，调用炒鸡简单~~
 ~~[`PictureInquirer`](https://github.com/iielse/DemoProjects/blob/master/P01_ImageCropper/app/src/main/java/ch/ielse/demo/p01/PictureInquirer.java)~~
 
-那么根据`rxpermissions`的`rxFragment`实现思路， `PictureInquirer`也可以出rx版的。github上已有各种`rxPicker` 学习中
+~~那么根据`rxpermissions`的`rxFragment`实现思路， `PictureInquirer`也可以出rx版的。github上已有各种`rxPicker` 学习中~~
+
+* 从相册中取出一张原图
+
+```
+new RxImagePicker(activity)
+    .queryAlbum()
+    .subscribe(new Consumer<String>() {
+        @Override
+        public void accept(@NonNull String output) throws Exception {
+            Glide.with(imageView.getContext()).load(output).into(imageView);
+        }
+    });
+```
 
 ### P02 [ImageWatcher](https://github.com/iielse/DemoProjects/tree/master/P02_ImageWatcher)
 图片查看器，为各位追求用户体验的daLao提供更优质的服务 它能够
@@ -33,7 +47,7 @@
 
 ### P04 [TitleAndPager](https://github.com/iielse/DemoProjects/tree/master/P04_TitleAndPager)
 
-撸码~弃坑?.纠结中...
+撸码~弃坑.纠结中...
 
 彩蛋
 * WaterRefreshHeader 高仿iOS QQ 水滴下拉
@@ -42,7 +56,7 @@
 ![image](https://github.com/iielse/DemoProjects/blob/master/P04_TitleAndPager/previews/222.gif)
 
 
-* expandable + stickyheader RecyclerView 
+* expandable + stickyHeader RecyclerView 
 
 
 ![image](https://github.com/iielse/DemoProjects/blob/master/P04_TitleAndPager/previews/333.gif)
@@ -56,4 +70,4 @@
 ![image](https://github.com/iielse/DemoProjects/blob/master/P05_Sneaker/previews/111.gif)
 
 
-撸码中...
+休息中...

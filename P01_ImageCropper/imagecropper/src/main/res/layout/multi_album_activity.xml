@@ -12,6 +12,7 @@
     <FrameLayout
         android:id="@+id/l_title"
         android:layout_width="match_parent"
+        android:background="#2B2B2B"
         android:layout_height="48dip">
 
         <ImageView
@@ -27,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="移动和缩放"
+            android:text="最近照片"
             android:textColor="#FFF"
             android:textSize="19sp" />
 
@@ -38,6 +39,17 @@
             android:layout_gravity="center_vertical|right"
             android:scaleType="centerInside"
             android:src="@mipmap/submit" />
+
+        <TextView
+            android:id="@+id/t_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="50dp"
+            android:text="3/9"
+            android:textColor="#FFF"
+            android:textSize="16sp" />
+
     </FrameLayout>
 
 

@@ -28,7 +28,7 @@ class Utils {
         return inSampleSize;
     }
 
-    static File getDiskCacheDir(Context context, String uniqueName) {
+    static File getDiskCacheDir(Context context, String uniqueName) throws Exception {
         String cachePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
