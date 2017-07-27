@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "1.0.2"
+version = "1.0.3"
 group = "ch.ielse" // Maven Group ID for the artifact，一般填你唯一的包名
 def siteUrl = 'https://github.com/iielse/DemoProjects/tree/master/P02_ImageWatcher' // 项目的主页
 def gitUrl = 'https://github.com/iielse/DemoProjects.git' // Git仓库的url
@@ -22,8 +22,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 4
+        versionName "1.0.3"
 
     }
     buildTypes {
@@ -86,7 +86,6 @@ install {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
 }
 
 task sourcesJar(type: Jar) {

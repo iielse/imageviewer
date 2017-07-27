@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -28,10 +27,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -94,6 +89,24 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private int initPosition;
     private int mPagerPositionOffsetPixels;
 
+    private Loader loader;
+
+    public void setLoader(Loader l) {
+        loader = l;
+    }
+
+    public interface Loader {
+        void load(Context context, String url,  LoadCallback lc);
+    }
+
+    public interface LoadCallback {
+        void onResourceReady(Bitmap resource);
+
+        void onLoadStarted(Drawable placeholder);
+
+        void onLoadFailed(Drawable errorDrawable);
+    }
+
     public ImageWatcher(Context context) {
         this(context, null);
     }
@@ -118,11 +131,17 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     /**
+     * 调用show方法前，请先调用setLoader 给ImageWatcher提供加载图片的实现
+     *
      * @param i              被点击的ImageView
      * @param imageGroupList 被点击的ImageView的所在列表，加载图片时会提前展示列表中已经下载完成的thumb图片
      * @param urlList        被加载的图片url列表，数量必须大于等于 imageGroupList.size。 且顺序应当和imageGroupList保持一致
      */
     public void show(ImageView i, List<ImageView> imageGroupList, final List<String> urlList) {
+        if (loader == null) {
+            throw new NullPointerException("please invoke `setLoader` first [loader == null]");
+        }
+
         if (i == null || imageGroupList == null || urlList == null || imageGroupList.size() < 1 ||
                 urlList.size() < imageGroupList.size()) {
             String info = "i[" + i + "]";
@@ -679,6 +698,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             boolean isFindEnterImagePicture = false;
 
             ViewState.write(imageView, ViewState.STATE_ORIGIN).alpha(0).scaleXBy(1.5f).scaleYBy(1.5f);
+
             if (pos < mImageGroupList.size()) {
                 ImageView originRef = mImageGroupList.get(pos);
                 if (pos == initPosition && !hasPlayBeginAnimation) {
@@ -717,9 +737,10 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             final boolean isPlayEnterAnimation = isFindEnterImagePicture;
             // loadHighDefinitionPicture
             ViewState.clear(imageView, ViewState.STATE_DEFAULT);
-            Glide.with(imageView.getContext()).load(mUrlList.get(pos)).asBitmap().into(new SimpleTarget<Bitmap>() {
+
+            loader.load(imageView.getContext(), mUrlList.get(pos), new LoadCallback() {
                 @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                public void onResourceReady(Bitmap resource) {
                     final int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
                     int resourceImageWidth = resource.getWidth();
                     int resourceImageHeight = resource.getHeight();
@@ -756,8 +777,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 }
 
                 @Override
-                public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                public void onLoadFailed(Drawable errorDrawable) {
                     notifyItemChangedState(pos, false, imageView.getDrawable() == null);
+
                 }
             });
 
@@ -957,6 +979,11 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
         public static Helper with(Activity activity) {
             return new Helper(activity);
+        }
+
+        public Helper setLoader(Loader l) {
+            mImageWatcher.setLoader(l);
+            return this;
         }
 
         public Helper setTranslucentStatus(int statusBarHeight) {

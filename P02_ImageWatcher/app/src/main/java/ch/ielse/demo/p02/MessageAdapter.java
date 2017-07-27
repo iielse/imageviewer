@@ -9,11 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 
 public class MessageAdapter extends RecyclerView.Adapter {
@@ -22,7 +24,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     private MessagePicturesLayout.Callback mCallback;
 
     MessageAdapter(Context context) {
-        mCropCircleTransformation = new CropCircleTransformation(context);
+         mCropCircleTransformation = new CropCircleTransformation();
     }
 
     public MessageAdapter setPictureClickCallback(MessagePicturesLayout.Callback callback) {
@@ -37,6 +39,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         }
         notifyDataSetChanged();
     }
+
 
     class ViewHolder extends RecyclerView.ViewHolder {
         ImageView iAvatar;
@@ -57,8 +60,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
         void refresh(int pos) {
             mData = mDataList.get(pos);
-            Glide.with(itemView.getContext()).load(mData.getAvatar())
-                    .placeholder(R.drawable.default_avatar).bitmapTransform(mCropCircleTransformation).into(iAvatar);
+            Picasso.with(itemView.getContext()).load(mData.getAvatar()).placeholder(R.drawable.default_avatar)
+                    .transform(mCropCircleTransformation)
+                    .into(iAvatar);
             tNickname.setText(mData.getNickname());
             tTime.setText(mData.getCreateTime());
             tContent.setText(mData.getContent());

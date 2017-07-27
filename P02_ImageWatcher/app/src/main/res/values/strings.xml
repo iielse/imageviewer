@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">P02_ImageWatcher</string>
-    <string name="s1">由于一般图片查看会占据全屏\n持有activity引用后\n调用activity.getWindow().getDecorView()拿到根FrameLayout即可动态插入ImageWatcher\n使用 ImageWatcher.Helper.with(activity) 插入ImageWatcher\n非入侵式\n不再需要在布局文件中加入&lt;ImageWatcher&gt;</string>
+    <string name="s1">由于一般图片查看会占据全屏\n持有activity引用后\n调用activity.getWindow().getDecorView()拿到根FrameLayout \n 顺便看看透明状态栏效果</string>
+    <string name="s33">使用ImageWatcher.Helper.with(activity)...create();初始化 \n不再需要在布局文件中加入&lt;ImageWatcher&gt;\n glide4.0加载</string>
 
-    <string name="s2">当然也任然可以使用在布局文件中加入&lt;ImageWatcher&gt;标签这种方式\n当然和第一种效果一样(顺便看看5.0以下非透明状态栏效果)</string>
+    <string name="s2">当然也任然可以使用在布局文件中加入&lt;ImageWatcher&gt;标签这种方式\n效果和第一种一样(顺便看看5.0以下非透明状态栏效果)</string>
+
+    <string name="s44">使用findViewById初始化 布局文件中加入&lt;ImageWatcher&gt; \n picasso.2.5.2加载</string>
+
 </resources>

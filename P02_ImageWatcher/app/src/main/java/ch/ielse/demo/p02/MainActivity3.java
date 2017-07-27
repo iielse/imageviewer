@@ -7,8 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,15 +17,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
-import java.util.List;
+import java.util.Collections;
 
 import ch.ielse.view.imagewatcher.ImageWatcher;
 
-public class MainActivity2 extends Activity implements MessagePicturesLayout.Callback, ImageWatcher.OnPictureLongPressListener {
+public class MainActivity3 extends Activity implements ImageWatcher.OnPictureLongPressListener {
 
     private ImageWatcher vImageWatcher;
-    private RecyclerView vRecycler;
-    private MessageAdapter adapter;
+
+    final String picThumbUrl = "http://img.my.csdn.net/uploads/201707/27/1501118720_9504.jpg";
+    final String picUrl = "http://img.my.csdn.net/uploads/201707/27/1501118577_9169.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +41,8 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
             isTranslucentStatus = true;
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_main3);
 
-        vRecycler = (RecyclerView) findViewById(R.id.v_recycler);
-        vRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vRecycler.addItemDecoration(new SpaceItemDecoration(this).setSpace(14).setSpaceColor(0xFFECECEC));
-        vRecycler.setAdapter(adapter = new MessageAdapter(this).setPictureClickCallback(this));
-        adapter.set(Data.get());
 
         vImageWatcher = ImageWatcher.Helper.with(this) // 一般来讲， ImageWatcher 需要占据全屏的位置
                 .setTranslucentStatus(!isTranslucentStatus ? Utils.calcStatusBarHeight(this) : 0) // 如果是透明状态栏，你需要给ImageWatcher标记 一个偏移值，以修正点击ImageView查看的启动动画的Y轴起点的不正确
@@ -78,16 +72,23 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
                 .create();
 
         Utils.fitsSystemWindows(isTranslucentStatus, findViewById(R.id.v_fit));
-    }
 
-    @Override
-    public void onThumbPictureClick(ImageView i, List<ImageView> imageGroupList, List<String> urlList) {
-        vImageWatcher.show(i, imageGroupList, urlList);
+
+        ImageView iPicture = (ImageView) findViewById(R.id.i_picture);
+
+        Glide.with(iPicture.getContext()).asBitmap().load(picThumbUrl).into(iPicture);
+
+        iPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vImageWatcher.show((ImageView) v, Collections.singletonList((ImageView) v), Collections.singletonList(picUrl));
+            }
+        });
     }
 
     @Override
     public void onPictureLongPress(ImageView v, String url, int pos) {
-        Toast.makeText(v.getContext().getApplicationContext(), "长按了第" + (pos + 1) + "张图片", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "长按了图片 [" + pos + "][" + url + "]", Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -1,16 +1,17 @@
 package ch.ielse.demo.p02;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.os.Build;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.List;
 
@@ -49,10 +50,32 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
         vImageWatcher = (ImageWatcher) findViewById(R.id.v_image_watcher);
         // 如果是透明状态栏，你需要给ImageWatcher标记 一个偏移值，以修正点击ImageView查看的启动动画的Y轴起点的不正确
         vImageWatcher.setTranslucentStatus(!isTranslucentStatus ? Utils.calcStatusBarHeight(this) : 0);
-        // 配置error图标
+        // 配置error图标 如果不介意使用lib自带的图标，并不一定要调用这个API
         vImageWatcher.setErrorImageRes(R.mipmap.error_picture);
         // 长按图片的回调，你可以显示一个框继续提供一些复制，发送等功能
         vImageWatcher.setOnPictureLongPressListener(this);
+
+        vImageWatcher.setLoader(new ImageWatcher.Loader() {
+            @Override
+            public void load(Context context, String url, final ImageWatcher.LoadCallback lc) {
+                Picasso.with(context).load(url).into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        lc.onResourceReady(bitmap);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        lc.onLoadFailed(errorDrawable);
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        lc.onLoadStarted(placeHolderDrawable);
+                    }
+                });
+            }
+        });
 
         Utils.fitsSystemWindows(isTranslucentStatus, findViewById(R.id.v_fit));
     }

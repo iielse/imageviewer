@@ -10,6 +10,14 @@
         android:layout_height="wrap_content"
         android:text="@string/s1" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#F00"
+        android:text="@string/s33" />
+
+
+
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
@@ -22,11 +30,34 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text="@string/s2" />
+    <TextView
+        android:layout_width="wrap_content"
+
+        android:textColor="#F00"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/s44" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="点击查看效果2" />
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:textColor="#F00"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="显示单张图片 \n加载尺寸超出屏幕像素的图" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="点击查看效果3" />
+
 
 </LinearLayout>

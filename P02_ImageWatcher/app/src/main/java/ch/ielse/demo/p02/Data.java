@@ -33,7 +33,8 @@ public class Data {
                 "http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jpg",
                 "http://img.my.csdn.net/uploads/201701/06/1483671689_9534.png",
                 "http://img.my.csdn.net/uploads/201701/06/1483671689_2126.png",
-                "http://img.my.csdn.net/uploads/201701/06/1483671703_7890.png"
+                "http://img.my.csdn.net/uploads/201701/06/1483671703_7890.png",
+                "http://img.my.csdn.net/uploads/201707/27/1501118577_9169.jpg" // 超出屏幕宽度大尺寸图测试
         );
         data1.pictureThumbList = Arrays.asList(
                 "http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg",
@@ -47,7 +48,8 @@ public class Data {
                 "http://img.my.csdn.net/uploads/201701/17/1484647897_1978.jpg",
                 "http://img.my.csdn.net/uploads/201701/17/1484647898_4474.png",
                 "http://img.my.csdn.net/uploads/201701/17/1484647930_7735.png",
-                "http://img.my.csdn.net/uploads/201701/17/1484647929_9591.png"
+                "http://img.my.csdn.net/uploads/201701/17/1484647929_9591.png",
+                "http://img.my.csdn.net/uploads/201707/27/1501118720_9504.jpg" // 超出屏幕宽度大尺寸图测试
         );
 
 
