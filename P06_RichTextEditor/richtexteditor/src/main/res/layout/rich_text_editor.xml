@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <EditText
+        android:id="@+id/vInput"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="top|left"
+        android:paddingBottom="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="12dp"
+        android:scrollbars="vertical"
+        android:text="讲道理撒娇的快乐撒大家djalsdjka\n大家阿卡"
+        android:textColor="#1F1F1F"
+        android:textSize="17sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/vAddImage"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:background="#AAA"
+            android:gravity="center"
+            android:text="插入图片" />
+
+    </LinearLayout>
+
+</LinearLayout>
