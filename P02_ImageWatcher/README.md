@@ -1,7 +1,20 @@
-# ImageWatcher
-图片查看器，为各位追求用户体验的daLao提供更优质的服务
-它能够
+想入坑者 推荐使用
 
+https://github.com/githubwing/DragPhotoView
+
+https://github.com/githubwing/DragPhotoView
+
+https://github.com/githubwing/DragPhotoView
+
+基于`PhotoView`的靠谱。可惜我当时写的时候不知道哎。
+造轮子的热血年纪已经过了。
+就这样吧。
+
+
+
+~~图片查看器，为各位追求用户体验的daLao提供更优质的服务~~
+
+它能够
 * 点击图片时以一种无缝顺畅的动画切换到图片查看的界面，同样以一种无缝顺畅的动画退出图片查看界面
 * 支持多图查看，快速翻页，双击放大，单击退出，双手缩放旋转图片
 * 下拽退出查看图片的操作，以及效果是本View的最大卖点(仿微信)
