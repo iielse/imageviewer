@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_height="23dp"
+            android:text="点击任意图片试试，关闭动画和对应的View对应哦" />
+
+        <android.support.constraint.ConstraintLayout
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/v1"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="244dp"
+                android:layout_marginTop="72dp"
+                android:background="#CCC"
+                android:scaleType="centerCrop"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:id="@+id/v2"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="240dp"
+                android:layout_marginTop="232dp"
+                android:background="#CCC"
+                android:scaleType="centerCrop"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/v3"
+                android:layout_width="110dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="68dp"
+                android:layout_marginTop="44dp"
+                android:background="#CCC"
+                android:scaleType="centerCrop"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/v4"
+                android:layout_width="100dp"
+                android:layout_height="140dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="408dp"
+                android:background="#CCC"
+                android:scaleType="centerCrop"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/v5"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="268dp"
+                android:layout_marginTop="372dp"
+                android:background="#CCC"
+                android:scaleType="centerCrop"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/v6"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="140dp"
+                android:layout_marginTop="424dp"
+                android:background="#CCC"
+                android:scaleType="centerCrop"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/v7"
+                android:layout_width="150dp"
+                android:layout_height="122dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="140dp"
+                android:background="#CCC"
+                android:scaleType="centerCrop"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/v8"
+                android:layout_width="180dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="52dp"
+                android:layout_marginTop="288dp"
+                android:background="#CCC"
+                android:scaleType="centerCrop"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                app:layout_constraintLeft_toLeftOf="@id/v1"
+                app:layout_constraintRight_toRightOf="@id/v1"
+                app:layout_constraintTop_toBottomOf="@id/v1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2"
+                app:layout_constraintLeft_toLeftOf="@id/v2"
+                app:layout_constraintRight_toRightOf="@id/v2"
+                app:layout_constraintTop_toBottomOf="@id/v2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3"
+                app:layout_constraintLeft_toLeftOf="@id/v3"
+                app:layout_constraintRight_toRightOf="@id/v3"
+                app:layout_constraintTop_toBottomOf="@id/v3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4"
+                app:layout_constraintLeft_toLeftOf="@id/v4"
+                app:layout_constraintRight_toRightOf="@id/v4"
+                app:layout_constraintTop_toBottomOf="@id/v4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5"
+                app:layout_constraintLeft_toLeftOf="@id/v5"
+                app:layout_constraintRight_toRightOf="@id/v5"
+                app:layout_constraintTop_toBottomOf="@id/v5" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6"
+                app:layout_constraintLeft_toLeftOf="@id/v6"
+                app:layout_constraintRight_toRightOf="@id/v6"
+                app:layout_constraintTop_toBottomOf="@id/v6" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7"
+                app:layout_constraintLeft_toLeftOf="@id/v7"
+                app:layout_constraintRight_toRightOf="@id/v7"
+                app:layout_constraintTop_toBottomOf="@id/v7" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8"
+                app:layout_constraintLeft_toLeftOf="@id/v8"
+                app:layout_constraintRight_toRightOf="@id/v8"
+                app:layout_constraintTop_toBottomOf="@id/v8" />
+
+
+        </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
+
+
+</ScrollView>
+
