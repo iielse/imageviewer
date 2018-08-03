@@ -72,7 +72,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private boolean isInTransformAnimation;
     private final GestureDetector mGestureDetector;
 
-
     private boolean isInitLayout = false;
     private ImageView initI;
     private SparseArray<ImageView> initImageGroupList;
@@ -111,7 +110,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     public void setLoader(Loader l) {
         loader = l;
     }
-
 
     public void setIndexProvider(IndexProvider ip) {
         indexProvider = ip;

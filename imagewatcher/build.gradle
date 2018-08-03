@@ -29,10 +29,10 @@ dependencies {
 
 
 
-version = "1.0.3"
-group = "ch.ielse" // Maven Group ID for the artifact，一般填你唯一的包名
-def siteUrl = 'https://github.com/iielse/DemoProjects/tree/master/P02_ImageWatcher' // 项目的主页
-def gitUrl = 'https://github.com/iielse/DemoProjects.git' // Git仓库的url
+version = "1.1.0"
+group = "com.github.ielse.imagewatcher" // Maven Group ID for the artifact，一般填你唯一的包名
+def siteUrl = 'https://github.com/iielse/ImageWatcher' // 项目的主页
+def gitUrl = 'https://github.com/iielse/ImageWatcher.git' // Git仓库的url
 
 android {
     compileOptions {

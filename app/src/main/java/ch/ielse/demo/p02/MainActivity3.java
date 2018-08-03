@@ -74,9 +74,6 @@ public class MainActivity3 extends Activity {
                 longPictureList.add("https://img3.duitang.com/uploads/item/201608/03/20160803170546_BwshQ.thumb.224_0.jpeg");
                 longPictureList.add("http://img4.duitang.com/uploads/item/201601/21/20160121150507_AkrQx.thumb.224_0.jpeg");
                 longPictureList.add("http://img.zcool.cn/community/019971579860ae0000012e7e1b5c10.gif");
-                longPictureList.add("http://img.zcool.cn/community/010d6b58ae3d24a801219c772d8b7a.JPG@1280w_1l_2o_100sh.jpg");
-                longPictureList.add("http://img.hb.aicdn.com/4fbe16f37f71006636ca171297d409b2cf75b92e263ed3-7VaWyo_fw658");
-                longPictureList.add("http://img.hb.aicdn.com/8ff2cf3de3e86c1e32040463b073441180af0b975d3b26-pCY4P9_fw658");
                 final SparseArray<ImageView> mappingViews = new SparseArray<>();
                 mappingViews.put(0, (ImageView) v);
                 vImageWatcher.show((ImageView) v, mappingViews, convert(longPictureList));

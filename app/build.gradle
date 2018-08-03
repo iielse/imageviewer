@@ -27,6 +27,15 @@ dependencies {
 
     implementation 'com.android.support.constraint:constraint-layout:1.1.1'
 
-    implementation project(':imagewatcher')
-//    implementation 'ch.ielse:imagewatcher:1.0.3'
+//    implementation project(':imagewatcher')
+    implementation 'com.github.iielse:ImageWatcher:1.1.0'
+}
+
+repositories {
+    google()
+    jcenter()
+    mavenCentral()
+    maven { url 'https://maven.google.com' }
+    maven { url "https://jitpack.io" }
+    flatDir { dirs 'libs' }
 }
