@@ -45,7 +45,7 @@ allprojects {
 Add the dependency
 ```
 dependencies {
-    implementation 'com.github.iielse:ImageWatcher:1.1.0'
+    implementation 'com.github.iielse:ImageWatcher:1.1.1'
 }
 ```
 
