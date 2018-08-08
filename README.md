@@ -59,7 +59,6 @@ dependencies {
 | setIndexProvider | 自定义页码UI |
 | setLoadingUIProvider | 自定义加载UI |
 | setOnStateChangedListener | 开始显示和退出显示时的回调 |
-| isOpened | 初始化默认状态 |
 
 ### 初始化配置
 
