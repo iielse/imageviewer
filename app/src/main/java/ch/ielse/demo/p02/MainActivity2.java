@@ -10,10 +10,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -78,9 +80,13 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
                     }
                 })
                 .setLoadingUIProvider(new ImageWatcher.LoadingUIProvider() {
+                    final FrameLayout.LayoutParams lpCenterInParent = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
                     @Override
                     public View initialView(ViewGroup parent) {
                         ImageView load = new ImageView(parent.getContext());
+                        lpCenterInParent.gravity = Gravity.CENTER;
+                        load.setLayoutParams(lpCenterInParent);
                         load.setImageResource(R.drawable.dice_action);
                         return load;
                     }

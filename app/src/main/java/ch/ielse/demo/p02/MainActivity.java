@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -36,6 +37,14 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
 //        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        findViewById(R.id.vRefresh).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext().getApplicationContext(), "刷新列表内容 adapter.reset()" , Toast.LENGTH_SHORT).show();
+                adapter.set(Data.get());
+            }
+        });
 
         vRecycler = (RecyclerView) findViewById(R.id.v_recycler);
         vRecycler.setLayoutManager(new LinearLayoutManager(this));

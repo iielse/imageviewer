@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -67,22 +68,25 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private float mFingersCenterY;
     private float mExitRef; // 触摸退出进度
 
+    private ValueAnimator animFling;
     private ValueAnimator animBackground;
     private ValueAnimator animImageTransform;
     private boolean isInTransformAnimation;
     private final GestureDetector mGestureDetector;
 
+
     private boolean isInitLayout = false;
-    private ImageView initI;
-    private SparseArray<ImageView> initImageGroupList;
-    private List<Uri> initUrlList;
+    protected ImageView initI;
+    protected SparseArray<ImageView> initImageGroupList;
+    protected List<Uri> initUrlList;
 
     private OnPictureLongPressListener pictureLongPressListener; // 图片长按回调
     private ImagePagerAdapter adapter;
     private final ViewPager vPager;
-    private SparseArray<ImageView> mImageGroupList; // 图片所在的ImageView控件集合，Int类型的Key对应position
-    private List<Uri> mUrlList; // 图片地址列表
-    private int initPosition;
+    protected SparseArray<ImageView> mImageGroupList; // 图片所在的ImageView控件集合，Int类型的Key对应position
+    protected List<Uri> mUrlList; // 图片地址列表
+    protected int initPosition;
+    private int currentPosition;
     private int mPagerPositionOffsetPixels;
     private Loader loader;
     private OnStateChangedListener stateChangedListener;
@@ -188,9 +192,14 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     public class DefaultLoadingUIProvider implements LoadingUIProvider {
+        final LayoutParams lpCenterInParent = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+
         @Override
         public View initialView(ViewGroup parent) {
-            return new ProgressView(parent.getContext());
+            lpCenterInParent.gravity = Gravity.CENTER;
+            ProgressView progressView = new ProgressView(parent.getContext());
+            progressView.setLayoutParams(lpCenterInParent);
+            return progressView;
         }
 
         @Override
@@ -261,6 +270,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         if (initPosition < 0) {
             throw new IllegalArgumentException("param ImageView i must be a member of the List <ImageView> imageGroupList!");
         }
+        currentPosition = initPosition;
 
         if (animImageTransform != null) animImageTransform.cancel();
         animImageTransform = null;
@@ -272,15 +282,15 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         ImageWatcher.this.setVisibility(View.VISIBLE);
         vPager.setAdapter(adapter = new ImagePagerAdapter());
         vPager.setCurrentItem(initPosition);
-        indexProvider.onPageChanged(this, initPosition, mUrlList);
+        if (indexProvider != null) indexProvider.onPageChanged(this, initPosition, mUrlList);
     }
 
     public int getCurrentPosition() {
-        return vPager.getCurrentItem();
+        return currentPosition;
     }
 
     public Uri getDisplayingUri() {
-        return mUrlList.get(getCurrentPosition());
+        return mUrlList != null ? mUrlList.get(getCurrentPosition()) : null;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -288,6 +298,11 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     public boolean onTouchEvent(MotionEvent event) {
         if (iSource == null) return true;
         if (isInTransformAnimation) return true;
+        if (animFling != null) {
+            animFling.cancel();
+            animFling = null;
+            mTouchMode = TOUCH_MODE_DOWN;
+        }
 
         final int action = event.getAction() & MotionEvent.ACTION_MASK;
         switch (action) {
@@ -323,7 +338,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     private void onUp(MotionEvent e) {
-        if (mTouchMode == TOUCH_MODE_SCALE || mTouchMode == TOUCH_MODE_SCALE_LOCK) {
+        if (mTouchMode == TOUCH_MODE_AUTO_FLING) {
+            return;
+        } else if (mTouchMode == TOUCH_MODE_SCALE || mTouchMode == TOUCH_MODE_SCALE_LOCK) {
             handleScaleTouchResult();
         } else if (mTouchMode == TOUCH_MODE_EXIT) {
             handleExitTouchResult();
@@ -338,9 +355,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        final float moveX = (e1 != null) ? e2.getX() - e1.getX() : 0;
-        final float moveY = (e1 != null) ? e2.getY() - e1.getY() : 0;
         if (mTouchMode == TOUCH_MODE_DOWN) {
+            final float moveX = (e1 != null) ? e2.getX() - e1.getX() : 0;
+            final float moveY = (e1 != null) ? e2.getY() - e1.getY() : 0;
             if (Math.abs(moveX) > mTouchSlop || Math.abs(moveY) > mTouchSlop) {
                 final ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
                 final ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
@@ -448,6 +465,45 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        if (mTouchMode != TOUCH_MODE_AUTO_FLING && mPagerPositionOffsetPixels == 0) {
+            if (e1 != null && e2 != null && (Math.abs(e1.getX() - e2.getX()) > 50 || Math.abs(e1.getY() - e2.getY()) > 50) && (Math.abs(velocityX) > 500 || Math.abs(velocityY) > 500)) {
+                // 满足fling手势
+                final ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
+                final ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+                float maxVelocity = Math.max(Math.abs(velocityX), Math.abs(velocityY));
+                float endTranslateX = vsCurrent.translationX + (velocityX * 0.2f);
+                float endTranslateY = vsCurrent.translationY + (velocityY * 0.2f);
+                if (vsCurrent.scaleY * iSource.getHeight() < mHeight) {
+                    endTranslateY = vsCurrent.translationY; // 当前状态下判定为 横图(所显示高度不过全屏)
+                    maxVelocity = Math.abs(velocityX);
+                }
+                if (vsCurrent.scaleY * iSource.getHeight() > mHeight && vsCurrent.scaleX == vsDefault.scaleX) {
+                    endTranslateX = vsCurrent.translationX; // 当前状态下判定为 竖图(所显示宽度不过全屏)
+                    maxVelocity = Math.abs(velocityY);
+                }
+
+                final float overflowX = mWidth * 0.02f;
+                float translateXEdge = vsDefault.width * (vsCurrent.scaleX - 1) / 2;
+                if (endTranslateX > translateXEdge + overflowX)
+                    endTranslateX = translateXEdge + overflowX;
+                else if (endTranslateX < -translateXEdge - overflowX)
+                    endTranslateX = -translateXEdge - overflowX;
+
+                if (vsCurrent.scaleY * iSource.getHeight() > mHeight) {
+                    final float overflowY = mHeight * 0.02f;
+                    float translateYTopEdge = vsDefault.height * vsCurrent.scaleY / 2 - vsDefault.height / 2;
+                    float translateYBottomEdge = mHeight - vsDefault.height * vsCurrent.scaleY / 2 - vsDefault.height / 2;
+                    if (endTranslateY > translateYTopEdge + overflowY) {
+                        endTranslateY = translateYTopEdge + overflowY;
+                    } else if (endTranslateY < translateYBottomEdge - overflowY) {
+                        endTranslateY = translateYBottomEdge - overflowY;
+                    }
+                }
+
+                animFling(iSource, ViewState.write(iSource, ViewState.STATE_TEMP).translationX(endTranslateX).translationY(endTranslateY), (long) (1000000 / maxVelocity));
+                return true;
+            }
+        }
         return false;
     }
 
@@ -727,6 +783,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     @Override
     public void onPageSelected(int position) {
         iSource = adapter.mImageSparseArray.get(position);
+        currentPosition = position;
 
         if (indexProvider != null) indexProvider.onPageChanged(this, position, mUrlList);
 
@@ -746,7 +803,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     class ImagePagerAdapter extends PagerAdapter {
-        private final FrameLayout.LayoutParams lpCenter = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         private final SparseArray<ImageView> mImageSparseArray = new SparseArray<>();
         private boolean hasPlayBeginAnimation;
 
@@ -776,9 +832,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             if (loadView == null) {
                 loadView = new View(container.getContext()); // 占位;errorView = getChildAt(2)
             }
-            lpCenter.gravity = Gravity.TOP;
-            lpCenter.setMargins(0, mHeight / 2, 0, 0);
-            loadView.setLayoutParams(lpCenter);
             itemView.addView(loadView);
 
             ImageView errorView = new ImageView(container.getContext());
@@ -926,8 +979,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
         @Override
         public void handleMessage(Message msg) {
-            if (mRef.get() != null) {
-                final ImageWatcher holder = mRef.get();
+            final ImageWatcher holder = mRef.get();
+            if (holder != null) {
                 switch (msg.what) {
                     case SINGLE_TAP_UP_CONFIRMED:
                         holder.onSingleTapConfirmed();
@@ -984,6 +1037,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         }
     };
 
+    private final DecelerateInterpolator decelerateInterpolator = new DecelerateInterpolator();
     private final AccelerateInterpolator accelerateInterpolator = new AccelerateInterpolator();
 
     public void setTranslucentStatus(int statusBarHeight) {
@@ -1025,6 +1079,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         animImageTransform = null;
         if (animBackground != null) animBackground.cancel();
         animBackground = null;
+        if (animFling != null) animFling.cancel();
+        animFling = null;
     }
 
     /**
@@ -1102,5 +1158,26 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             }
         });
         animBackground.start();
+    }
+
+    private void animFling(ImageView view, final ViewState vsResult, long duration) {
+        if (duration > 800) duration = 800;
+        else if (duration < 100) duration = 100;
+        if (animFling != null) animFling.cancel();
+        animFling = ViewState.restoreByAnim(view, vsResult.mTag).addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mTouchMode = TOUCH_MODE_AUTO_FLING;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mTouchMode = TOUCH_MODE_SCALE_LOCK;
+                onUp(null);
+            }
+        }).create();
+        animFling.setInterpolator(decelerateInterpolator);
+        animFling.setDuration(duration);
+        animFling.start();
     }
 }

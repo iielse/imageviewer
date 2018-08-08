@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.view.View;
 
 /**
- * QQ 517309507 <br/>
  * ViewState包含记录了一个View的瞬时UI状态<br/>
  * 并且提供了给View新增状态，抓取View的当前状态，复制View的状态，将View还原至该状态等便捷方法
  */
@@ -17,7 +16,7 @@ class ViewState {
     static final int STATE_TEMP = R.id.state_temp; // 临时目标
     static final int STATE_DRAG = R.id.state_touch_drag; // 高清图拖拽起点
     static final int STATE_EXIT = R.id.state_exit; // 高清图退出起点
-    static final int STATE_TOUCH_SCALE = R.id.state_touch_scale_rotate; // 高清图缩放旋转起点
+    static final int STATE_TOUCH_SCALE = R.id.state_touch_scale; // 高清图缩放起点
 
     int mTag;
     int width;

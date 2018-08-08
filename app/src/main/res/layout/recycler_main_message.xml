@@ -8,6 +8,7 @@
 
     <ImageView
         android:id="@+id/i_avatar"
+        android:scaleType="centerCrop"
         android:layout_width="36dip"
         android:layout_height="36dip"
         android:layout_marginRight="10dip"/>

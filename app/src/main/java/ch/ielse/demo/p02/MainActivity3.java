@@ -73,7 +73,7 @@ public class MainActivity3 extends Activity {
                 longPictureList.add("http://img.zcool.cn/community/01ee43596f0ce9a8012193a38dcb00.jpg");
                 longPictureList.add("https://img3.duitang.com/uploads/item/201608/03/20160803170546_BwshQ.thumb.224_0.jpeg");
                 longPictureList.add("http://img4.duitang.com/uploads/item/201601/21/20160121150507_AkrQx.thumb.224_0.jpeg");
-                longPictureList.add("http://img.zcool.cn/community/019971579860ae0000012e7e1b5c10.gif");
+                longPictureList.add("https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=2211841400,3995215486&fm=27&gp=0.jpg");
                 final SparseArray<ImageView> mappingViews = new SparseArray<>();
                 mappingViews.put(0, (ImageView) v);
                 vImageWatcher.show((ImageView) v, mappingViews, convert(longPictureList));

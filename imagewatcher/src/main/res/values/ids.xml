@@ -7,6 +7,6 @@
     <item name="state_temp" type="id" />
     <item name="state_exit" type="id" />
     <item name="state_touch_drag" type="id" />
-    <item name="state_touch_scale_rotate" type="id" />
+    <item name="state_touch_scale" type="id" />
     <item name="view_image_watcher" type="id" />
 </resources>

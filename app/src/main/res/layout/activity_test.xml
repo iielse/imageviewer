@@ -14,34 +14,71 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
+            android:text="微信朋友圈/QQ空间效果"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="xml方式集成、开始显示和退出显示时的回调、长按监听"
             android:textAllCaps="false" />
 
         <Button
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="xml集成方式(基础) 、 微信朋友圈/QQ空间效果"
+            android:text="demo1"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="addView方式集成、自定义loadingUI(弱网效果清晰)、透明状态栏"
             android:textAllCaps="false" />
 
         <Button
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="addView集成方式 、  自定义loading  、 (FLAG_TRANSLUCENT_STATUS)"
+            android:text="demo2"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="==========================================="
+            android:textAllCaps="false" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="大尺寸、长图"
             android:textAllCaps="false" />
 
         <Button
             android:id="@+id/button3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="大尺寸 、 长图" />
+            android:text="demo3"
+            android:textAllCaps="false" />
 
-        <Button
-            android:id="@+id/button4" android:textAllCaps="false"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="显示隐藏动画和控件的'映射关系' 、 自定义IndexProvider"
+            android:layout_marginTop="10dp"
+            android:text="自定义IndexUI、显示隐藏动画和控件的'映射关系'"
+            android:textAllCaps="false"
+            android:textColor="#F00" />
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="demo4"
+            android:textAllCaps="false"
             android:textColor="#F00" />
 
 

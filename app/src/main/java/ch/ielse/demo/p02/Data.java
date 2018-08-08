@@ -135,12 +135,27 @@ public class Data {
                 Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647818_3369.png")
         );
 
-        dataList.add(data1);
-        dataList.add(data2);
-        dataList.add(data3);
-        dataList.add(data4);
-        dataList.add(data5);
-        dataList.add(data6);
+
+        if (System.currentTimeMillis() % 3 == 0) {
+            dataList.add(data1);
+            dataList.add(data2);
+            dataList.add(data3);
+            dataList.add(data4);
+            dataList.add(data6);
+        } else if (System.currentTimeMillis() % 3 == 1) {
+            dataList.add(data5);
+            dataList.add(data6);
+            dataList.add(data2);
+            dataList.add(data4);
+            dataList.add(data3);
+        } else {
+            dataList.add(data1);
+            dataList.add(data3);
+            dataList.add(data4);
+            dataList.add(data5);
+            dataList.add(data6);
+        }
+
         return dataList;
     }
 

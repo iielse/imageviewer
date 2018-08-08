@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,9 +12,10 @@
             android:id="@+id/v_fit"
             android:layout_width="match_parent"
             android:layout_height="0dip"
-            android:background="@color/colorPrimary"/>
+            android:background="@color/colorPrimary" />
 
         <LinearLayout
+            android:id="@+id/vRefresh"
             android:layout_width="match_parent"
             android:layout_height="@dimen/title_height"
             android:background="@color/colorPrimary"
@@ -25,20 +25,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hello World!"
+                android:text="点我刷新列表内容!"
                 android:textColor="#FFF"
-                android:textSize="19sp"/>
+                android:textSize="19sp" />
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/v_recycler"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
     </LinearLayout>
 
     <com.github.ielse.imagewatcher.ImageWatcher
         android:id="@+id/v_image_watcher"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </FrameLayout>
