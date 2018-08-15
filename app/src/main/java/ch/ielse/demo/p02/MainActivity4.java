@@ -12,7 +12,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.github.ielse.imagewatcher.ImageWatcher;
 import com.github.ielse.imagewatcher.ImageWatcherHelper;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import java.util.List;
 public class MainActivity4 extends Activity {
     private List<Uri> dataList = new ArrayList<>();
 
-    private ImageWatcher vImageWatcher;
+    private ImageWatcherHelper iwHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,10 +79,8 @@ public class MainActivity4 extends Activity {
         findViewById(R.id.v8).setOnClickListener(showListener);
 
 
-        vImageWatcher = ImageWatcherHelper.with(this) // 一般来讲， ImageWatcher 需要占据全屏的位置
-                .setLoader(new GlideImageWatcherLoader())
-                .setIndexProvider(new DotIndexProvider())
-                .create();
+        iwHelper = ImageWatcherHelper.with(this ,new SimpleLoader()) // 一般来讲， ImageWatcher 需要占据全屏的位置
+                .setIndexProvider(new CustomDotIndexProvider()); // 自定义index
     }
 
     private void show(ImageView clickedImage) {
@@ -110,12 +107,12 @@ public class MainActivity4 extends Activity {
 
         // 以上是show源码。 所以就是说， clickedImage 是 mapping 中的任意一个。 如果不是就崩了。
         // 注意，下标当然是从0开始的
-        vImageWatcher.show(clickedImage, mapping, dataList);
+        iwHelper.show(clickedImage, mapping, dataList);
     }
 
     @Override
     public void onBackPressed() {
-        if (!vImageWatcher.handleBackPressed()) {
+        if (!iwHelper.handleBackPressed()) {
             super.onBackPressed();
         }
     }

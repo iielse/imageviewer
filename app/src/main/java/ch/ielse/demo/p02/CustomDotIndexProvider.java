@@ -12,7 +12,7 @@ import com.github.ielse.imagewatcher.ImageWatcher;
 
 import java.util.List;
 
-public class DotIndexProvider implements ImageWatcher.IndexProvider {
+public class CustomDotIndexProvider implements ImageWatcher.IndexProvider {
     private boolean initLayout;
     private IndicatorView indicatorView;
 

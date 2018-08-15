@@ -13,6 +13,13 @@
 在 previews文件夹下 app-debug.apk
 [app-debug.apk](https://github.com/iielse/DemoProjects/blob/master/previews/app-debug.apk)
 
+`1.1.2`
+
+* 修复-图片切换中多指触碰导致页面停滞
+* 优化-fling边缘手感
+* 优化-更积极的释放内存 `detachAffirmative` 水有点小深 /小纠结 请尽量使用helper操作
+* 新增-gif支持(原始图需为静态) demo5
+
 `1.1.1`
 
 * 修复-自定义LoadingUI位置错误。
@@ -64,14 +71,11 @@ dependencies {
 
 `Activity.onCreate()`
 ```
-vImageWatcher = ImageWatcherHelper.with(this) // 一般来讲，ImageWatcher尺寸占据全屏
-    .setLoader(new GlideImageWatcherLoader()) // demo中有简单实现
-    .setIndexProvider(new DotIndexProvider()) // 自定义
-    .create();
+ImageWatcherHelper iwHelper = ImageWatcherHelper.with(this, new SimpleLoader());  // SimpleLoader demo中有简单实现
 ```
 `Activity.onBackPressed()`
 ```
-if (!vImageWatcher.handleBackPressed()) {
+if (!iwHelper.handleBackPressed()) {
     super.onBackPressed();
 }
 ```
@@ -84,13 +88,13 @@ SparseArray<ImageView> mapping = new SparseArray<>(); // 这个请自行理解�
 mapping.put(0, clickedImage);
 List<Uri> dataList = 被显示的图片们;
 
-vImageWatcher.show(clickedImage, mapping, dataList);
+iwHelper.show(clickedImage, mapping, dataList);
 ```
 
 
 具体看源码demo示例。项目可运行。
 
-欢迎提出问题/想法。
+帆迎提出问题/想法。
 
 楼主也许可能会更新，比如这次 /斜眼笑。
 

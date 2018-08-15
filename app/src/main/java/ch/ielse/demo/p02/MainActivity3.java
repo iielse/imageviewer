@@ -12,19 +12,14 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.github.ielse.imagewatcher.ImageWatcher;
 import com.github.ielse.imagewatcher.ImageWatcherHelper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity3 extends Activity {
 
-    private ImageWatcher vImageWatcher;
-
-    final String picThumbUrl = "http://img.my.csdn.net/uploads/201707/27/1501118720_9504.jpg";
-    final String picUrl = "http://img.my.csdn.net/uploads/201707/27/1501118577_9169.jpg";
+    private ImageWatcherHelper iwHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,25 +36,26 @@ public class MainActivity3 extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
 
-
-        vImageWatcher = ImageWatcherHelper.with(this) // 一般来讲， ImageWatcher 需要占据全屏的位置
+        iwHelper = ImageWatcherHelper.with(this, new SimpleLoader()) // 一般来讲， ImageWatcher 需要占据全屏的位置
                 .setTranslucentStatus(!isTranslucentStatus ? Utils.calcStatusBarHeight(this) : 0) // 如果不是透明状态栏，你需要给ImageWatcher标记 一个偏移值，以修正点击ImageView查看的启动动画的Y轴起点的不正确
-                .setErrorImageRes(R.mipmap.error_picture) // 配置error图标 如果不介意使用lib自带的图标，并不一定要调用这个API
-                .setLoader(new GlideImageWatcherLoader())
-                .create();
+                .setErrorImageRes(R.mipmap.error_picture); // 配置error图标 如果不介意使用lib自带的图标，并不一定要调用这个API
 
         Utils.fitsSystemWindows(isTranslucentStatus, findViewById(R.id.v_fit));
 
         ImageView iPicture = (ImageView) findViewById(R.id.i_picture);
 
-        Glide.with(iPicture.getContext()).asBitmap().load(picThumbUrl).into(iPicture);
+        final String picThumbUrl = "http://img.my.csdn.net/uploads/201707/27/1501118720_9504.jpg";
+        final String picUrl = "http://img.my.csdn.net/uploads/201707/27/1501118577_9169.jpg";
 
+        Glide.with(iPicture.getContext()).asBitmap().load(picThumbUrl).into(iPicture);
         iPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final List<String> longPictureList = new ArrayList<>();
+                longPictureList.add(picUrl);
                 final SparseArray<ImageView> mappingViews = new SparseArray<>();
                 mappingViews.put(0, (ImageView) v);
-                vImageWatcher.show((ImageView) v, mappingViews, Collections.singletonList(Uri.parse(picUrl)));
+                iwHelper.show((ImageView) v, mappingViews, convert(longPictureList));
             }
         });
 
@@ -76,7 +72,7 @@ public class MainActivity3 extends Activity {
                 longPictureList.add("https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=2211841400,3995215486&fm=27&gp=0.jpg");
                 final SparseArray<ImageView> mappingViews = new SparseArray<>();
                 mappingViews.put(0, (ImageView) v);
-                vImageWatcher.show((ImageView) v, mappingViews, convert(longPictureList));
+                iwHelper.show((ImageView) v, mappingViews, convert(longPictureList));
             }
         });
     }
@@ -90,7 +86,7 @@ public class MainActivity3 extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (!vImageWatcher.handleBackPressed()) {
+        if (!iwHelper.handleBackPressed()) {
             super.onBackPressed();
         }
     }

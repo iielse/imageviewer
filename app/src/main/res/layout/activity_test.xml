@@ -81,6 +81,22 @@
             android:textAllCaps="false"
             android:textColor="#F00" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="gif"
+            android:textAllCaps="false"
+            android:textColor="#F00" />
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="demo5"
+            android:textAllCaps="false"
+            android:textColor="#F00" />
+
 
     </LinearLayout>
 

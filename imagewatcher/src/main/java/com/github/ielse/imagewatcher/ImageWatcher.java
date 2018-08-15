@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -74,7 +75,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private boolean isInTransformAnimation;
     private final GestureDetector mGestureDetector;
 
-
     private boolean isInitLayout = false;
     protected ImageView initI;
     protected SparseArray<ImageView> initImageGroupList;
@@ -93,6 +93,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private IndexProvider indexProvider;
     private View idxView;
     private LoadingUIProvider loadingUIProvider;
+
+    private boolean detachAffirmative; // dismiss detach parent
+    private boolean detachedParent;
 
     public ImageWatcher(Context context) {
         this(context, null);
@@ -113,6 +116,10 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     public void setLoader(Loader l) {
         loader = l;
+    }
+
+    public void setDetachAffirmative(boolean detachAffirmative) {
+        this.detachAffirmative = detachAffirmative;
     }
 
     public void setIndexProvider(IndexProvider ip) {
@@ -318,12 +325,18 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                         ViewState.write(iSource, ViewState.STATE_TOUCH_SCALE);
                     }
                     mTouchMode = TOUCH_MODE_SCALE; // 变化为缩放状态
+                } else {
+                    dispatchEventToViewPager(event);
                 }
                 break;
             case MotionEvent.ACTION_POINTER_UP:
-                if (event.getPointerCount() - 1 < 1 + 1) {
-                    mTouchMode = TOUCH_MODE_SCALE_LOCK;
-                    onUp(event); // 结束缩放状态
+                if (mPagerPositionOffsetPixels == 0) { // 正在查看一张图片，不处于翻页中。
+                    if (event.getPointerCount() - 1 < 1 + 1) {
+                        mTouchMode = TOUCH_MODE_SCALE_LOCK;
+                        onUp(event); // 结束缩放状态
+                    }
+                } else {
+                    dispatchEventToViewPager(event);
                 }
                 break;
         }
@@ -333,20 +346,25 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     @Override
     public boolean onDown(MotionEvent e) {
         mTouchMode = TOUCH_MODE_DOWN;
-        vPager.onTouchEvent(e);
+        dispatchEventToViewPager(e);
         return true;
     }
 
     private void onUp(MotionEvent e) {
         if (mTouchMode == TOUCH_MODE_AUTO_FLING) {
-            return;
+            // do nothing
         } else if (mTouchMode == TOUCH_MODE_SCALE || mTouchMode == TOUCH_MODE_SCALE_LOCK) {
             handleScaleTouchResult();
         } else if (mTouchMode == TOUCH_MODE_EXIT) {
             handleExitTouchResult();
         } else if (mTouchMode == TOUCH_MODE_DRAG) {
             handleDragTouchResult();
+        } else if (mTouchMode == TOUCH_MODE_SLIDE) {
+            dispatchEventToViewPager(e);
         }
+    }
+
+    private void dispatchEventToViewPager(MotionEvent e) {
         try {
             vPager.onTouchEvent(e);
         } catch (Exception ignore) {
@@ -411,7 +429,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         }
 
         if (mTouchMode == TOUCH_MODE_SLIDE) {
-            vPager.onTouchEvent(e2);
+            dispatchEventToViewPager(e2);
         } else if (mTouchMode == TOUCH_MODE_SCALE) {
             handleScaleGesture(e2);
         } else if (mTouchMode == TOUCH_MODE_EXIT) {
@@ -465,11 +483,17 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        if (mTouchMode != TOUCH_MODE_AUTO_FLING && mPagerPositionOffsetPixels == 0) {
-            if (e1 != null && e2 != null && (Math.abs(e1.getX() - e2.getX()) > 50 || Math.abs(e1.getY() - e2.getY()) > 50) && (Math.abs(velocityX) > 500 || Math.abs(velocityY) > 500)) {
+        if (iSource != null && mTouchMode != TOUCH_MODE_AUTO_FLING && mPagerPositionOffsetPixels == 0) {
+            final ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
+            final ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+            if (vsDefault == null) return false;
+
+            if (getCurrentPosition() <= 0 && velocityX > 0 && vsCurrent.translationX == (vsDefault.width * (vsCurrent.scaleX - 1) / 2)) {
+                return false; // 第一张手指右划
+            } else if (getCurrentPosition() >= mUrlList.size() - 1 && velocityX < 0 && -vsCurrent.translationX == vsDefault.width * (vsCurrent.scaleX - 1) / 2) {
+                return false; // 最后一张手指左划
+            } else if (e1 != null && e2 != null && (Math.abs(e1.getX() - e2.getX()) > 50 || Math.abs(e1.getY() - e2.getY()) > 50) && (Math.abs(velocityX) > 500 || Math.abs(velocityY) > 500)) {
                 // 满足fling手势
-                final ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
-                final ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
                 float maxVelocity = Math.max(Math.abs(velocityX), Math.abs(velocityY));
                 float endTranslateX = vsCurrent.translationX + (velocityX * 0.2f);
                 float endTranslateY = vsCurrent.translationY + (velocityY * 0.2f);
@@ -880,14 +904,13 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
             ViewState.write(imageView, ViewState.STATE_ORIGIN).alpha(0).scaleXBy(1.5f).scaleYBy(1.5f);
 
-            if (pos < mImageGroupList.size()) {
-                ImageView originRef = mImageGroupList.get(pos);
-                if (pos == initPosition && !hasPlayBeginAnimation) {
-                    isFindEnterImagePicture = true;
-                    iSource = imageView;
-                }
-
-                int[] location = new int[2];
+            final ImageView originRef = mImageGroupList.get(pos);
+            if (pos == initPosition && !hasPlayBeginAnimation) {
+                isFindEnterImagePicture = true;
+                iSource = imageView;
+            }
+            if (originRef != null) {
+                final int[] location = new int[2];
                 originRef.getLocationOnScreen(location);
                 imageView.setTranslationX(location[0]);
                 int locationYOfFullScreen = location[1];
@@ -898,7 +921,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
                 ViewState.write(imageView, ViewState.STATE_ORIGIN).width(originRef.getWidth()).height(originRef.getHeight());
 
-                Drawable bmpMirror = originRef.getDrawable();
+                final Drawable bmpMirror = originRef.getDrawable();
                 if (bmpMirror != null) {
                     int bmpMirrorWidth = bmpMirror.getBounds().width();
                     int bmpMirrorHeight = bmpMirror.getBounds().height();
@@ -949,6 +972,25 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                         imageView.setAlpha(0f);
                         imageView.animate().alpha(1).start();
                     }
+
+                    imageView.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+                        @Override
+                        public void onViewAttachedToWindow(View v) {
+                        }
+
+                        @Override
+                        public void onViewDetachedFromWindow(View v) {
+                            Drawable displayingDrawable = imageView.getDrawable();
+                            if (displayingDrawable instanceof Animatable) {
+                                ((Animatable) displayingDrawable).stop();
+                            }
+                        }
+                    });
+
+                    Drawable displayingDrawable = imageView.getDrawable();
+                    if (displayingDrawable instanceof Animatable) {
+                        ((Animatable) displayingDrawable).start();
+                    }
                 }
 
                 @Override
@@ -959,7 +1001,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 @Override
                 public void onLoadFailed(Drawable errorDrawable) {
                     notifyItemChangedState(pos, false, imageView.getDrawable() == null);
-
                 }
             });
 
@@ -1092,6 +1133,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
      * 4、其他情况，ImageWatcher并没有展示图片
      */
     public boolean handleBackPressed() {
+        if (detachedParent) return false;
         return isInTransformAnimation || (iSource != null && getVisibility() == View.VISIBLE && onSingleTapConfirmed());
     }
 
@@ -1154,6 +1196,11 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                     if (tag == STATE_EXIT_HIDING) {
                         stateChangedListener.onStateChanged(ImageWatcher.this, getCurrentPosition(), getDisplayingUri(), tag);
                     }
+                }
+
+                if (detachAffirmative && tag == STATE_EXIT_HIDING) {
+                    detachedParent = true;
+                    ((ViewGroup) getParent()).removeView(ImageWatcher.this);
                 }
             }
         });

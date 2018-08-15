@@ -47,6 +47,13 @@ public class TestActivity extends Activity {
             }
         });
 
+        findViewById(R.id.button5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TestActivity.this, MainActivity5.class);
+                startActivity(intent);
+            }
+        });
     }
 
 }

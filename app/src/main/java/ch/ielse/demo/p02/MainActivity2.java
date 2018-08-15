@@ -26,7 +26,7 @@ import java.util.List;
 
 public class MainActivity2 extends Activity implements MessagePicturesLayout.Callback {
 
-    private ImageWatcher vImageWatcher;
+    private ImageWatcherHelper iwHelper;
     private RecyclerView vRecycler;
     private MessageAdapter adapter;
 
@@ -53,7 +53,7 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
 
         //  **************  动态 addView   **************
 
-        vImageWatcher = ImageWatcherHelper.with(this) // 一般来讲， ImageWatcher 需要占据全屏的位置
+        iwHelper = ImageWatcherHelper.with(this, new SimpleLoader()) // 一般来讲， ImageWatcher 需要占据全屏的位置
                 .setTranslucentStatus(!isTranslucentStatus ? Utils.calcStatusBarHeight(this) : 0) // 如果不是透明状态栏，你需要给ImageWatcher标记 一个偏移值，以修正点击ImageView查看的启动动画的Y轴起点的不正确
                 .setErrorImageRes(R.mipmap.error_picture) // 配置error图标 如果不介意使用lib自带的图标，并不一定要调用这个API
                 .setOnPictureLongPressListener(new ImageWatcher.OnPictureLongPressListener() {
@@ -63,7 +63,6 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
                         Toast.makeText(v.getContext().getApplicationContext(), "长按了第" + (pos + 1) + "张图片", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setLoader(new GlideImageWatcherLoader())
                 .setOnStateChangedListener(new ImageWatcher.OnStateChangedListener() {
                     @Override
                     public void onStateChangeUpdate(ImageWatcher imageWatcher, ImageView clicked, int position, Uri uri, float animatedValue, int actionTag) {
@@ -79,43 +78,20 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
                         }
                     }
                 })
-                .setLoadingUIProvider(new ImageWatcher.LoadingUIProvider() {
-                    final FrameLayout.LayoutParams lpCenterInParent = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                .setLoadingUIProvider(new CustomLoadingUIProvider()); // 自定义LoadingUI
 
-                    @Override
-                    public View initialView(ViewGroup parent) {
-                        ImageView load = new ImageView(parent.getContext());
-                        lpCenterInParent.gravity = Gravity.CENTER;
-                        load.setLayoutParams(lpCenterInParent);
-                        load.setImageResource(R.drawable.dice_action);
-                        return load;
-                    }
-
-                    @Override
-                    public void start(View loadView) {
-                        loadView.setVisibility(View.VISIBLE);
-                        ((AnimationDrawable) ((ImageView) loadView).getDrawable()).start();
-                    }
-
-                    @Override
-                    public void stop(View loadView) {
-                        ((AnimationDrawable) ((ImageView) loadView).getDrawable()).stop();
-                        loadView.setVisibility(View.GONE);
-                    }
-                })
-                .create();
 
         Utils.fitsSystemWindows(isTranslucentStatus, findViewById(R.id.v_fit));
     }
 
     @Override
     public void onThumbPictureClick(ImageView i, SparseArray<ImageView> imageGroupList, List<Uri> urlList) {
-        vImageWatcher.show(i, imageGroupList, urlList);
+        iwHelper.show(i, imageGroupList, urlList);
     }
 
     @Override
     public void onBackPressed() {
-        if (!vImageWatcher.handleBackPressed()) {
+        if (!iwHelper.handleBackPressed()) {
             super.onBackPressed();
         }
     }

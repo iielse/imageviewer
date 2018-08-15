@@ -11,10 +11,11 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.github.ielse.imagewatcher.ImageWatcher;
 
-class GlideImageWatcherLoader implements ImageWatcher.Loader {
+class SimpleLoader implements ImageWatcher.Loader {
     @Override
     public void load(Context context, Uri uri, final ImageWatcher.LoadCallback lc) {
-        Glide.with(context).load(uri).into(new SimpleTarget<Drawable>() {
+        Glide.with(context).load(uri)
+                .into(new SimpleTarget<Drawable>() {
             @Override
             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                 lc.onResourceReady(resource);

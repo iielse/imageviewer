@@ -52,7 +52,7 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
         vRecycler.setAdapter(adapter = new MessageAdapter(this).setPictureClickCallback(this));
         adapter.set(Data.get());
 
-        // **************   xml 方式加载  ********
+        // **************   xml 方式加载  ********  推荐使用后面demo的iwHelper
 
         // 一般来讲， ImageWatcher 需要占据全屏的位置
         vImageWatcher = (ImageWatcher) findViewById(R.id.v_image_watcher);
@@ -62,7 +62,7 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
         vImageWatcher.setErrorImageRes(R.mipmap.error_picture);
         // 长按图片的回调，你可以显示一个框继续提供一些复制，发送等功能
         vImageWatcher.setOnPictureLongPressListener(this);
-        vImageWatcher.setLoader(new GlideImageWatcherLoader());
+        vImageWatcher.setLoader(new SimpleLoader());
         vImageWatcher.setOnStateChangedListener(new ImageWatcher.OnStateChangedListener() {
             @Override
             public void onStateChangeUpdate(ImageWatcher imageWatcher, ImageView clicked, int position, Uri uri, float animatedValue, int actionTag) {
