@@ -10,8 +10,7 @@
 ![image](https://github.com/iielse/DemoProjects/blob/master/previews/444.gif)
 
 ### 示例下载
-在 previews文件夹下 app-debug.apk
-[app-debug.apk](https://github.com/iielse/DemoProjects/blob/master/previews/app-debug.apk)
+略。
 
 `1.1.2`
 
@@ -52,7 +51,7 @@ allprojects {
 Add the dependency
 ```
 dependencies {
-    implementation 'com.github.iielse:ImageWatcher:1.1.1'
+    implementation 'com.github.iielse:ImageWatcher:1.1.2'
 }
 ```
 
