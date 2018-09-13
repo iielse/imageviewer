@@ -75,6 +75,57 @@ public class MainActivity3 extends Activity {
                 iwHelper.show((ImageView) v, mappingViews, convert(longPictureList));
             }
         });
+
+        Glide.with(iPicture.getContext()).asBitmap().load("http://image.xcar.com.cn/attachments/a/day_20141126/2014112609_68d9843ed0c3e1d05735CObUWVqIy3rr.jpg")
+                .into((ImageView) findViewById(R.id.vLongPictureH));
+        findViewById(R.id.vLongPictureH).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final List<String> longPictureList = new ArrayList<>();
+                longPictureList.add("http://image.xcar.com.cn/attachments/a/day_20141126/2014112609_68d9843ed0c3e1d05735CObUWVqIy3rr.jpg");
+                final SparseArray<ImageView> mappingViews = new SparseArray<>();
+                mappingViews.put(0, (ImageView) v);
+                iwHelper.show((ImageView) v, mappingViews, convert(longPictureList));
+            }
+        });
+
+
+
+        View vGifPicture = findViewById(R.id.vGifPicture);
+        Glide.with(vGifPicture.getContext()).asBitmap().load("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534324920537&di=278f9d990f277cca368a118afaac196b&imgtype=0&src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201409%2F22%2F20140922013938_NZfBs.thumb.700_0.gif")
+                .into((ImageView) vGifPicture); // asBitmap 必须加
+        vGifPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final List<String> longPictureList = new ArrayList<>();
+                longPictureList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534326475217&di=f9b996c80a034ae12126bed1e0156445&imgtype=0&src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201411%2F25%2F20141125204219_QzmMA.thumb.700_0.gif");
+                longPictureList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534324920537&di=278f9d990f277cca368a118afaac196b&imgtype=0&src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201409%2F22%2F20140922013938_NZfBs.thumb.700_0.gif");
+                longPictureList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534326475217&di=d828d5dd375440a6344d75ecde93dcb6&imgtype=0&src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201411%2F29%2F20141129014255_4hnZt.thumb.700_0.gif");
+                longPictureList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534326475216&di=09e333916e78b88ad80ad80b26b65bf5&imgtype=0&src=http%3A%2F%2Fattach.cgjoy.com%2Fattachment%2Fforum%2F201505%2F06%2F102801e87qjqt1n3hmt0n1.gif");
+                final SparseArray<ImageView> mappingViews = new SparseArray<>();
+                mappingViews.put(1, (ImageView) v);
+                iwHelper.show((ImageView) v, mappingViews, convert(longPictureList));
+            }
+        });
+
+        View vCompatImage = findViewById(R.id.vCompatImage);
+        Glide.with(vCompatImage.getContext()).asBitmap().load("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536811355545&di=2436088f354f1a8355ea8db0a82592e0&imgtype=0&src=http%3A%2F%2Fgss0.bdstatic.com%2F7LsWdDW5_xN3otebn9fN2DJv%2Fdoc%2Fpic%2Fitem%2F3801213fb80e7bec392a30d9232eb9389b506b11.jpg")
+                .into((ImageView) vCompatImage); // asBitmap 必须加
+        vCompatImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final List<String> longPictureList = new ArrayList<>();
+                longPictureList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536811355543&di=87e5c3def99fdad3e356263114f11f0b&imgtype=0&src=http%3A%2F%2Fthumb11.jfcdns.com%2Fthumb%2F2017-11%2Fbce5a02c4551db77_600_400.jpeg");
+                longPictureList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536811355543&di=a0dbe4cb9420b031669693f2d170aaae&imgtype=0&src=http%3A%2F%2Fthumb10.jfcdns.com%2Fthumb%2F2017-11%2Fbce5a02c45735cc6_600_400.jpeg");
+                longPictureList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536811355543&di=a1b77f149342811754180a7b88382e13&imgtype=0&src=http%3A%2F%2Fgss0.bdstatic.com%2F7LsWdDW5_xN3otebn9fN2DJv%2Fdoc%2Fpic%2Fitem%2Ff31fbe096b63f62442fe1e3b8b44ebf81a4ca362.jpg");
+                longPictureList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536811355545&di=2436088f354f1a8355ea8db0a82592e0&imgtype=0&src=http%3A%2F%2Fgss0.bdstatic.com%2F7LsWdDW5_xN3otebn9fN2DJv%2Fdoc%2Fpic%2Fitem%2F3801213fb80e7bec392a30d9232eb9389b506b11.jpg");
+                final SparseArray<ImageView> mappingViews = new SparseArray<>();
+                mappingViews.put(3, (ImageView) v);
+                iwHelper.show((ImageView) v, mappingViews, convert(longPictureList));
+            }
+        });
+
+
     }
 
     private List<Uri> convert(List<String> data) {

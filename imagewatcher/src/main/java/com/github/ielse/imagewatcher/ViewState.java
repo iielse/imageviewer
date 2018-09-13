@@ -2,6 +2,7 @@ package com.github.ielse.imagewatcher;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -94,6 +95,7 @@ class ViewState {
                 if (vsOrigin != null) vsCurrent.width(vsOrigin.width).height(vsOrigin.height);
             }
             final ViewState vsResult = read(view, tag);
+
             if (vsResult != null) {
                 animator = ValueAnimator.ofFloat(0, 1).setDuration(200);
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
