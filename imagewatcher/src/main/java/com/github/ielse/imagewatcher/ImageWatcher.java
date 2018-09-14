@@ -508,11 +508,12 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             final ViewState vsCurrent = ViewState.write(iSource, ViewState.STATE_CURRENT);
             final ViewState vsDefault = ViewState.read(iSource, ViewState.STATE_DEFAULT);
             if (vsDefault == null) return false;
+            final String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
 
-            if (velocityX > 0 && vsCurrent.translationX == (vsDefault.width * (vsCurrent.scaleX - 1) / 2)) {
-                return false; // 当前图片左侧边缘手指右划
-            } else if (velocityX < 0 && -vsCurrent.translationX == vsDefault.width * (vsCurrent.scaleX - 1) / 2) {
-                return false; // 当前图片右侧边缘手指左划
+            if (velocityX > 0 && vsCurrent.translationX == (vsDefault.width * (vsCurrent.scaleX - 1) / 2) && "horizontal".equals(imageOrientation)) {
+                return false; // 当前图片[横图]左侧边缘手指右划
+            } else if (velocityX < 0 && -vsCurrent.translationX == vsDefault.width * (vsCurrent.scaleX - 1) / 2 && "horizontal".equals(imageOrientation)) {
+                return false; // 当前图片[横图]右侧边缘手指左划
             } else if (e1 != null && e2 != null && (Math.abs(e1.getX() - e2.getX()) > 50 || Math.abs(e1.getY() - e2.getY()) > 50) && (Math.abs(velocityX) > 500 || Math.abs(velocityY) > 500)) {
                 // 满足fling手势
                 float maxVelocity = Math.max(Math.abs(velocityX), Math.abs(velocityY));
@@ -679,17 +680,17 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             float expectedScale = (MAX_SCALE - vsDefault.scaleX) * 0.4f + vsDefault.scaleX;
 
             // 横向超长图片双击无法看清楚的问题
-//            final String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
-//            if (imageOrientation.equals("horizontal")) {
-//                ViewState viewState = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-//                //图片在双击的时候放大的倍数，如果图片过长看不放大根本看不见 #45 hu670014125
-//                final float scale = viewState.width / viewState.height;
-//                float maxScale = MAX_SCALE;
-//                if (scale > 2.0f) {
-//                    maxScale = MAX_SCALE * scale / 2;
-//                }
-//                expectedScale = (maxScale - vsDefault.scaleX) * 0.4f + vsDefault.scaleX;
-//            }
+            final String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
+            if (imageOrientation.equals("horizontal")) {
+                ViewState viewState = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+                //图片在双击的时候放大的倍数，如果图片过长看不放大根本看不见 #45 hu670014125
+                final float scale = viewState.width / viewState.height;
+                float maxScale = MAX_SCALE;
+                if (scale > 2.0f) {
+                    maxScale = MAX_SCALE * scale / 2;
+                }
+                expectedScale = (maxScale - vsDefault.scaleX) * 0.4f + vsDefault.scaleX;
+            }
 
             animSourceViewStateTransform(iSource,
                     ViewState.write(iSource, ViewState.STATE_TEMP).scaleX(expectedScale).scaleY(expectedScale));

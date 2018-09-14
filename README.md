@@ -12,6 +12,10 @@
 ### 示例下载
 略。
 
+`1.1.3`
+* 新增-不需要传ImageView的show方法。
+* 修复-下拉返回不灵
+
 `1.1.2`
 
 * 修复-图片切换中多指触碰导致页面停滞
@@ -51,7 +55,7 @@ allprojects {
 Add the dependency
 ```
 dependencies {
-    implementation 'com.github.iielse:ImageWatcher:1.1.2'
+    implementation 'com.github.iielse:ImageWatcher:1.1.3'
 }
 ```
 
