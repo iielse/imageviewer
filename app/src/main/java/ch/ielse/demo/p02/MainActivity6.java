@@ -28,7 +28,7 @@ public class MainActivity6 extends AppCompatActivity implements ImageWatcherHelp
     }
 
     @Override
-    public ImageWatcherHelper iwh() {
+    public ImageWatcherHelper iwHelper() {
         return iwHelper;
     }
 }

@@ -1,14 +1,10 @@
 package ch.ielse.demo.p02;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -24,16 +20,6 @@ public class MainActivity4 extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        boolean isTranslucentStatus = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.TRANSPARENT);
-            window.setNavigationBarColor(Color.TRANSPARENT);
-            isTranslucentStatus = true;
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main4);
 
@@ -80,8 +66,8 @@ public class MainActivity4 extends Activity {
 
 
         iwHelper = ImageWatcherHelper.with(this, new SimpleLoader()) // 一般来讲， ImageWatcher 需要占据全屏的位置
-                .setIndexProvider(new CustomDotIndexProvider()) // 自定义index
-                .setOthersUIProvider(new CustomFuncUIProvider());
+                .setIndexProvider(new CustomDotIndexProvider()); // 自定义index
+
     }
 
     private void show(ImageView clickedImage) {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="12dip"
+    android:paddingLeft="12dip"
+    android:paddingRight="12dip"
+    android:paddingTop="12dip">
+
+    <LinearLayout
+        android:id="@+id/layContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dip"
+        android:orientation="vertical" />
+
+    <TextView
+        android:id="@+id/vCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/sheet_dialog_singleton_selector"
+        android:gravity="center"
+        android:paddingBottom="8dip"
+        android:paddingTop="8dip"
+        android:text="取消"
+        android:textColor="#007AFF"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

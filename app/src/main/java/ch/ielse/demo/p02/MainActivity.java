@@ -1,6 +1,7 @@
 package ch.ielse.demo.p02;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,7 +42,7 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
         findViewById(R.id.vRefresh).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext().getApplicationContext(), "刷新列表内容 adapter.reset()" , Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext().getApplicationContext(), "刷新列表内容 adapter.reset()", Toast.LENGTH_SHORT).show();
                 adapter.set(Data.get());
             }
         });
@@ -90,6 +91,32 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
     @Override
     public void onPictureLongPress(ImageView v, Uri uri, int pos) {
         Toast.makeText(v.getContext().getApplicationContext(), "长按了第" + (pos + 1) + "张图片", Toast.LENGTH_SHORT).show();
+
+        new SheetDialog.Builder(this)
+                .addSheet("发送给好友", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .addSheet("转载到空间相册", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .addSheet("保存到手机", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .addSheet("收藏", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).create().show();
     }
 
     @Override

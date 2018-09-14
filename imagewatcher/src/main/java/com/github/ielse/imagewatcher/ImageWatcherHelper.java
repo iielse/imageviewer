@@ -19,7 +19,6 @@ public class ImageWatcherHelper {
     private Integer statusBarHeight;
     private Integer resErrorImage;
     private ImageWatcher.OnPictureLongPressListener listener;
-    private ImageWatcher.UIProvider othersUIProvider;
     private ImageWatcher.IndexProvider indexProvider;
     private ImageWatcher.LoadingUIProvider loadingUIProvider;
     private ImageWatcher.OnStateChangedListener onStateChangedListener;
@@ -62,11 +61,6 @@ public class ImageWatcherHelper {
         return this;
     }
 
-    public ImageWatcherHelper setOthersUIProvider(ImageWatcher.UIProvider lp) {
-        othersUIProvider = lp;
-        return this;
-    }
-
     public ImageWatcherHelper setOnStateChangedListener(ImageWatcher.OnStateChangedListener listener) {
         onStateChangedListener = listener;
         return this;
@@ -86,13 +80,12 @@ public class ImageWatcherHelper {
         mImageWatcher = new ImageWatcher(holder);
         mImageWatcher.setId(VIEW_IMAGE_WATCHER_ID);
         mImageWatcher.setLoader(loader);
-        mImageWatcher.setDetachAffirmative(true); // helper
+        mImageWatcher.setDetachAffirmative(); // helper
         if (statusBarHeight != null) mImageWatcher.setTranslucentStatus(statusBarHeight);
         if (resErrorImage != null) mImageWatcher.setErrorImageRes(resErrorImage);
         if (listener != null) mImageWatcher.setOnPictureLongPressListener(listener);
         if (indexProvider != null) mImageWatcher.setIndexProvider(indexProvider);
         if (loadingUIProvider != null) mImageWatcher.setLoadingUIProvider(loadingUIProvider);
-        if (othersUIProvider != null) mImageWatcher.setOthersUIProvider(othersUIProvider);
         if (onStateChangedListener != null)
             mImageWatcher.setOnStateChangedListener(onStateChangedListener);
 
@@ -117,6 +110,6 @@ public class ImageWatcherHelper {
     }
 
     public interface Provider {
-        ImageWatcherHelper iwh();
+        ImageWatcherHelper iwHelper();
     }
 }

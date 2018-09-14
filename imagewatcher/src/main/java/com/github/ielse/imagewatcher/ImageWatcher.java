@@ -18,7 +18,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -77,8 +76,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private final GestureDetector mGestureDetector;
 
     private boolean isInitLayout = false;
-    protected ImageView initI;
-    protected SparseArray<ImageView> initImageGroupList;
+    protected ImageView initI; // 显示ImageWatcher时点击view
+    protected SparseArray<ImageView> initImageGroupList; // imageView控件映射列表
     protected List<Uri> initUrlList;
 
     private OnPictureLongPressListener pictureLongPressListener; // 图片长按回调
@@ -88,19 +87,15 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     protected List<Uri> mUrlList; // 图片地址列表
     protected int initPosition;
     private int currentPosition;
-    private int mPagerPositionOffsetPixels;
-    private Loader loader;
+    private int mPagerPositionOffsetPixels; // viewpager当前在屏幕上偏移量
+    private Loader loader; // 图片加载者
     private OnStateChangedListener stateChangedListener;
-    private IndexProvider indexProvider;
-    private View idxView;
-    private LoadingUIProvider loadingUIProvider;
-    private UIProvider othersUIProvider;
+    private IndexProvider indexProvider; // 索引ui接口
+    private View idxView; // 索引ui
+    private LoadingUIProvider loadingUIProvider; // 加载ui
 
-    private boolean detachAffirmative; // dismiss detach parent
+    private boolean detachAffirmative; // dismiss detach parent 退出查看大图模式后，立即释放内存
     private boolean detachedParent;
-
-    private float downX, downY;
-    private boolean isInterceptTouchEvent;
 
     public ImageWatcher(Context context) {
         this(context, null);
@@ -123,8 +118,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         loader = l;
     }
 
-    public void setDetachAffirmative(boolean detachAffirmative) {
-        this.detachAffirmative = detachAffirmative;
+    public void setDetachAffirmative() {
+        this.detachAffirmative = true;
     }
 
     public void setIndexProvider(IndexProvider ip) {
@@ -138,10 +133,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     public void setLoadingUIProvider(LoadingUIProvider lp) {
         loadingUIProvider = lp;
-    }
-
-    public void setOthersUIProvider(UIProvider lp) {
-        othersUIProvider = lp;
     }
 
     public void setOnStateChangedListener(OnStateChangedListener changedListener) {
@@ -164,11 +155,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         void onLoadFailed(Drawable errorDrawable);
     }
 
-    public interface UIProvider {
+    public interface IndexProvider {
         View initialView(Context context);
-    }
 
-    public interface IndexProvider extends UIProvider {
         void onPageChanged(ImageWatcher imageWatcher, int position, List<Uri> dataList);
     }
 
@@ -201,7 +190,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
 
-    public interface LoadingUIProvider extends UIProvider {
+    public interface LoadingUIProvider {
+        View initialView(Context context);
+
         void start(View loadView);
 
         void stop(View loadView);
@@ -304,8 +295,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         vPager.setAdapter(adapter = new ImagePagerAdapter());
         vPager.setCurrentItem(initPosition);
         if (indexProvider != null) indexProvider.onPageChanged(this, initPosition, mUrlList);
-
-        if (othersUIProvider != null) addView(othersUIProvider.initialView(getContext()));
     }
 
     public int getCurrentPosition() {
@@ -318,33 +307,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return isInterceptTouchEvent;
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        final int action = ev.getAction() & MotionEvent.ACTION_MASK;
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                downX = ev.getX();
-                downY = ev.getY();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (!isInterceptTouchEvent) {
-                    if (Math.abs(downX - ev.getX()) > mTouchSlop || Math.abs(downY - ev.getY()) > mTouchSlop) {
-                        isInterceptTouchEvent = true;
-
-                        final MotionEvent e = MotionEvent.obtain(ev.getDownTime(), ev.getEventTime() + (long) ViewConfiguration.getLongPressTimeout(), 3, ev.getX(), ev.getY(), ev.getMetaState());
-                        e.setAction(MotionEvent.ACTION_DOWN);
-                        onTouchEvent(e);
-                    }
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                isInterceptTouchEvent = false;
-                break;
-        }
-        return super.dispatchTouchEvent(ev);
+        return mPagerPositionOffsetPixels == 0;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -387,7 +350,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 }
                 break;
         }
-
         return mGestureDetector.onTouchEvent(event);
     }
 
@@ -399,9 +361,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     private void onUp(MotionEvent e) {
-        if (mTouchMode == TOUCH_MODE_AUTO_FLING) {
-            // do nothing
-        } else if (mTouchMode == TOUCH_MODE_SCALE || mTouchMode == TOUCH_MODE_SCALE_LOCK) {
+        // mTouchMode == TOUCH_MODE_AUTO_FLING -> nothing
+        if (mTouchMode == TOUCH_MODE_SCALE || mTouchMode == TOUCH_MODE_SCALE_LOCK) {
             handleScaleTouchResult();
         } else if (mTouchMode == TOUCH_MODE_EXIT) {
             handleExitTouchResult();
@@ -421,7 +382,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             if (e2 != null) {
                 final float moveX = (e1 != null) ? e2.getX() - e1.getX() : 0;
                 final float moveY = (e1 != null) ? e2.getY() - e1.getY() : 0;
-                if (Math.abs(moveY) > mTouchSlop * 3  && Math.abs(moveX) < mTouchSlop && mPagerPositionOffsetPixels == 0) {
+                if (Math.abs(moveY) > mTouchSlop * 3 && Math.abs(moveX) < mTouchSlop && mPagerPositionOffsetPixels == 0) {
                     ViewState.write(iSource, ViewState.STATE_EXIT);
                     mTouchMode = TOUCH_MODE_EXIT; // 下拉返回不灵 mTouchMode SLIDE 变化为 EXIT
                 }
@@ -497,7 +458,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         } else if (mTouchMode == TOUCH_MODE_DRAG) {
             handleDragGesture(e2, e1);
         }
-        return true;
+        return false;
     }
 
     /**
@@ -717,17 +678,18 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         if (vsCurrent.scaleY <= vsDefault.scaleY && vsCurrent.scaleX <= vsDefault.scaleX) {
             float expectedScale = (MAX_SCALE - vsDefault.scaleX) * 0.4f + vsDefault.scaleX;
 
-            final String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
-            if (imageOrientation.equals("horizontal")) {
-                ViewState viewState = ViewState.read(iSource, ViewState.STATE_DEFAULT);
-                //图片在双击的时候放大的倍数，如果图片过长看不放大根本看不见
-                final float scale = viewState.width / viewState.height;
-                float maxScale = MAX_SCALE;
-                if (scale > 2.0f) {
-                    maxScale = MAX_SCALE * scale / 2;
-                }
-                expectedScale = (maxScale - vsDefault.scaleX) * 0.4f + vsDefault.scaleX;
-            }
+            // 横向超长图片双击无法看清楚的问题
+//            final String imageOrientation = (String) iSource.getTag(R.id.image_orientation);
+//            if (imageOrientation.equals("horizontal")) {
+//                ViewState viewState = ViewState.read(iSource, ViewState.STATE_DEFAULT);
+//                //图片在双击的时候放大的倍数，如果图片过长看不放大根本看不见 #45 hu670014125
+//                final float scale = viewState.width / viewState.height;
+//                float maxScale = MAX_SCALE;
+//                if (scale > 2.0f) {
+//                    maxScale = MAX_SCALE * scale / 2;
+//                }
+//                expectedScale = (maxScale - vsDefault.scaleX) * 0.4f + vsDefault.scaleX;
+//            }
 
             animSourceViewStateTransform(iSource,
                     ViewState.write(iSource, ViewState.STATE_TEMP).scaleX(expectedScale).scaleY(expectedScale));
@@ -976,8 +938,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         private boolean setDefaultDisplayConfigs(final ImageView imageView, final int pos, boolean hasPlayBeginAnimation) {
             boolean isFindEnterImagePicture = false;
 
-            // ViewState.write(imageView, ViewState.STATE_ORIGIN).alpha(0).scaleXBy(1.5f).scaleYBy(1.5f);
-
             if (pos == initPosition && !hasPlayBeginAnimation) {
                 isFindEnterImagePicture = true;
                 iSource = imageView;
@@ -1204,14 +1164,14 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     /**
      * 当界面处于图片查看状态需要在Activity中的{@link Activity#onBackPressed()}
      * 将事件传递给ImageWatcher优先处理<br/>
-     * 1、当处于收尾动画执行状态时，消费返回键事件<br/>
-     * 2、当图片处于放大状态时，执行图片缩放到原始大小的动画，消费返回键事件<br/>
-     * 3、当图片处于原始状态时，退出图片查看，消费返回键事件<br/>
-     * 4、其他情况，ImageWatcher并没有展示图片
+     * *ImageWatcher并没有从父View中移除
+     * *当处于收尾动画执行状态时，消费返回键事件<br/>
+     * *当图片处于放大状态时，执行图片缩放到原始大小的动画，消费返回键事件<br/>
+     * *当图片处于原始状态时，退出图片查看，消费返回键事件<br/>
+     * *其他情况，ImageWatcher并没有展示图片
      */
     public boolean handleBackPressed() {
-        if (detachedParent) return false;
-        return isInTransformAnimation || (iSource != null && getVisibility() == View.VISIBLE && onSingleTapConfirmed());
+        return !detachedParent && (isInTransformAnimation || (iSource != null && getVisibility() == View.VISIBLE && onSingleTapConfirmed()));
     }
 
     /**

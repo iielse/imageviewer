@@ -71,7 +71,7 @@ public class Fragment1 extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if (getActivity() instanceof ImageWatcherHelper.Provider) {
-            iwHelper = ((ImageWatcherHelper.Provider) getActivity()).iwh();
+            iwHelper = ((ImageWatcherHelper.Provider) getActivity()).iwHelper();
         }
 
         List<Uri> tmp = new ArrayList<>();

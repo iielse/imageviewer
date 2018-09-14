@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="xml方式集成、开始显示和退出显示时的回调、长按监听"
+            android:text="xml方式集成、开始显示和退出显示时的回调、长按监听弹框"
             android:textAllCaps="false" />
 
         <Button
@@ -85,10 +85,12 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"  android:textColor="#F00"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="在fragment中使用"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:textColor="#F00" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
