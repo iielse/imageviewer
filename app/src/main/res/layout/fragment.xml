@@ -14,8 +14,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#f00"
-            android:text="这里开始是fragment区域" />
+            android:text="这里开始是fragment区域"
+            android:textColor="#f00" />
 
 
         <Button
@@ -28,6 +28,13 @@
             android:id="@+id/vPictureUris"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/vIdx"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="输入初始化位置，默认0"
+            android:minHeight="20dp" />
 
         <Button
             android:id="@+id/vNoInitPicture"

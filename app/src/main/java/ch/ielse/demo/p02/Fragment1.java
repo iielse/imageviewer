@@ -10,10 +10,12 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,12 +39,14 @@ public class Fragment1 extends Fragment {
     private ImageWatcherHelper iwHelper;
     private final List<Uri> pictureList = new ArrayList<>();
     private TextView vPictureUris;
+    private EditText vIdx;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View itemView = inflater.inflate(R.layout.fragment, container, false);
 
+        vIdx = itemView.findViewById(R.id.vIdx);
         vPictureUris = itemView.findViewById(R.id.vPictureUris);
         View vAddLocal = itemView.findViewById(R.id.vAddLocal);
 
@@ -58,7 +62,15 @@ public class Fragment1 extends Fragment {
             @Override
             public void onClick(View v) {
                 if (iwHelper != null) {
-                    iwHelper.show(pictureList);
+                    int currIdx = 0;
+                    try {
+                        if (!TextUtils.isEmpty(vIdx.getText())) {
+                            currIdx = Integer.parseInt(vIdx.getText().toString());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    iwHelper.show(pictureList, currIdx);
                 }
             }
         });

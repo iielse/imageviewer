@@ -71,9 +71,9 @@ public class ImageWatcherHelper {
         mImageWatcher.show(i, imageGroupList, urlList);
     }
 
-    public void show(List<Uri> urlList) {
+    public void show(List<Uri> urlList, int initPos) {
         init();
-        mImageWatcher.show(urlList);
+        mImageWatcher.show(urlList, initPos);
     }
 
     private void init() {
