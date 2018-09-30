@@ -36,7 +36,7 @@ public class MainActivity3 extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
 
-        iwHelper = ImageWatcherHelper.with(this, new SimpleLoader()) // 一般来讲， ImageWatcher 需要占据全屏的位置
+        iwHelper = ImageWatcherHelper.with(this, new GlideSimpleLoader()) // 一般来讲， ImageWatcher 需要占据全屏的位置
                 .setTranslucentStatus(!isTranslucentStatus ? Utils.calcStatusBarHeight(this) : 0) // 如果不是透明状态栏，你需要给ImageWatcher标记 一个偏移值，以修正点击ImageView查看的启动动画的Y轴起点的不正确
                 .setErrorImageRes(R.mipmap.error_picture); // 配置error图标 如果不介意使用lib自带的图标，并不一定要调用这个API
 

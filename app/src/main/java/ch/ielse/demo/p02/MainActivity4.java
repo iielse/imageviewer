@@ -65,7 +65,7 @@ public class MainActivity4 extends Activity {
         findViewById(R.id.v8).setOnClickListener(showListener);
 
 
-        iwHelper = ImageWatcherHelper.with(this, new SimpleLoader()) // 一般来讲， ImageWatcher 需要占据全屏的位置
+        iwHelper = ImageWatcherHelper.with(this, new GlideSimpleLoader()) // 一般来讲， ImageWatcher 需要占据全屏的位置
                 .setIndexProvider(new CustomDotIndexProvider()); // 自定义index
 
     }

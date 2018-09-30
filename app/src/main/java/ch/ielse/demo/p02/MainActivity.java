@@ -63,7 +63,7 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
         vImageWatcher.setErrorImageRes(R.mipmap.error_picture);
         // 长按图片的回调，你可以显示一个框继续提供一些复制，发送等功能
         vImageWatcher.setOnPictureLongPressListener(this);
-        vImageWatcher.setLoader(new SimpleLoader());
+        vImageWatcher.setLoader(new GlideSimpleLoader());
         vImageWatcher.setOnStateChangedListener(new ImageWatcher.OnStateChangedListener() {
             @Override
             public void onStateChangeUpdate(ImageWatcher imageWatcher, ImageView clicked, int position, Uri uri, float animatedValue, int actionTag) {
