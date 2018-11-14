@@ -90,10 +90,9 @@ public class MainActivity3 extends Activity {
         });
 
 
-
         View vGifPicture = findViewById(R.id.vGifPicture);
         Glide.with(vGifPicture.getContext()).asBitmap().load("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534324920537&di=278f9d990f277cca368a118afaac196b&imgtype=0&src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201409%2F22%2F20140922013938_NZfBs.thumb.700_0.gif")
-                .into((ImageView) vGifPicture); // asBitmap 必须加
+                .into((ImageView) vGifPicture);
         vGifPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,7 +109,7 @@ public class MainActivity3 extends Activity {
 
         View vCompatImage = findViewById(R.id.vCompatImage);
         Glide.with(vCompatImage.getContext()).asBitmap().load("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536811355545&di=2436088f354f1a8355ea8db0a82592e0&imgtype=0&src=http%3A%2F%2Fgss0.bdstatic.com%2F7LsWdDW5_xN3otebn9fN2DJv%2Fdoc%2Fpic%2Fitem%2F3801213fb80e7bec392a30d9232eb9389b506b11.jpg")
-                .into((ImageView) vCompatImage); // asBitmap 必须加
+                .into((ImageView) vCompatImage); //
         vCompatImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,6 +125,20 @@ public class MainActivity3 extends Activity {
         });
 
 
+        final String urlFitXY = "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=393198154,1291067317&fm=15&gp=0.jpg";
+        ImageView vFitXyImage = findViewById(R.id.vFitXyImage);
+        Glide.with(vCompatImage.getContext()).asBitmap().load(urlFitXY)
+                .into(vFitXyImage); //
+        vFitXyImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final List<String> longPictureList = new ArrayList<>();
+                longPictureList.add(urlFitXY);
+                final SparseArray<ImageView> mappingViews = new SparseArray<>();
+                mappingViews.put(0, (ImageView) v);
+                iwHelper.show((ImageView) v, mappingViews, convert(longPictureList));
+            }
+        });
     }
 
     private List<Uri> convert(List<String> data) {

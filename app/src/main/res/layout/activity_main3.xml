@@ -115,6 +115,21 @@
             android:layout_marginLeft="20dp"
             android:background="#CCC"
             android:scaleType="centerCrop" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="scaleType fitXY " />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/vFitXyImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
+            android:background="#CCC"
+            android:scaleType="fitXY" />
     </LinearLayout>
 
 
