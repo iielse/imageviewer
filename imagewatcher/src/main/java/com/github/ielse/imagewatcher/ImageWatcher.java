@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -969,7 +970,17 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                     int bmpMirrorHeight = bmpMirror.getBounds().height();
                     ViewState vsThumb = ViewState.write(imageView, ViewState.STATE_THUMB).width(bmpMirrorWidth).height(bmpMirrorHeight)
                             .translationX((mWidth - bmpMirrorWidth) / 2).translationY((mHeight - bmpMirrorHeight) / 2);
-                    imageView.setImageDrawable(bmpMirror);
+
+                    if (bmpMirror instanceof Animatable) {
+                        Drawable.ConstantState constantState = bmpMirror.getConstantState();
+                        if (constantState != null) {
+                            imageView.setImageDrawable(constantState.newDrawable());
+                        } else {
+                            imageView.setImageDrawable(null);
+                        }
+                    } else {
+                        imageView.setImageDrawable(bmpMirror);
+                    }
 
                     if (isFindEnterImagePicture) {
                         animSourceViewStateTransform(imageView, vsThumb);
@@ -1035,7 +1046,9 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
                     Drawable displayingDrawable = imageView.getDrawable();
                     if (displayingDrawable instanceof Animatable) {
-                        ((Animatable) displayingDrawable).start();
+                        if (!((Animatable) displayingDrawable).isRunning()) {
+                            ((Animatable) displayingDrawable).start();
+                        }
                     }
                 }
 

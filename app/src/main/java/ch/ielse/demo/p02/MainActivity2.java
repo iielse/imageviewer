@@ -45,7 +45,7 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
         vRecycler.setLayoutManager(new LinearLayoutManager(this));
         vRecycler.addItemDecoration(new SpaceItemDecoration(this).setSpace(14).setSpaceColor(0xFFECECEC));
         vRecycler.setAdapter(adapter = new MessageAdapter(this).setPictureClickCallback(this));
-        adapter.set(Data.get());
+        adapter.set(Data.getGif());
 
         //  **************  动态 addView   **************
 
