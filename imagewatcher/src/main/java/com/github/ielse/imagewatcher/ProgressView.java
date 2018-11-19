@@ -60,6 +60,10 @@ public class ProgressView extends View {
 
     }
 
+    public boolean isRunning() {
+        return mDrawable.isRunning();
+    }
+
     public void start() {
         mDrawable.start();
     }

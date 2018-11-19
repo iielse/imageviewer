@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Animatable;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -34,11 +33,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestureListener, ViewPager.OnPageChangeListener {
     private static final int SINGLE_TAP_UP_CONFIRMED = 1;
     private static final int DATA_INITIAL = 2;
+
     public static final int STATE_ENTER_DISPLAYING = 3;
     public static final int STATE_EXIT_HIDING = 4;
     private final Handler mHandler;
@@ -90,10 +91,11 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     private int currentPosition;
     private int mPagerPositionOffsetPixels; // viewpager当前在屏幕上偏移量
     private Loader loader; // 图片加载者
-    private OnStateChangedListener stateChangedListener;
+    private final List<OnStateChangedListener> onStateChangedListeners = new ArrayList<>();
     private IndexProvider indexProvider; // 索引ui接口
     private View idxView; // 索引ui
     private LoadingUIProvider loadingUIProvider; // 加载ui
+    private final List<ViewPager.OnPageChangeListener> onPageChangeListeners = new ArrayList<>();
 
     private boolean detachAffirmative; // dismiss detach parent 退出查看大图模式后，立即释放内存
     private boolean detachedParent;
@@ -110,7 +112,6 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         addView(vPager = new ViewPager(context));
         vPager.addOnPageChangeListener(this);
         setVisibility(View.INVISIBLE);
-
         setIndexProvider(new DefaultIndexProvider());
         setLoadingUIProvider(new DefaultLoadingUIProvider());
     }
@@ -136,12 +137,20 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         loadingUIProvider = lp;
     }
 
-    public void setOnStateChangedListener(OnStateChangedListener changedListener) {
-        stateChangedListener = changedListener;
+    public void addOnStateChangedListener(OnStateChangedListener listener) {
+        if (!onStateChangedListeners.contains(listener)) {
+            onStateChangedListeners.add(listener);
+        }
     }
 
     public void setOnPictureLongPressListener(OnPictureLongPressListener listener) {
         pictureLongPressListener = listener;
+    }
+
+    public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
+        if (!onPageChangeListeners.contains(listener)) {
+            onPageChangeListeners.add(listener);
+        }
     }
 
     public interface Loader {
@@ -201,6 +210,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
 
     public class DefaultLoadingUIProvider implements LoadingUIProvider {
         final LayoutParams lpCenterInParent = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        private Runnable runDelayDisplay;
 
         @Override
         public View initialView(Context context) {
@@ -211,15 +221,30 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         }
 
         @Override
-        public void start(View loadView) {
-            loadView.setVisibility(View.VISIBLE);
-            ((ProgressView) loadView).start();
+        public void start(final View loadView) {
+            if (runDelayDisplay != null) mHandler.removeCallbacks(runDelayDisplay);
+            runDelayDisplay = new Runnable() {
+                @Override
+                public void run() {
+                    loadView.setVisibility(View.VISIBLE);
+                    if (!((ProgressView) loadView).isRunning()) {
+                        ((ProgressView) loadView).start();
+                    }
+                }
+            };
+            mHandler.postDelayed(runDelayDisplay, 500);
         }
 
         @Override
         public void stop(View loadView) {
-            ((ProgressView) loadView).stop();
+            if (runDelayDisplay != null) mHandler.removeCallbacks(runDelayDisplay);
+            runDelayDisplay = null;
+
+            if (((ProgressView) loadView).isRunning()) {
+                ((ProgressView) loadView).stop();
+            }
             loadView.setVisibility(View.GONE);
+
         }
     }
 
@@ -256,7 +281,7 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
      * @param imageGroupList 被点击的ImageView的所在列表，加载图片时会提前展示列表中已经下载完成的thumb图片
      * @param urlList        被加载的图片url列表，数量必须大于等于 imageGroupList.size。 且顺序应当和imageGroupList保持一致
      */
-    public void show(ImageView i, SparseArray<ImageView> imageGroupList, final List<Uri> urlList) {
+    public boolean show(ImageView i, SparseArray<ImageView> imageGroupList, final List<Uri> urlList) {
         if (i == null || imageGroupList == null || urlList == null) {
             throw new NullPointerException("i[" + i + "]  imageGroupList[" + imageGroupList + "]  urlList[" + urlList + "]");
         }
@@ -270,15 +295,16 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         if (initPosition < 0) {
             throw new IllegalArgumentException("param ImageView i must be a member of the List <ImageView> imageGroupList!");
         }
+
+        if (i.getDrawable() == null) return false;
         showInternal(i, imageGroupList, urlList);
+        return true;
     }
 
     private void showInternal(ImageView i, SparseArray<ImageView> imageGroupList, final List<Uri> urlList) {
         if (loader == null) {
             throw new NullPointerException("please invoke `setLoader` first [loader == null]");
         }
-
-        if (i != null && i.getDrawable() == null) return;
 
         if (!isInitLayout) {
             initI = i;
@@ -307,7 +333,22 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     }
 
     public Uri getDisplayingUri() {
-        return mUrlList != null ? mUrlList.get(getCurrentPosition()) : null;
+        return getUri(getCurrentPosition());
+    }
+
+    public Uri getUri(int position) {
+        if (mUrlList == null || mUrlList.size() <= position || position < 0) {
+            return null;
+        }
+        return mUrlList.get(position);
+    }
+
+    public void notifyItemChanged(int position, Uri newUri) {
+        if (mUrlList == null || mUrlList.size() <= position || position < 0) {
+            return;
+        }
+        mUrlList.set(position, newUri);
+        adapter.notifyItemChanged(position);
     }
 
     @Override
@@ -839,6 +880,12 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         mPagerPositionOffsetPixels = positionOffsetPixels;
+
+        if (!onPageChangeListeners.isEmpty()) {
+            for (ViewPager.OnPageChangeListener onPageChangeListener : onPageChangeListeners) {
+                onPageChangeListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+        }
     }
 
     /**
@@ -860,11 +907,22 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         if (ViewState.read(mNext, ViewState.STATE_DEFAULT) != null) {
             ViewState.restoreByAnim(mNext, ViewState.STATE_DEFAULT).create().start();
         }
+
+        if (!onPageChangeListeners.isEmpty()) {
+            for (ViewPager.OnPageChangeListener onPageChangeListener : onPageChangeListeners) {
+                onPageChangeListener.onPageSelected(position);
+            }
+        }
     }
 
 
     @Override
     public void onPageScrollStateChanged(int state) {
+        if (!onPageChangeListeners.isEmpty()) {
+            for (ViewPager.OnPageChangeListener onPageChangeListener : onPageChangeListeners) {
+                onPageChangeListener.onPageScrollStateChanged(state);
+            }
+        }
     }
 
     class ImagePagerAdapter extends PagerAdapter {
@@ -915,6 +973,74 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         @Override
         public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
             return view == object;
+        }
+
+        void notifyItemChanged(final int position) {
+            final ImageView imageView = mImageSparseArray.get(position);
+            if (imageView != null) {
+                loader.load(imageView.getContext(), mUrlList.get(position), new LoadCallback() {
+                    @Override
+                    public void onResourceReady(Drawable resource) {
+                        final int sourceDefaultWidth, sourceDefaultHeight, sourceDefaultTranslateX, sourceDefaultTranslateY;
+                        int resourceImageWidth = resource.getIntrinsicWidth();
+                        int resourceImageHeight = resource.getIntrinsicHeight();
+                        if (resourceImageWidth * 1f / resourceImageHeight > mWidth * 1f / mHeight) {
+                            sourceDefaultWidth = mWidth;
+                            sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / resourceImageWidth * resourceImageHeight);
+                            sourceDefaultTranslateX = 0;
+                            sourceDefaultTranslateY = (mHeight - sourceDefaultHeight) / 2;
+                            imageView.setTag(R.id.image_orientation, "horizontal");
+                        } else {
+                            sourceDefaultWidth = mWidth;
+                            sourceDefaultHeight = (int) (sourceDefaultWidth * 1f / resourceImageWidth * resourceImageHeight);
+                            sourceDefaultTranslateX = 0;
+                            sourceDefaultTranslateY = 0;
+                            imageView.setTag(R.id.image_orientation, "vertical");
+                        }
+                        imageView.setImageDrawable(resource);
+                        notifyItemChangedState(position, false, false);
+
+                        ViewState vsDefault = ViewState.write(imageView, ViewState.STATE_DEFAULT).width(sourceDefaultWidth).height(sourceDefaultHeight)
+                                .translationX(sourceDefaultTranslateX).translationY(sourceDefaultTranslateY);
+
+                        ViewState.restore(imageView, vsDefault.mTag);
+                        imageView.setAlpha(1f);
+                        imageView.animate().alpha(1).start();
+
+                        imageView.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+                            @Override
+                            public void onViewAttachedToWindow(View v) {
+                            }
+
+                            @Override
+                            public void onViewDetachedFromWindow(View v) {
+                                Drawable displayingDrawable = imageView.getDrawable();
+                                if (displayingDrawable instanceof Animatable) {
+                                    ((Animatable) displayingDrawable).stop();
+                                }
+                            }
+                        });
+
+                        Drawable displayingDrawable = imageView.getDrawable();
+                        if (displayingDrawable instanceof Animatable) {
+                            if (!((Animatable) displayingDrawable).isRunning()) {
+                                ((Animatable) displayingDrawable).start();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onLoadStarted(Drawable placeholder) {
+                        notifyItemChangedState(position, true, false);
+                    }
+
+                    @Override
+                    public void onLoadFailed(Drawable errorDrawable) {
+                        notifyItemChangedState(position, false, imageView.getDrawable() == null);
+                    }
+                });
+            }
+
         }
 
         /**
@@ -1229,8 +1355,10 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
                 float p = (float) animation.getAnimatedValue();
                 setBackgroundColor(mColorEvaluator.evaluate(p, mCurrentBackgroundColor, colorResult));
 
-                if (stateChangedListener != null) {
-                    stateChangedListener.onStateChangeUpdate(ImageWatcher.this, iSource, getCurrentPosition(), getDisplayingUri(), p, tag);
+                if (!onStateChangedListeners.isEmpty()) {
+                    for (OnStateChangedListener stateChangedListener : onStateChangedListeners) {
+                        stateChangedListener.onStateChangeUpdate(ImageWatcher.this, iSource, getCurrentPosition(), getDisplayingUri(), p, tag);
+                    }
                 }
             }
         });
@@ -1238,18 +1366,22 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             @Override
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
-                if (stateChangedListener != null) {
+                if (!onStateChangedListeners.isEmpty()) {
                     if (tag == STATE_ENTER_DISPLAYING) {
-                        stateChangedListener.onStateChanged(ImageWatcher.this, getCurrentPosition(), getDisplayingUri(), tag);
+                        for (OnStateChangedListener stateChangedListener : onStateChangedListeners) {
+                            stateChangedListener.onStateChanged(ImageWatcher.this, getCurrentPosition(), getDisplayingUri(), tag);
+                        }
                     }
                 }
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (stateChangedListener != null) {
+                if (!onStateChangedListeners.isEmpty()) {
                     if (tag == STATE_EXIT_HIDING) {
-                        stateChangedListener.onStateChanged(ImageWatcher.this, getCurrentPosition(), getDisplayingUri(), tag);
+                        for (OnStateChangedListener stateChangedListener : onStateChangedListeners) {
+                            stateChangedListener.onStateChanged(ImageWatcher.this, getCurrentPosition(), getDisplayingUri(), tag);
+                        }
                     }
                 }
 

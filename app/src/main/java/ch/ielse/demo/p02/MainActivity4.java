@@ -66,7 +66,8 @@ public class MainActivity4 extends Activity {
 
 
         iwHelper = ImageWatcherHelper.with(this, new GlideSimpleLoader()) // 一般来讲， ImageWatcher 需要占据全屏的位置
-                .setIndexProvider(new CustomDotIndexProvider()); // 自定义index
+                .setIndexProvider(new CustomDotIndexProvider()) // 自定义index
+                .setLoadingUIProvider(new CustomLoadingUIProvider()); // 骰子loading
 
     }
 

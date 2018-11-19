@@ -26,6 +26,8 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
     private RecyclerView vRecycler;
     private MessageAdapter adapter;
 
+    private DecorationLayout layDecoration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         boolean isTranslucentStatus = false;
@@ -40,6 +42,7 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        layDecoration = new DecorationLayout(this);
 
         vRecycler = (RecyclerView) findViewById(R.id.v_recycler);
         vRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -74,7 +77,12 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
                         }
                     }
                 })
-                .setLoadingUIProvider(new CustomLoadingUIProvider()); // 自定义LoadingUI
+                .setOtherView(layDecoration)
+                .addOnPageChangeListener(layDecoration)
+                .setLoadingUIProvider(new CustomLoadingUIProvider2()); // 自定义LoadingUI
+
+
+        layDecoration.attachImageWatcher(iwHelper);
 
 
         Utils.fitsSystemWindows(isTranslucentStatus, findViewById(R.id.v_fit));
