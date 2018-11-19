@@ -12,6 +12,15 @@
 ### 示例下载
 略。
 
+### 更新历史
+
+`1.1.5`
+* fix 预览图显示 gif 导致错乱
+* 调整回调api
+
+`1.1.4`
+* 添加不带imageView的show方法 设置起始位置
+
 `1.1.3`
 * 新增-不需要传ImageView的show方法。
 * 修复-下拉返回不灵
@@ -55,7 +64,7 @@ allprojects {
 Add the dependency
 ```
 dependencies {
-    implementation 'com.github.iielse:ImageWatcher:1.1.3'
+    implementation 'com.github.iielse:ImageWatcher:x.y.z'  
 }
 ```
 
