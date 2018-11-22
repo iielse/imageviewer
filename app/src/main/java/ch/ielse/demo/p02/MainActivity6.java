@@ -24,12 +24,12 @@ public class MainActivity6 extends AppCompatActivity implements ImageWatcherHelp
                 .commit();
     }
 
-    @Override
-    public void onBackPressed() {
-        if (!iwHelper.handleBackPressed()) {
-            super.onBackPressed();
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (!iwHelper.handleBackPressed()) {
+//            super.onBackPressed();
+//        }
+//    }
 
     @Override
     public ImageWatcherHelper iwHelper() {

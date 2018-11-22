@@ -3,6 +3,7 @@ package ch.ielse.demo.p02;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.view.ViewPager;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -21,13 +22,17 @@ public class DecorationLayout extends FrameLayout implements ViewPager.OnPageCha
     private int mPagerPositionOffsetPixels;
 
     public DecorationLayout(Context context) {
-        super(context);
+        this(context, null);
+    }
+
+    public DecorationLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        // 在 activity onCreate 之后 addView . fitsSystemWindows 无效~
         final FrameLayout vContainer = (FrameLayout) LayoutInflater.from(context).inflate(R.layout.layout_watcher_decoration, this);
         vDisplayOrigin = vContainer.findViewById(R.id.vDisplayOrigin);
         vDisplayOrigin.setOnClickListener(this);
         vDownload = vContainer.findViewById(R.id.vDownload);
         vDownload.setOnClickListener(this);
-
     }
 
     public void attachImageWatcher(ImageWatcherHelper iwHelper) {

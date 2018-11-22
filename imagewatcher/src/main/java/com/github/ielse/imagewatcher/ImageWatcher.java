@@ -18,6 +18,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.GestureDetector;
@@ -263,15 +264,18 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         void onPictureLongPress(ImageView v, Uri uri, int pos); // 当前展示图片长按的回调
     }
 
-    public void show(List<Uri> urlList, int initPos) {
+    public boolean show(List<Uri> urlList, int initPos) {
         if (urlList == null) {
-            throw new NullPointerException("urlList[null]");
+            Log.e("ImageWatcher", "urlList[null]");
+            return false;
         }
         if (initPos >= urlList.size() || initPos < 0) {
-            throw new IndexOutOfBoundsException("initPos[" + initPos + "]  urlList.size[" + urlList.size() + "]");
+            Log.e("ImageWatcher", "initPos[" + initPos + "]  urlList.size[" + urlList.size() + "]");
+            return false;
         }
         initPosition = initPos;
         showInternal(null, null, urlList);
+        return true;
     }
 
     /**
@@ -283,7 +287,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
      */
     public boolean show(ImageView i, SparseArray<ImageView> imageGroupList, final List<Uri> urlList) {
         if (i == null || imageGroupList == null || urlList == null) {
-            throw new NullPointerException("i[" + i + "]  imageGroupList[" + imageGroupList + "]  urlList[" + urlList + "]");
+            Log.e("ImageWatcher", "i[" + i + "]  imageGroupList[" + imageGroupList + "]  urlList[" + urlList + "]");
+            return false;
         }
         initPosition = -1;
         for (int x = 0; x < imageGroupList.size(); x++) {
@@ -293,7 +298,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
             }
         }
         if (initPosition < 0) {
-            throw new IllegalArgumentException("param ImageView i must be a member of the List <ImageView> imageGroupList!");
+            Log.e("ImageWatcher", "param ImageView i must be a member of the List <ImageView> imageGroupList!");
+            return false;
         }
 
         if (i.getDrawable() == null) return false;
@@ -301,9 +307,30 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         return true;
     }
 
+    public boolean show(int position, SparseArray<ImageView> imageGroupList, final List<Uri> urlList) {
+        if (imageGroupList == null || urlList == null) {
+            Log.e("ImageWatcher", "imageGroupList[" + imageGroupList + "]  urlList[" + urlList + "]");
+            return false;
+        }
+        initPosition = position;
+        if (initPosition < 0 || initPosition >= imageGroupList.size()) {
+            Log.e("ImageWatcher", "position error " + position);
+            return false;
+        }
+        final ImageView i = imageGroupList.get(position);
+        if (i == null) {
+            Log.e("ImageWatcher", "param ImageView i must be a member of the List <ImageView> imageGroupList!!");
+            return false;
+        }
+        if (i.getDrawable() == null) return false;
+        showInternal(i, imageGroupList, urlList);
+        return true;
+    }
+
     private void showInternal(ImageView i, SparseArray<ImageView> imageGroupList, final List<Uri> urlList) {
         if (loader == null) {
-            throw new NullPointerException("please invoke `setLoader` first [loader == null]");
+            Log.e("ImageWatcher", "please invoke `setLoader` first [loader == null]");
+            return;
         }
 
         if (!isInitLayout) {

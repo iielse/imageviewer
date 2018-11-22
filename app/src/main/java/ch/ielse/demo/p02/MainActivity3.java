@@ -1,10 +1,10 @@
 package ch.ielse.demo.p02;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.Window;
@@ -17,7 +17,7 @@ import com.github.ielse.imagewatcher.ImageWatcherHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity3 extends Activity {
+public class MainActivity3 extends AppCompatActivity {
 
     private ImageWatcherHelper iwHelper;
 
@@ -134,9 +134,10 @@ public class MainActivity3 extends Activity {
             public void onClick(View v) {
                 final List<String> longPictureList = new ArrayList<>();
                 longPictureList.add(urlFitXY);
+                final int initPosition = 0;
                 final SparseArray<ImageView> mappingViews = new SparseArray<>();
-                mappingViews.put(0, (ImageView) v);
-                iwHelper.show((ImageView) v, mappingViews, convert(longPictureList));
+                mappingViews.put(initPosition, (ImageView) v);
+                iwHelper.show(initPosition, mappingViews, convert(longPictureList));
             }
         });
     }
@@ -148,10 +149,10 @@ public class MainActivity3 extends Activity {
     }
 
 
-    @Override
-    public void onBackPressed() {
-        if (!iwHelper.handleBackPressed()) {
-            super.onBackPressed();
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (!iwHelper.handleBackPressed()) {
+//            super.onBackPressed();
+//        }
+//    }
 }

@@ -1,8 +1,8 @@
 package ch.ielse.demo.p02;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,7 +13,7 @@ import com.github.ielse.imagewatcher.ImageWatcherHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity4 extends Activity {
+public class MainActivity4 extends AppCompatActivity {
     private List<Uri> dataList = new ArrayList<>();
 
     private ImageWatcherHelper iwHelper;
@@ -98,12 +98,12 @@ public class MainActivity4 extends Activity {
         iwHelper.show(clickedImage, mapping, dataList);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (!iwHelper.handleBackPressed()) {
-            super.onBackPressed();
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (!iwHelper.handleBackPressed()) {
+//            super.onBackPressed();
+//        }
+//    }
 }
 
 

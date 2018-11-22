@@ -1,9 +1,9 @@
 package ch.ielse.demo.p02;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,7 +17,7 @@ import com.github.ielse.imagewatcher.ImageWatcher;
 import java.util.List;
 
 
-public class MainActivity extends Activity implements MessagePicturesLayout.Callback, ImageWatcher.OnPictureLongPressListener {
+public class MainActivity extends AppCompatActivity implements MessagePicturesLayout.Callback, ImageWatcher.OnPictureLongPressListener {
 
     private ImageWatcher vImageWatcher;
 
@@ -121,6 +121,7 @@ public class MainActivity extends Activity implements MessagePicturesLayout.Call
 
     @Override
     public void onBackPressed() {
+        // 没有使用helper初始化
         if (!vImageWatcher.handleBackPressed()) {
             super.onBackPressed();
         }

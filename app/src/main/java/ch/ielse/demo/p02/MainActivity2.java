@@ -1,10 +1,10 @@
 package ch.ielse.demo.p02;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,7 +20,7 @@ import com.github.ielse.imagewatcher.ImageWatcherHelper;
 
 import java.util.List;
 
-public class MainActivity2 extends Activity implements MessagePicturesLayout.Callback {
+public class MainActivity2 extends AppCompatActivity implements MessagePicturesLayout.Callback {
 
     private ImageWatcherHelper iwHelper;
     private RecyclerView vRecycler;
@@ -92,11 +92,11 @@ public class MainActivity2 extends Activity implements MessagePicturesLayout.Cal
     public void onThumbPictureClick(ImageView i, SparseArray<ImageView> imageGroupList, List<Uri> urlList) {
         iwHelper.show(i, imageGroupList, urlList);
     }
-
-    @Override
-    public void onBackPressed() {
-        if (!iwHelper.handleBackPressed()) {
-            super.onBackPressed();
-        }
-    }
+//
+//    @Override
+//    public void onBackPressed() {
+//        if (!iwHelper.handleBackPressed()) {
+//            super.onBackPressed();
+//        }
+//    }
 }

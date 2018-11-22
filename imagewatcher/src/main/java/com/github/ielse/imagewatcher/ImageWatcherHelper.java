@@ -1,7 +1,9 @@
 package com.github.ielse.imagewatcher;
 
-import android.app.Activity;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.SparseArray;
@@ -16,7 +18,7 @@ import java.util.List;
 public class ImageWatcherHelper {
     private static final int VIEW_DECORATION_ID = R.id.view_decoration;
     private static final int VIEW_IMAGE_WATCHER_ID = R.id.view_image_watcher;
-    private final Activity holder;
+    private final FragmentActivity holder;
     private final ViewGroup activityDecorView;
     private ImageWatcher mImageWatcher;
     private ImageWatcher.Loader loader;
@@ -30,12 +32,12 @@ public class ImageWatcherHelper {
     private View otherView;
 
 
-    private ImageWatcherHelper(Activity activity) {
+    private ImageWatcherHelper(FragmentActivity activity) {
         holder = activity;
         activityDecorView = (ViewGroup) activity.getWindow().getDecorView();
     }
 
-    public static ImageWatcherHelper with(Activity activity, ImageWatcher.Loader l) { // attach
+    public static ImageWatcherHelper with(FragmentActivity activity, ImageWatcher.Loader l) { // attach
         if (activity == null) throw new NullPointerException("activity is null");
         if (l == null) throw new NullPointerException("loader is null");
         ImageWatcherHelper iwh = new ImageWatcherHelper(activity);
@@ -57,7 +59,6 @@ public class ImageWatcherHelper {
         this.listener = listener;
         return this;
     }
-
 
     public ImageWatcherHelper addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
         if (!onPageChangeListeners.contains(listener)) {
@@ -81,7 +82,12 @@ public class ImageWatcherHelper {
         return this;
     }
 
+    @Deprecated
     public ImageWatcherHelper setOnStateChangedListener(ImageWatcher.OnStateChangedListener listener) {
+        return addOnStateChangedListener(listener);
+    }
+
+    public ImageWatcherHelper addOnStateChangedListener(ImageWatcher.OnStateChangedListener listener) {
         if (!onStateChangedListeners.contains(listener)) {
             onStateChangedListeners.add(listener);
         }
@@ -91,6 +97,14 @@ public class ImageWatcherHelper {
     public void show(ImageView i, SparseArray<ImageView> imageGroupList, List<Uri> urlList) {
         init();
         final boolean displaySuccess = mImageWatcher.show(i, imageGroupList, urlList);
+        if (displaySuccess) {
+            appendOtherView();
+        }
+    }
+
+    public void show(int initPosition, SparseArray<ImageView> imageGroupList, List<Uri> urlList) {
+        init();
+        final boolean displaySuccess = mImageWatcher.show(initPosition, imageGroupList, urlList);
         if (displaySuccess) {
             appendOtherView();
         }
@@ -122,6 +136,22 @@ public class ImageWatcherHelper {
                 mImageWatcher.addOnPageChangeListener(onPageChangeListener);
             }
         }
+
+        mImageWatcher.addOnStateChangedListener(new ImageWatcher.OnStateChangedListener() {
+            @Override
+            public void onStateChangeUpdate(ImageWatcher imageWatcher, ImageView clicked, int position, Uri uri, float animatedValue, int actionTag) {
+
+            }
+
+            @Override
+            public void onStateChanged(ImageWatcher imageWatcher, int position, Uri uri, int actionTag) {
+                if (actionTag == ImageWatcher.STATE_ENTER_DISPLAYING) {
+                    addToBackStack(holder, ImageWatcherHelper.this);
+                } else if (actionTag == ImageWatcher.STATE_EXIT_HIDING) {
+                    removeFromBackStack(holder);
+                }
+            }
+        });
 
 
         removeExistingOverlayInView(activityDecorView, mImageWatcher.getId()); // 理论上是无意义的操作。在ImageWatcher 'dismiss' 时会移除自身。但检查一下不错
@@ -177,8 +207,42 @@ public class ImageWatcherHelper {
         }
     }
 
+    private void addToBackStack(FragmentActivity activity, ImageWatcherHelper helper) {
+        activity.getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+            }
+        });
+
+        final BackPressedFragment backPressedFragment = new BackPressedFragment();
+        backPressedFragment.cb = new Runnable() {
+            @Override
+            public void run() {
+                handleBackPressed();
+            }
+        };
+
+        activity.getSupportFragmentManager().beginTransaction()
+                .add(android.R.id.content, backPressedFragment)
+                .addToBackStack("back")
+                .commitAllowingStateLoss();
+    }
+
+    private void removeFromBackStack(FragmentActivity activity) {
+        activity.getSupportFragmentManager().popBackStack("back", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
 
     public interface Provider {
         ImageWatcherHelper iwHelper();
+    }
+
+    public static class BackPressedFragment extends Fragment {
+        Runnable cb;
+
+        @Override
+        public void onDetach() {
+            if (cb != null) cb.run();
+            super.onDetach();
+        }
     }
 }
