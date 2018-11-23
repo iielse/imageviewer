@@ -207,7 +207,7 @@ public class ImageWatcherHelper {
         }
     }
 
-    private void addToBackStack(FragmentActivity activity, ImageWatcherHelper helper) {
+    private void addToBackStack(final FragmentActivity activity, final ImageWatcherHelper helper) {
         activity.getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
@@ -218,7 +218,9 @@ public class ImageWatcherHelper {
         backPressedFragment.cb = new Runnable() {
             @Override
             public void run() {
-                handleBackPressed();
+                if (handleBackPressed()) {
+                    addToBackStack(activity, helper);
+                }
             }
         };
 
