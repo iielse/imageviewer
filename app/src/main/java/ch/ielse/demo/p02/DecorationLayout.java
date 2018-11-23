@@ -27,7 +27,6 @@ public class DecorationLayout extends FrameLayout implements ViewPager.OnPageCha
 
     public DecorationLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // 在 activity onCreate 之后 addView . fitsSystemWindows 无效~
         final FrameLayout vContainer = (FrameLayout) LayoutInflater.from(context).inflate(R.layout.layout_watcher_decoration, this);
         vDisplayOrigin = vContainer.findViewById(R.id.vDisplayOrigin);
         vDisplayOrigin.setOnClickListener(this);

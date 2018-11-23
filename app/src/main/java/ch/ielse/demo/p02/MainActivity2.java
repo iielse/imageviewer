@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -91,6 +92,8 @@ public class MainActivity2 extends AppCompatActivity implements MessagePicturesL
     @Override
     public void onThumbPictureClick(ImageView i, SparseArray<ImageView> imageGroupList, List<Uri> urlList) {
         iwHelper.show(i, imageGroupList, urlList);
+
+        ViewCompat.requestApplyInsets(layDecoration); // fit
     }
 //
 //    @Override
