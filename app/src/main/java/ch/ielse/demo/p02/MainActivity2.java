@@ -1,5 +1,6 @@
 package ch.ielse.demo.p02;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -86,20 +88,31 @@ public class MainActivity2 extends AppCompatActivity implements MessagePicturesL
         layDecoration.attachImageWatcher(iwHelper);
 
 
-        Utils.fitsSystemWindows(isTranslucentStatus, findViewById(R.id.v_fit));
+        //  Utils.fitsSystemWindows(isTranslucentStatus, findViewById(R.id.v_fit));
     }
 
     @Override
     public void onThumbPictureClick(ImageView i, SparseArray<ImageView> imageGroupList, List<Uri> urlList) {
         iwHelper.show(i, imageGroupList, urlList);
 
-        ViewCompat.requestApplyInsets(layDecoration); // fit
+        fitsSystemWindow(this, layDecoration);
     }
-//
-//    @Override
-//    public void onBackPressed() {
-//        if (!iwHelper.handleBackPressed()) {
-//            super.onBackPressed();
-//        }
-//    }
+
+    private void fitsSystemWindow(Activity activity, View otherView) {
+        boolean adjustByRoot = false;
+        final View content = activity.findViewById(android.R.id.content);
+        if (content instanceof ViewGroup) {
+            final View root = ((ViewGroup) content).getChildAt(0);
+            if (root != null) {
+                boolean fitsSystemWindows = ViewCompat.getFitsSystemWindows(root);
+                if (fitsSystemWindows) {
+                    otherView.setPadding(root.getPaddingLeft(), root.getPaddingTop(), root.getPaddingRight(), root.getPaddingBottom());
+                    adjustByRoot = true;
+                }
+            }
+        }
+        if (!adjustByRoot) {
+            ViewCompat.requestApplyInsets(otherView);
+        }
+    }
 }
