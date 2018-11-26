@@ -711,7 +711,8 @@ public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestu
         if (e2.getPointerCount() < 2) return;
         final float deltaX = e2.getX(1) - e2.getX(0);
         final float deltaY = e2.getY(1) - e2.getY(0);
-        float distance = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+//        float distance = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        float distance = Math.abs(deltaX) + Math.abs(deltaY);
         if (mFingersDistance == 0) mFingersDistance = distance;
         float changedScale = (mFingersDistance - distance) / (mWidth * scaleSensitivity);
         float scaleResultX = vsTouchScale.scaleX - changedScale;
