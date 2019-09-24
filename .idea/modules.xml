@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ImageWatcher.iml" filepath="$PROJECT_DIR$/ImageWatcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imageviewer/imageviewer.iml" filepath="$PROJECT_DIR$/imageviewer/imageviewer.iml" />
       <module fileurl="file://$PROJECT_DIR$/imagewatcher/imagewatcher.iml" filepath="$PROJECT_DIR$/imagewatcher/imagewatcher.iml" />
     </modules>
   </component>
