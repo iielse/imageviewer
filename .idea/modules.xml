@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ImageWatcher.iml" filepath="$PROJECT_DIR$/ImageWatcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/ImageWatcher-app.iml" filepath="$PROJECT_DIR$/app/ImageWatcher-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imagewatcher/ImageWatcher-imagewatcher.iml" filepath="$PROJECT_DIR$/imagewatcher/ImageWatcher-imagewatcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-ImageWatcher.iml" filepath="$PROJECT_DIR$/android-ImageWatcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/imageviewer/imageviewer.iml" filepath="$PROJECT_DIR$/imageviewer/imageviewer.iml" />
       <module fileurl="file://$PROJECT_DIR$/imagewatcher/imagewatcher.iml" filepath="$PROJECT_DIR$/imagewatcher/imagewatcher.iml" />

@@ -44,6 +44,7 @@ dependencies {
     implementation 'org.rekotlin:rekotlin:1.0.0'
 
     implementation project(':imagewatcher')
+    implementation project(':imageviewer')
 //    implementation 'com.github.iielse:ImageWatcher:1.1.1'
 }
 

@@ -1,15 +1,17 @@
 package com.github.ielse.imagewatcher;
 
 import android.net.Uri;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ public class ImageWatcherHelper {
     private ImageWatcher.OnPictureLongPressListener listener;
     private ImageWatcher.IndexProvider indexProvider;
     private ImageWatcher.LoadingUIProvider loadingUIProvider;
-    private final List<ViewPager.OnPageChangeListener> onPageChangeListeners = new ArrayList<>();
+    private final List<OnPageChangeListener> onPageChangeListeners = new ArrayList<>();
     private final List<ImageWatcher.OnStateChangedListener> onStateChangedListeners = new ArrayList<>();
     private View otherView;
 
@@ -60,7 +62,7 @@ public class ImageWatcherHelper {
         return this;
     }
 
-    public ImageWatcherHelper addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
+    public ImageWatcherHelper addOnPageChangeListener(OnPageChangeListener listener) {
         if (!onPageChangeListeners.contains(listener)) {
             onPageChangeListeners.add(listener);
         }
@@ -132,7 +134,7 @@ public class ImageWatcherHelper {
             }
         }
         if (!onPageChangeListeners.isEmpty()) {
-            for (ViewPager.OnPageChangeListener onPageChangeListener : onPageChangeListeners) {
+            for (OnPageChangeListener onPageChangeListener : onPageChangeListeners) {
                 mImageWatcher.addOnPageChangeListener(onPageChangeListener);
             }
         }

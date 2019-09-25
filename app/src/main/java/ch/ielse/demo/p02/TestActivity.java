@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 
+import github.iielse.imageviewer.demo.MainActivity6;
+
 
 public class TestActivity extends Activity {
 
