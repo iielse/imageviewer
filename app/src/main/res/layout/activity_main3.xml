@@ -67,7 +67,7 @@
             android:padding="12dp"
             android:text="gif  多张[图片来自百度，访问多了地址可能404，自行替换url](左右滑动)" />
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -98,7 +98,7 @@
                 app:layout_constraintRight_toRightOf="@id/vGifPicture" />
 
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.ConstraintLayout>
 
 
         <TextView

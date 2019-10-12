@@ -24,7 +24,7 @@ class ImageViewerViewModel : ViewModel() {
                     boundaryCallback = object : PagedList.BoundaryCallback<PWrapper>() {
                         override fun onItemAtEndLoaded(itemAtEnd: PWrapper) {
                             if (ID_MORE_LOADING == itemAtEnd.id) {
-                                requestPKHistory(false)
+//                                requestPKHistory(false)
                             }
                         }
                     }

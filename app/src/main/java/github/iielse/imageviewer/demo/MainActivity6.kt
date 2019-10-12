@@ -11,7 +11,6 @@ import com.github.iielse.imageviewer.model.Photo
 class MainActivity6 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         ImageViewerBuilder(this)
                 .setDataProvider(SimpleDataProvider())
                 .show()
@@ -22,6 +21,6 @@ class MainActivity6 : AppCompatActivity() {
 
 class SimpleDataProvider : DataProviderAdapter() {
     override fun getInitial(): SparseArray<Pair<ImageView, Photo>> {
-
+        return SparseArray()
     }
 }
