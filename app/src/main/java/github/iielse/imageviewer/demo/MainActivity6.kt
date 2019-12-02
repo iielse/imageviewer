@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.SparseArray
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import ch.ielse.demo.p02.Data
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.`interface`.DataProviderAdapter
 import com.github.iielse.imageviewer.model.Photo
@@ -15,8 +16,6 @@ class MainActivity6 : AppCompatActivity() {
                 .setDataProvider(SimpleDataProvider())
                 .show()
     }
-
-
 }
 
 class SimpleDataProvider : DataProviderAdapter() {

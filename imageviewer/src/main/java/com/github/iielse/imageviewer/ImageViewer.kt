@@ -2,21 +2,19 @@ package com.github.iielse.imageviewer
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.paging.PagedList
-import androidx.viewpager2.widget.ViewPager2
 import com.github.iielse.imageviewer.core.PWrapper
+import kotlinx.android.synthetic.main.imageviewer.view.*
 
 class ImageViewer @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
     : ConstraintLayout(context, attrs, defStyleAttr) {
-    private val viewPager by lazy { ViewPager2(context, attrs, defStyleAttr) }
-    private val overlayView by lazy { ConstraintLayout(context, attrs, defStyleAttr) }
     private val adapter by lazy { ImageViewerAdapter() }
 
     init {
-        addView(viewPager)
-        addView(overlayView)
-        viewPager.adapter = adapter
+        LayoutInflater.from(context).inflate(R.layout.imageviewer, this)
+        pager.adapter = adapter
     }
 
     fun set(dataList: PagedList<PWrapper>) {

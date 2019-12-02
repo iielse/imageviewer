@@ -1,56 +1,32 @@
 package com.github.iielse.imageviewer
 
 import android.view.ViewGroup
-import androidx.paging.PagedListAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.core.*
-import java.util.*
+import com.github.iielse.imageviewer.model.Photo
+import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
+import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 
-class ImageViewerAdapter : PagedListAdapter<PWrapper, RecyclerView.ViewHolder>(DIFF) {
+object ItemType {
+    val PHOTO by lazy { itemTypeProvider++ }
+    val SUBSAMPLING by lazy { itemTypeProvider++ }
+}
+
+class ImageViewerAdapter : PAdapter() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return when (viewType) {
+            ItemType.PHOTO -> PhotoViewHolder(parent.inflate(R.layout.item_imageviewer_photo))
+            ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent.inflate(R.layout.item_imageviewer_subsampling))
+            else -> super.onCreateViewHolder(parent, viewType)
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val item = getItem(position)
+        when (holder) {
+            is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
+            is SubsamplingViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
+        }
     }
 }
-
-private val DIFF = object : DiffUtil.ItemCallback<PWrapper>() {
-    override fun areItemsTheSame(oldItem: PWrapper, newItem: PWrapper): Boolean {
-        return newItem.type == oldItem.type && newItem.id == oldItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: PWrapper, newItem: PWrapper): Boolean {
-        return newItem.type == oldItem.type && Objects.equals(newItem.get(), oldItem.get())
-    }
-}
-
-private var itemTypeProvider = 1
-
-enum class ItemType(val value: Int) {
-    EmptyPlaceHolder(itemTypeProvider++),
-    ErrorPlaceHolder(itemTypeProvider++),
-    LoadingPlaceHolder(itemTypeProvider++),
-    RetryPlaceHolder(itemTypeProvider++),
-    NoMorePlaceHolder(itemTypeProvider++),
-    Photo(itemTypeProvider++), ;
-
-    fun lastItemType(): Int {
-        return itemTypeProvider
-    }
-}
-
-fun transformDefaultPWrapper(itemTypeId: String): PWrapper? {
-    return when (itemTypeId) {
-        ID_EMPTY -> PWrapper(ItemType.EmptyPlaceHolder.value, ID_EMPTY)
-        ID_ERROR -> PWrapper(ItemType.ErrorPlaceHolder.value, ID_ERROR)
-        ID_MORE_LOADING -> PWrapper(ItemType.LoadingPlaceHolder.value, ID_MORE_LOADING)
-        ID_MORE_RETRY -> PWrapper(ItemType.RetryPlaceHolder.value, ID_MORE_RETRY)
-        ID_NO_MORE -> PWrapper(ItemType.NoMorePlaceHolder.value, ID_NO_MORE)
-        else -> null
-    }
-}
-
 

@@ -6,8 +6,19 @@ import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import com.github.iielse.imageviewer.core.*
 import com.github.iielse.imageviewer.model.Photo
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.Executors
 import kotlin.math.max
 import kotlin.math.min
+
+object Injection {
+    private val picExecutor by lazy { Executors.newSingleThreadExecutor() }
+    val picScheduler by lazy { Schedulers.from(picExecutor) }
+}
+
+private fun runOnPicThread(block: () -> Unit): Disposable = Observable.fromCallable { block() }.subscribeOn(Injection.picScheduler).subscribe()
 
 data class PhotoState(
         val page: Int = PAGE_INITIAL,
@@ -30,8 +41,20 @@ class ImageViewerViewModel : ViewModel() {
                     }
             )
 
-
     private var photoDataSource: StorePageKeyedDataSource? = null
+
+    fun test() {
+        fetch(0) {
+            runOnPicThread {
+                photoState = photoState.copy(
+                        page = PAGE_INITIAL,
+                        list = it.map { it.id.toString() },
+                        data = photoState.data.mutablePutAll(it.map { Pair(it.id.toString(), Photo(it.id.toString(), it.imageUrl, 0, 0)) })
+                )
+                notifyStateInvalidate()
+            }
+        }
+    }
 
     private fun photosDataSource(): DataSource.Factory<Int, PWrapper> =
             object : DataSource.Factory<Int, PWrapper>() {
@@ -47,10 +70,7 @@ class ImageViewerViewModel : ViewModel() {
                             return list.safelySubList(max(0, start), min(list.size, start + count))
                                     .map {
                                         transformDefaultPWrapper(it)
-                                                ?: when (it) {
-                                                    // intercept
-                                                    else -> PWrapper(ItemType.Photo.value, it, extra = photoState.data[it])
-                                                }
+                                                ?: PWrapper(ItemType.PHOTO, it, extra = photoState.data[it])
                                     }
                         }
                     }.also {
