@@ -17,7 +17,7 @@ android {
     buildToolsVersion '29.0.2'
     defaultConfig {
         applicationId "com.github.iielse.imageviewer.demo"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"

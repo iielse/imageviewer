@@ -12,10 +12,12 @@ object ItemType {
     val SUBSAMPLING by lazy { itemTypeProvider++ }
 }
 
+const val ITEM_DRAG = "adapter_item_drag"
+
 class ImageViewerAdapter : PAdapter() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            ItemType.PHOTO -> PhotoViewHolder(parent.inflate(R.layout.item_imageviewer_photo))
+            ItemType.PHOTO -> PhotoViewHolder(parent.inflate(R.layout.item_imageviewer_photo), callback)
             ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent.inflate(R.layout.item_imageviewer_subsampling))
             else -> super.onCreateViewHolder(parent, viewType)
         }

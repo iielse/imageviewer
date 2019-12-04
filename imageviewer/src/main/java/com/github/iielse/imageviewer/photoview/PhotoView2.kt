@@ -14,17 +14,25 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
     companion object {
         private const val EDGE_NONE = -1
         private const val EDGE_TOP = 3
+        private const val ACTION_DRAG = 1
+        private const val ACTION_RESET = 2
+        const val ACTION_RELEASE = 3
     }
 
-    private val dismissEdge by lazy { height }
+    private val dismissEdge by lazy { height * 0.4f }
     private var scrollEdge = EDGE_NONE
     private var lastRect: RectF? = null
     private var singleTouch = true
     private var lastX = 0f
     private var lastY = 0f
+    private var dragChangedListener: OnDragChangedListener? = null
 
     init {
         setOnMatrixChangeListener(this)
+    }
+
+    fun setDragChangedListener(listener: OnDragChangedListener?) {
+        dragChangedListener = listener
     }
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
@@ -59,22 +67,42 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     private fun transform(offsetX: Float, offsetY: Float) {
         setAllowParentInterceptOnEdge(false)
-        translationY = offsetY
-        translationX = offsetX / 2
-        val fakeScale = 1 - min(0.3f, offsetY / dismissEdge)
+        val fraction = min(1f, offsetY / height)
+        val fakeScale = 1 - min(0.4f, fraction)
         scaleX = fakeScale
         scaleY = fakeScale
+        translationY = offsetY
+        translationX = offsetX / 2
+        dragChangedListener?.onDragChanged(this, fraction, ACTION_DRAG)
     }
 
     private fun reset() {
         setAllowParentInterceptOnEdge(true)
         singleTouch = true
+        lastX = 0f
         lastY = 0f
 
         if (translationY > dismissEdge) {
-
+            dragChangedListener?.onDragChanged(this, 1f, ACTION_RELEASE)
         } else {
-            animate().translationY(0f).scaleX(1f).scaleY(1f).setDuration(200).start()
+            animate()
+                    .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
+                    .setDuration(200)
+                    .setUpdateListener {
+                        val offsetY = translationY
+                        val fraction = min(1f, offsetY / dismissEdge)
+                        dragChangedListener?.onDragChanged(this, fraction, ACTION_RESET)
+                    }
+                    .start()
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        animate().cancel()
+    }
+
+    interface OnDragChangedListener {
+        fun onDragChanged(view: PhotoView2, fraction: Float, action: Int)
     }
 }

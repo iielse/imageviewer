@@ -79,7 +79,6 @@ class ImageViewerViewModel : ViewModel() {
                 }
             }
 
-    @StoreThread
     private fun notifyStateInvalidate() {
         photoDataSource?.invalidate()
     }

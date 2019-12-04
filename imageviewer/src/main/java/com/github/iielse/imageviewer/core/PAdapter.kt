@@ -13,8 +13,6 @@ const val ID_MORE_LOADING = "id_more_loading"
 const val ID_MORE_RETRY = "id_more_retry"
 const val ID_NO_MORE = "id_no_more"
 
-const val ITEM_CLICKED = "adapter_item_clicked"
-
 var itemTypeProvider = 1
 
 object ItemType {
