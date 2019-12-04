@@ -24,34 +24,42 @@ public class Data {
         data1.createTime = "昨天 11:21";
         data1.content = "开司还是那么帅";
         data1.pictureList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664940_9893.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664940_3308.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664927_3920.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664926_8360.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664926_6184.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664925_8382.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664925_2087.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664777_5730.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483671689_9534.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483671689_2126.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483671703_7890.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201707/27/1501118577_9169.jpg") // 超出屏幕宽度大尺寸图测试
+                Uri.parse("https://images.pexels.com/photos/45170/kittens-cat-cat-puppy-rush-45170.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"),
+                Uri.parse("https://images.pexels.com/photos/145939/pexels-photo-145939.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"),
+                Uri.parse("https://images.unsplash.com/photo-1503066211613-c17ebc9daef0?ixlib=rb-1.2.1&dpr=1&auto=format&fit=crop&w=416&h=312&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1520848315518-b991dd16a625?ixlib=rb-1.2.1&dpr=1&auto=format&fit=crop&w=416&h=312&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1539418561314-565804e349c0?ixlib=rb-1.2.1&dpr=1&auto=format&fit=crop&w=416&h=312&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1539418561314-565804e349c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1524272332618-3a94122bb0c1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjU3NTIxfQ&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1524293191286-59ec719556d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=654&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1478005344131-44da2ded3415?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1484406566174-9da000fda645?ixlib=rb-1.2.1&auto=format&fit=crop&w=635&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1462953491269-9aff00919695?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1494256997604-768d1f608cac?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1543183344-acd290d5142e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1452001603782-7d4e7d931173?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1539692858702-5cc9e1e40c17?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1563409236340-c174b51cbb81?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1486723312829-f32b4a25211b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60")
         );
         data1.pictureThumbList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647798_4500.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647897_1367.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484650736_2101.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647701_9893.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484650700_2514.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647930_5139.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647929_8108.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647897_1978.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647898_4474.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647930_7735.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647929_9591.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201707/27/1501118720_9504.jpg") // 超出屏幕宽度大尺寸图测试
+                Uri.parse("https://images.pexels.com/photos/45170/kittens-cat-cat-puppy-rush-45170.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"),
+                Uri.parse("https://images.pexels.com/photos/145939/pexels-photo-145939.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"),
+                Uri.parse("https://images.unsplash.com/photo-1503066211613-c17ebc9daef0?ixlib=rb-1.2.1&dpr=1&auto=format&fit=crop&w=416&h=312&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1520848315518-b991dd16a625?ixlib=rb-1.2.1&dpr=1&auto=format&fit=crop&w=416&h=312&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1539418561314-565804e349c0?ixlib=rb-1.2.1&dpr=1&auto=format&fit=crop&w=416&h=312&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1539418561314-565804e349c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1524272332618-3a94122bb0c1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjU3NTIxfQ&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1524293191286-59ec719556d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=654&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1478005344131-44da2ded3415?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1484406566174-9da000fda645?ixlib=rb-1.2.1&auto=format&fit=crop&w=635&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1462953491269-9aff00919695?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1494256997604-768d1f608cac?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1543183344-acd290d5142e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1452001603782-7d4e7d931173?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1539692858702-5cc9e1e40c17?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1563409236340-c174b51cbb81?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"),
+                Uri.parse("https://images.unsplash.com/photo-1486723312829-f32b4a25211b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60")
         );
 
 
@@ -61,10 +69,11 @@ public class Data {
         data2.createTime = "昨天 09:59";
         data2.content = "唐僧还是厉害啊。为什么？有宝马";
         data2.pictureList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483664741_7475.png")
+                Uri.parse("https://images.unsplash.com/photo-1486518714050-b97edb7fcfa9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjExMjU4fQ&auto=format&fit=crop&w=500&q=60")
         );
         data2.pictureThumbList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647799_1689.png")
+                Uri.parse("https://images.unsplash.com/photo-1486518714050-b97edb7fcfa9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjExMjU4fQ&auto=format&fit=crop&w=500&q=60")
+
         );
 
         Data data3 = new Data();
@@ -73,16 +82,19 @@ public class Data {
         data3.createTime = "昨天 08:12";
         data3.content = "各种眼神";
         data3.pictureList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483671690_1970.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483671690_6902.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483671702_6499.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/06/1483671702_2352.jpg")
+                Uri.parse("https://images.unsplash.com/photo-1554226114-f7ae1de16f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1550699566-83f93df24072?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1418405752269-40caf13f90ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1486365227551-f3f90034a57c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60")
+
         );
         data3.pictureThumbList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484650701_4150.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484650719_9275.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647702_8420.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647930_4474.jpg")
+                Uri.parse("https://images.unsplash.com/photo-1554226114-f7ae1de16f55?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1550699566-83f93df24072?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1418405752269-40caf13f90ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1486365227551-f3f90034a57c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60")
+
+
         );
 
         Data data4 = new Data();
@@ -91,14 +103,15 @@ public class Data {
         data4.createTime = "昨天 06:00";
         data4.content = "人与人间的信任，就像是纸片，一旦破损，就不会再回到原来的样子。";
         data4.pictureList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296303_7395.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296122_9613.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296303_6984.png")
+                Uri.parse("https://images.unsplash.com/photo-1568435363428-2474799f37c3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjE3MzYxfQ&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1553338258-24fe91e8baf3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1491604612772-6853927639ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60")
+
         );
         data4.pictureThumbList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647817_3557.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647818_9583.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647817_7305.png")
+                Uri.parse("https://images.unsplash.com/photo-1568435363428-2474799f37c3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjE3MzYxfQ&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1553338258-24fe91e8baf3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1491604612772-6853927639ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60")
         );
 
         Data data5 = new Data();
@@ -107,12 +120,12 @@ public class Data {
         data5.createTime = "前天 14:61";
         data5.content = "雪.触之即化..愿永久飘零";
         data5.pictureList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296288_3031.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296303_5044.jpg")
+                Uri.parse("https://images.unsplash.com/photo-1565416448218-e59ef8b4f03a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1516728778615-2d590ea1855e?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80")
         );
         data5.pictureThumbList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647278_8869.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647702_1117.jpg")
+                Uri.parse("https://images.unsplash.com/photo-1565416448218-e59ef8b4f03a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1516728778615-2d590ea1855e?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80")
         );
 
         Data data6 = new Data();
@@ -121,18 +134,18 @@ public class Data {
         data6.createTime = "圣诞节";
         data6.content = "颜宇扬的期末总结\n1、有本事冲我来，别再家长会上吓唬我爸\n2、期末考试成绩出来了，我觉得我妈生二胎是非常明智的选择\n3、这场考试对于我的意义就是知道了班上到底有多少人\n4、期末考试不给老师们露一手，他们还真以为自己教的好";
         data6.pictureList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296287_2190.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296286_7908.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296286_7013.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296286_6401.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/13/1484296106_5671.png")
+                Uri.parse("https://images.unsplash.com/photo-1574260288371-7b63f7e3f186?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1550684863-a70a48d476d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1496963729609-7d408fa580b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1531959870249-9f9b729efcf4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1490260400179-d656f04de422?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60")
         );
         data6.pictureThumbList = Arrays.asList(
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647898_9300.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647278_2143.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647816_4929.png"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647817_5319.jpg"),
-                Uri.parse("http://img.my.csdn.net/uploads/201701/17/1484647818_3369.png")
+                Uri.parse("https://images.unsplash.com/photo-1574260288371-7b63f7e3f186?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1550684863-a70a48d476d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1496963729609-7d408fa580b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1531959870249-9f9b729efcf4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"),
+                Uri.parse("https://images.unsplash.com/photo-1490260400179-d656f04de422?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60")
         );
 
 

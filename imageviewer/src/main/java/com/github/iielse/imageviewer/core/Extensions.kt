@@ -17,6 +17,8 @@ import android.view.ViewGroup
 //    return null
 //}
 
+val Float.decimal2: Float get() = (this * 100).toInt() / 100f
+
 fun ViewGroup.inflate(resId: Int): View {
     return LayoutInflater.from(context).inflate(resId, this, false)
 }
@@ -26,9 +28,6 @@ fun <T> List<T>.safelySubList(fromIndex: Int, toIndex: Int): List<T> {
     return subList(fromIndex, toIndex)
 }
 
-fun <T, K> Map<T, K>.insertOrReplace(key: T, value: K): Map<T, K> {
-    return toMutableMap().apply { put(key, value) }
-}
 
 fun <T, K> Map<T, K>.mutablePutAll(items: List<Pair<T, K>>?): Map<T, K> {
     if (items == null) return this

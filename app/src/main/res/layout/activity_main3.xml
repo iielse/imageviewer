@@ -67,7 +67,7 @@
             android:padding="12dp"
             android:text="gif  多张[图片来自百度，访问多了地址可能404，自行替换url](左右滑动)" />
 
-        <androidx.constraintlayout.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -98,7 +98,7 @@
                 app:layout_constraintRight_toRightOf="@id/vGifPicture" />
 
 
-        </androidx.constraintlayout.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         <TextView
@@ -107,7 +107,7 @@
             android:padding="10dp"
             android:text="AppCompatImageView " />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/vCompatImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -122,7 +122,7 @@
             android:padding="10dp"
             android:text="scaleType fitXY " />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/vFitXyImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
