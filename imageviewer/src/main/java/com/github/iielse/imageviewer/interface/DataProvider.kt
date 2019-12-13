@@ -1,16 +1,17 @@
 package com.github.iielse.imageviewer.`interface`
 
-import android.util.SparseArray
 import android.widget.ImageView
 import com.github.iielse.imageviewer.model.Photo
 
 interface DataProvider {
-    fun getInitial(): SparseArray<Pair<ImageView, Photo>>
+    fun getInitial(): Map<Photo, ImageView?>
     fun getMore(callback: (List<Photo>) -> Unit)
 }
 
-abstract class DataProviderAdapter : DataProvider {
-    abstract override fun getInitial(): SparseArray<Pair<ImageView, Photo>>
+open class DataProviderAdapter : DataProvider {
+    override fun getInitial(): Map<Photo, ImageView?> {
+        return mapOf()
+    }
 
     override fun getMore(callback: (List<Photo>) -> Unit) {
         callback(emptyList())
