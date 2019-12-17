@@ -3,6 +3,7 @@ package com.github.iielse.imageviewer
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.github.iielse.imageviewer.Config.POS_INVALID
 import com.github.iielse.imageviewer.core.*
 import com.github.iielse.imageviewer.model.Photo
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
@@ -27,16 +28,18 @@ object ItemType {
 }
 
 const val ITEM_DRAG = "adapter_item_drag"
+const val ITEM_INIT = "adapter_item_init"
 
 class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val dataList = mutableListOf<Item>()
     private var listener: AdapterCallback? = null
+    private var initPos = 0
 
     fun setListener(callback: AdapterCallback?) {
         listener = callback
     }
 
-    fun set(sourceList: List<Photo>, fetchOver: Boolean = false) {
+    fun set(sourceList: List<Photo>, initPos: Int = 0, fetchOver: Boolean = false) {
         val lastSize = dataList.size
         dataList.clear()
         notifyItemRangeRemoved(0, lastSize)
@@ -50,7 +53,6 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     fun append(sourceList: List<Photo>, fetchOver: Boolean = false) {
 
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -68,6 +70,11 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             is PhotoViewHolder -> item.extra<Photo>()?.let { holder.bind(it) }
             is SubsamplingViewHolder -> item.extra<Photo>()?.let { holder.bind(it) }
         }
+
+        if (position == initPos) {
+            listener?.invoke(ITEM_INIT, holder.itemView)
+            initPos = POS_INVALID
+        }
     }
 
     private val callback: AdapterCallback = { item, action ->
@@ -77,6 +84,7 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemViewType(position: Int): Int {
         return dataList[position].type
     }
+
 
     override fun getItemCount() = dataList.size
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -8,7 +9,10 @@
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/pView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="50dp"
+        tools:background="#eee" />
 
 </LinearLayout>

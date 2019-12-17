@@ -2,6 +2,8 @@ package com.github.iielse.imageviewer.util
 
 import android.animation.TypeEvaluator
 import android.graphics.Color
+import android.graphics.Rect
+import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 
 object ViewerUtil {
@@ -18,4 +20,9 @@ object ViewerUtil {
             Color.argb(alpha, red, green, blue)
         }
     }
+
+    fun transform(originView: View, current: View) {
+
+    }
+
 }

@@ -15,7 +15,7 @@ class PhotoViewHolder(override val containerView: View, callback: AdapterCallbac
     init {
         photoView.setDragChangedListener(object : PhotoView2.OnDragChangedListener {
             override fun onDragChanged(view: PhotoView2, fraction: Float, action: Int) {
-                Log.e("XXX", "fraction $fraction action $action")
+
                 callback(ITEM_DRAG, Pair(fraction, action))
             }
         })
