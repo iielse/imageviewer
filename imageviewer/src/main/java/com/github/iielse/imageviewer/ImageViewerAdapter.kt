@@ -8,6 +8,7 @@ import com.github.iielse.imageviewer.core.*
 import com.github.iielse.imageviewer.model.Photo
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
+import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 
 data class Item(
         val type: Int,
@@ -72,7 +73,7 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         if (position == initPos) {
-            listener?.invoke(ITEM_INIT, holder.itemView)
+            listener?.invoke(ITEM_INIT, holder.itemView.photoView)
             initPos = POS_INVALID
         }
     }

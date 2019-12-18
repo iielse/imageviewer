@@ -29,7 +29,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         (viewer.getChildAt(0) as? RecyclerView?)?.clipChildren = false
         viewer.adapter = adapter
 
-        handleTransformAnimation()
+
     }
 
 
@@ -46,6 +46,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
                         }
                     }
                     ITEM_INIT -> {
+                        (item as? PhotoView2)?.let(::handleTransformAnimation)
                     }
                 }
             }
@@ -53,14 +54,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     }
 
     private fun handleTransformAnimation(view: PhotoView2) {
-        ViewerUtil.transform()
-        val rect = viewModel.getTransformRect(0)
-        if (rect == RECT_NULL) {
-            view.alpha = 0f
-            view.animate().alpha(1f).start()
-        } else {
-
-        }
+        ViewerUtil.transform(this, viewModel.transform?.getOriginView(0), view)
     }
 
 

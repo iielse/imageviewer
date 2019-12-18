@@ -8,8 +8,8 @@ import com.github.iielse.imageviewer.`interface`.Transform
 import com.github.iielse.imageviewer.model.Photo
 
 class ImageViewerViewModel : ViewModel() {
- var dataProvider: DataProvider? = null
- var transform: Transform? = null
+    var dataProvider: DataProvider? = null
+    var transform: Transform? = null
 
     fun initialize(dataProvider: DataProvider?, transform: Transform?) {
         this.dataProvider = dataProvider
@@ -20,9 +20,9 @@ class ImageViewerViewModel : ViewModel() {
         return dataProvider?.getInitial() ?: listOf()
     }
 
-    fun getTransformRect(pos: Int): Rect {
-        return transform?.getOriginView(pos)?.let {
-            Rect().apply { it.getHitRect(this) }
-        } ?: RECT_NULL
-    }
+//    fun getTransformRect(pos: Int): Rect {
+//        return transform?.getOriginView(pos)?.let {
+//            Rect().apply { it.getHitRect(this) }
+//        } ?: RECT_NULL
+//    }
 }
