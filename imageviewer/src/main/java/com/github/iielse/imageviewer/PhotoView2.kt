@@ -21,7 +21,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         fun onRelease(view: PhotoView2) {}
     }
 
-    private val dismissEdge by lazy { height * 0.3f }
+    private val dismissEdge by lazy { height * 0.25f }
     private var scrollEdge = EDGE_NONE
     private var lastRect: RectF? = null
     private var singleTouch = true
@@ -43,8 +43,6 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
     }
 
     override fun onMatrixChanged(rect: RectF?) {
-        // 可以记录到最小到
-        log {  "PhotoView2 onMatrixChanged $scale $lastRect $rect" }
         val last = lastRect
         scrollEdge = if (rect != null && last != null && rect.top.decimal2 >= last.top.decimal2) EDGE_TOP else EDGE_NONE
         lastRect = rect

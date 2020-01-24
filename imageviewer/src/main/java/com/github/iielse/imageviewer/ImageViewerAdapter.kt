@@ -4,6 +4,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.Config.POS_INVALID
+
+import com.github.iielse.imageviewer.viewholders.MoreLoadingVH
+import com.github.iielse.imageviewer.viewholders.MoreRetryVH
+import com.github.iielse.imageviewer.viewholders.NoMoreVH
+import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
+import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 
 data class Item(
@@ -24,13 +30,6 @@ object ItemType {
     val SUBSAMPLING = itemTypeProvider++
 }
 
-class MoreLoadingVH(itemView: View) : RecyclerView.ViewHolder(itemView)
-class MoreRetryVH(itemView: View) : RecyclerView.ViewHolder(itemView)
-class NoMoreVH(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-const val ITEM_DRAG = "adapter_item_drag"
-const val ITEM_INIT = "adapter_item_init"
-
 class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val dataList = mutableListOf<Item>()
     private var listener: ImageViewerAdapterListener? = null
@@ -40,7 +39,8 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         listener = callback
     }
 
-    fun set(sourceList: List<Photo>, initPos: Int = 0, fetchOver: Boolean = false) {
+    fun set(sourceList: List<Photo>) {
+        val fetchOver: Boolean = sourceList.isEmpty()
         val lastSize = dataList.size
         dataList.clear()
         notifyItemRangeRemoved(0, lastSize)
@@ -51,11 +51,27 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyItemInserted(photoSize - 1)
     }
 
+    fun append(sourceList: List<Photo>){
+        log { "viewer adapter append ${sourceList.size}" }
+        val fetchOver: Boolean = sourceList.isEmpty()
+        val loadingIdx = dataList.indexOfFirst { it.type == ItemType.MORE_LOADING }
+        if (loadingIdx >= 0) {
+            dataList.removeAt(loadingIdx)
+            notifyItemRemoved(loadingIdx)
+        }
+        val lastSize = dataList.size
+        dataList.addAll(sourceList.map { Item(ItemType.PHOTO, it) })
+        notifyItemRangeInserted(lastSize, sourceList.size)
+        val photoSize = dataList.size
+        dataList.add(Item(if (fetchOver) ItemType.NO_MORE else ItemType.MORE_LOADING))
+        notifyItemInserted(photoSize - 1)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ItemType.PHOTO -> PhotoViewHolder(parent.inflate(R.layout.item_imageviewer_photo), callback)
             ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent.inflate(R.layout.item_imageviewer_subsampling))
-            ItemType.MORE_LOADING -> MoreLoadingVH(parent.inflate(R.layout.item_imageviewer_more_loading))
+            ItemType.MORE_LOADING -> MoreLoadingVH(parent.inflate(R.layout.item_imageviewer_more_loading), callback)
             ItemType.MORE_RETRY -> MoreRetryVH(parent.inflate(R.layout.item_imageviewer_more_retry))
             else -> NoMoreVH(parent.inflate(R.layout.item_imageviewer_no_more))
         }
@@ -64,6 +80,7 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = dataList[position]
         when (holder) {
+            is MoreLoadingVH -> holder.bind()
             is PhotoViewHolder -> item.extra<Photo>()?.let { holder.bind(it) }
             is SubsamplingViewHolder -> item.extra<Photo>()?.let { holder.bind(it) }
         }
@@ -92,6 +109,9 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override fun onRestore(view: PhotoView2, fraction: Float) {
             listener?.onRestore(view, fraction)
         }
+
+        override fun onLoadMore() {
+            listener?.onLoadMore()
+        }
     }
 }
-

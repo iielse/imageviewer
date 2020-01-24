@@ -15,6 +15,11 @@ class ImageViewerViewModel : ViewModel() {
         return dataProvider?.getInitial() ?: listOf()
     }
 
+    // todo lifecycle
+    fun getMore(callback: (List<Photo>) -> Unit) {
+         dataProvider?.getMore(callback)
+    }
+
 //    fun getTransformRect(pos: Int): Rect {
 //        return transform?.getOriginView(pos)?.let {
 //            Rect().apply { it.getHitRect(this) }

@@ -58,6 +58,10 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
                 release(view)
 
             }
+
+            override fun onLoadMore() {
+                viewModel.getMore { adapter.append(it)}
+            }
         }
     }
 
@@ -101,46 +105,53 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         // todo animating intercept
 
         container.changeToBackgroundColor(Color.TRANSPARENT)
-
-        val startView: View? = viewModel.transform?.getOriginView(0)
-            animator = ValueAnimator.ofFloat(1f, 0f).apply {
-                duration = 200
-                interpolator = DecelerateInterpolator()
-                if (startView == null) {
-                    addUpdateListener {
-                        val fraction = it.animatedValue as Float
-                        endView.alpha = fraction
-                    }
-                } else {
-                    val w1 = startView.width
-                    val w2 = endView.width
-                    val h1 = startView.height
-                    val h2 = endView.height
-
-                    val transX = endView.translationX
-                    val transY = endView.translationY
-                    val scaleX = endView.scaleX
-                    val scaleY = endView.scaleY
-                    addUpdateListener {
-                        val fraction = it.animatedValue as Float
-                        endView.translationX = fraction * transX
-                        endView.translationY = fraction * transY
-                        endView.scaleX = 1 + (scaleX - 1) * fraction
-                        endView.scaleY = 1 + (scaleY - 1) * fraction
-                        endView.layoutParams = (endView.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
-                            width = (w1 + (w2 - w1) * fraction).toInt()
-                            height = (h1 + (h2 - h1) * fraction).toInt()
-                            setMargins((startView.left * (1 - fraction)).toInt(), (startView.top * (1 - fraction)).toInt(), 0, 0)
-                        }
-                    }
-                    addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            dismissAllowingStateLoss()
-                        }
-                    })
+        val startView: View? = viewModel.transform?.getOriginView(viewer.currentItem)
+        log { "viewer fragment release ${viewer.currentItem} $startView" }
+        animator = ValueAnimator.ofFloat(1f, 0f).apply {
+            duration = 200
+            interpolator = DecelerateInterpolator()
+            if (startView == null) {
+                addUpdateListener {
+                    val fraction = it.animatedValue as Float
+                    endView.alpha = fraction
+                    endView.scaleX = 1 + (1 - fraction) * 0.4f
+                    endView.scaleY = 1 + (1 - fraction) * 0.4f
                 }
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        dismissAllowingStateLoss()
+                    }
+                })
+            } else {
+                val w1 = startView.width
+                val w2 = endView.width
+                val h1 = startView.height
+                val h2 = endView.height
+
+                val transX = endView.translationX
+                val transY = endView.translationY
+                val scaleX = endView.scaleX
+                val scaleY = endView.scaleY
+                addUpdateListener {
+                    val fraction = it.animatedValue as Float
+                    endView.translationX = fraction * transX
+                    endView.translationY = fraction * transY
+                    endView.scaleX = 1 + (scaleX - 1) * fraction
+                    endView.scaleY = 1 + (scaleY - 1) * fraction
+                    endView.layoutParams = (endView.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
+                        width = (w1 + (w2 - w1) * fraction).toInt()
+                        height = (h1 + (h2 - h1) * fraction).toInt()
+                        setMargins((startView.left * (1 - fraction)).toInt(), (startView.top * (1 - fraction)).toInt(), 0, 0)
+                    }
+                }
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        dismissAllowingStateLoss()
+                    }
+                })
             }
-            animator?.start()
+        }
+        animator?.start()
     }
 
     override fun onBackPressed() {
