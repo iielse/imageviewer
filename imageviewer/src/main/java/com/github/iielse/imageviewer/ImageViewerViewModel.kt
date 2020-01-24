@@ -1,11 +1,6 @@
 package com.github.iielse.imageviewer
 
-import android.graphics.Rect
 import androidx.lifecycle.ViewModel
-import com.github.iielse.imageviewer.Config.RECT_NULL
-import com.github.iielse.imageviewer.`interface`.DataProvider
-import com.github.iielse.imageviewer.`interface`.Transform
-import com.github.iielse.imageviewer.model.Photo
 
 class ImageViewerViewModel : ViewModel() {
     var dataProvider: DataProvider? = null

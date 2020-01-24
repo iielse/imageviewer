@@ -1,23 +1,14 @@
-package com.github.iielse.imageviewer.viewholders
+package com.github.iielse.imageviewer
 
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.github.iielse.imageviewer.ITEM_DRAG
-import com.github.iielse.imageviewer.core.AdapterCallback
-import com.github.iielse.imageviewer.model.Photo
-import com.github.iielse.imageviewer.photoview.PhotoView2
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
 
-class PhotoViewHolder(override val containerView: View, callback: AdapterCallback) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+class PhotoViewHolder(override val containerView: View, callback: PhotoView2.Listener) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     init {
-        photoView.setDragChangedListener(object : PhotoView2.OnDragChangedListener {
-            override fun onDragChanged(view: PhotoView2, fraction: Float, action: Int) {
-                callback(ITEM_DRAG, Pair(fraction, action))
-            }
-        })
+        photoView.setListener(callback)
     }
 
     fun bind(item: Photo) {

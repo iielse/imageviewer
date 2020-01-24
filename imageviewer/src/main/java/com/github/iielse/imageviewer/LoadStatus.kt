@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer.core
+package com.github.iielse.imageviewer
 
 enum class LoadStatus {
     IDLE,

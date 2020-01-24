@@ -1,6 +1,4 @@
-package com.github.iielse.imageviewer.`interface`
-
-import com.github.iielse.imageviewer.model.Photo
+package com.github.iielse.imageviewer
 
 interface DataProvider {
     fun getInitial(): List<Photo>

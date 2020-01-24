@@ -3,8 +3,6 @@ package com.github.iielse.imageviewer
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
-import com.github.iielse.imageviewer.`interface`.DataProvider
-import com.github.iielse.imageviewer.`interface`.Transform
 
 class ImageViewerBuilder(private val context: Context?) {
     private var dataProvider: DataProvider? = null

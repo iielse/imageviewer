@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.github.iielse.imageviewer.photoview.PhotoView2
+    <com.github.iielse.imageviewer.PhotoView2
         android:id="@+id/photoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

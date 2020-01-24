@@ -4,10 +4,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.Config.POS_INVALID
-import com.github.iielse.imageviewer.core.*
-import com.github.iielse.imageviewer.model.Photo
-import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
-import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 
 data class Item(
@@ -28,15 +24,19 @@ object ItemType {
     val SUBSAMPLING = itemTypeProvider++
 }
 
+class MoreLoadingVH(itemView: View) : RecyclerView.ViewHolder(itemView)
+class MoreRetryVH(itemView: View) : RecyclerView.ViewHolder(itemView)
+class NoMoreVH(itemView: View) : RecyclerView.ViewHolder(itemView)
+
 const val ITEM_DRAG = "adapter_item_drag"
 const val ITEM_INIT = "adapter_item_init"
 
 class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val dataList = mutableListOf<Item>()
-    private var listener: AdapterCallback? = null
+    private var listener: ImageViewerAdapterListener? = null
     private var initPos = 0
 
-    fun setListener(callback: AdapterCallback?) {
+    fun setListener(callback: ImageViewerAdapterListener?) {
         listener = callback
     }
 
@@ -49,10 +49,6 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         val photoSize = dataList.size
         dataList.add(Item(if (fetchOver) ItemType.NO_MORE else ItemType.MORE_LOADING))
         notifyItemInserted(photoSize - 1)
-    }
-
-    fun append(sourceList: List<Photo>, fetchOver: Boolean = false) {
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -73,20 +69,29 @@ class ImageViewerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         if (position == initPos) {
-            listener?.invoke(ITEM_INIT, holder.itemView.photoView)
+            listener?.onInit(holder.itemView.photoView)
             initPos = POS_INVALID
         }
     }
 
-    private val callback: AdapterCallback = { item, action ->
-        listener?.invoke(item, action)
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return dataList[position].type
-    }
-
-
+    override fun getItemViewType(position: Int) = dataList[position].type
     override fun getItemCount() = dataList.size
+    private val callback: ImageViewerAdapterListener = object : ImageViewerAdapterListener {
+        override fun onInit(view: View) {
+            listener?.onInit(view)
+        }
+
+        override fun onDrag(view: PhotoView2, fraction: Float) {
+            listener?.onDrag(view, fraction)
+        }
+
+        override fun onRelease(view: PhotoView2) {
+            listener?.onRelease(view)
+        }
+
+        override fun onRestore(view: PhotoView2, fraction: Float) {
+            listener?.onRestore(view, fraction)
+        }
+    }
 }
 

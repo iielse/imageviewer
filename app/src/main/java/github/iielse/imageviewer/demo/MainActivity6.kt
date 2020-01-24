@@ -6,9 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import ch.ielse.demo.p02.R
 import com.bumptech.glide.Glide
 import com.github.iielse.imageviewer.ImageViewerBuilder
-import com.github.iielse.imageviewer.`interface`.DataProviderAdapter
-import com.github.iielse.imageviewer.`interface`.Transform
-import com.github.iielse.imageviewer.model.Photo
+import com.github.iielse.imageviewer.DataProviderAdapter
+import com.github.iielse.imageviewer.Transform
+import com.github.iielse.imageviewer.Photo
 import kotlinx.android.synthetic.main.activity_9.*
 
 class MainActivity6 : AppCompatActivity() {

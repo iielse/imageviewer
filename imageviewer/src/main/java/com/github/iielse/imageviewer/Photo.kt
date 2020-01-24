@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer.model
+package com.github.iielse.imageviewer
 
 data class Photo(
         val id: String,

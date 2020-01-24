@@ -1,10 +1,11 @@
 package com.github.iielse.imageviewer
 
 import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 
 class ViewerContainerLayout @JvmOverloads constructor(
@@ -13,20 +14,23 @@ class ViewerContainerLayout @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs) {
     private val argbEvaluator by lazy { ArgbEvaluator() }
     private var bgColor = Color.TRANSPARENT
-    private var animator: ObjectAnimator? = null
+    private var animator: ValueAnimator? = null
 
-    fun animateBackgroundColor(targetColor: Int) {
-        animator = ObjectAnimator.ofObject(this, "backgroundColor", argbEvaluator, bgColor, targetColor)
-                .also { it.start() }
+    fun changeToBackgroundColor(targetColor: Int) {
+        animator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 200
+            interpolator = DecelerateInterpolator()
+            val start = bgColor
+            addUpdateListener {
+                val fraction = it.animatedValue as Float
+                updateBackgroundColor(fraction, start, targetColor)
+            }
+        }
+        animator?.start()
     }
 
-    fun updateBackgroundColor(fraction: Float) {
-        val resultColor: Int = argbEvaluator.evaluate(fraction, 0xff000000.toInt(), 0x00000000) as Int
-        setBackgroundColor(resultColor)
-    }
-
-    fun release() {
-        animator?.cancel()
+    fun updateBackgroundColor(fraction: Float, startValue: Int, endValue: Int) {
+        setBackgroundColor(argbEvaluator.evaluate(fraction, startValue, endValue) as Int)
     }
 
     override fun setBackgroundColor(color: Int) {
@@ -36,6 +40,6 @@ class ViewerContainerLayout @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        release()
+        animator?.cancel()
     }
 }

@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer.`interface`
+package com.github.iielse.imageviewer
 
 import android.widget.ImageView
 

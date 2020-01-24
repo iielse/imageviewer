@@ -1,8 +1,5 @@
-package com.github.iielse.imageviewer.core
+package com.github.iielse.imageviewer
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
