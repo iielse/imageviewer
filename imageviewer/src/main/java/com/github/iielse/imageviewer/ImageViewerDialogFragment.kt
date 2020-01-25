@@ -9,17 +9,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
-import androidx.core.animation.addListener
 import androidx.core.view.doOnPreDraw
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
+import com.github.iielse.imageviewer.adapter.ImageViewerAdapter
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 
 class ImageViewerDialogFragment : BaseDialogFragment() {
     private val viewModel by lazy { ViewModelProviders.of(requireActivity()).get(ImageViewerViewModel::class.java) }
-    private val adapter by lazy { ImageViewerAdapter() }
+    private val adapter by lazy { ImageViewerAdapter(viewModel.initialPosition) }
     private var animator: ValueAnimator? = null
-    private var current: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_image_viewer_dialog, container, false)
@@ -28,39 +28,33 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.setListener(adapterListener)
-        adapter.set(viewModel.getInitial())
         (viewer.getChildAt(0) as? RecyclerView?)?.clipChildren = false
         viewer.adapter = adapter
+        viewer.setCurrentItem (viewModel.initialPosition, false)
 
+        viewModel.dataList.observe(this, Observer {
+            adapter.submitList(it)
+        })
     }
 
 
     private val adapterListener by lazy {
         object : ImageViewerAdapterListener {
             override fun onInit(view: View) {
-                current = view
                 init(view)
                 container.changeToBackgroundColor(Color.BLACK)
             }
 
             override fun onDrag(view: PhotoView2, fraction: Float) {
-                current = view
                 container.updateBackgroundColor(fraction, Color.BLACK, Color.TRANSPARENT)
             }
 
             override fun onRestore(view: PhotoView2, fraction: Float) {
-                current = view
                 container.changeToBackgroundColor(Color.BLACK)
             }
 
             override fun onRelease(view: PhotoView2) {
-                current = view
                 release(view)
-
-            }
-
-            override fun onLoadMore() {
-                viewModel.getMore { adapter.append(it)}
             }
         }
     }
@@ -112,10 +106,12 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
             interpolator = DecelerateInterpolator()
             if (startView == null) {
                 addUpdateListener {
+
                     val fraction = it.animatedValue as Float
                     endView.alpha = fraction
                     endView.scaleX = 1 + (1 - fraction) * 0.4f
                     endView.scaleY = 1 + (1 - fraction) * 0.4f
+                    log { "release update $fraction " }
                 }
                 addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
@@ -155,6 +151,6 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     }
 
     override fun onBackPressed() {
-        current?.let { release(it) }
+        viewer.findViewWithKeyTag(R.id.viewer_adapter_item, viewer.currentItem)?.let { release(it) }
     }
 }

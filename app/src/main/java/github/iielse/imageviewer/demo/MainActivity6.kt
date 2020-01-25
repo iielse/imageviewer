@@ -17,8 +17,7 @@ class MainActivity6 : AppCompatActivity() {
         setContentView(R.layout.activity_9)
 
         Glide.with(pView)
-//                .load("https://img-blog.csdnimg.cn/20190505120041887.gif")
-                .load("http://static.unicolive.com/20190715/me_0-1563200961.618469")
+                .load(provideBitmap(9527))
                 .into(pView)
 
         pView.setOnClickListener {
@@ -26,8 +25,8 @@ class MainActivity6 : AppCompatActivity() {
                     .setDataProvider(object : DataProviderAdapter() {
 
                         var curr = 0
-                        override fun getInitial(): List<Photo> {
-                            return listOf(Photo(id = "1", url = "http://static.unicolive.com/20190715/me_0-1563200961.618469", height = 0, width = 0))
+                        override fun loadInitial(): List<Photo> {
+                            return listOf(Photo(id = 9527, url = "", height = 0, width = 0))
                         }
 
                         override fun getMore(callback: (List<Photo>) -> Unit) {
@@ -40,12 +39,12 @@ class MainActivity6 : AppCompatActivity() {
                     .setTransform(object : Transform {
                         override fun getOriginView(pos: Int): ImageView? {
                             return when (pos) {
-                                0 -> pView
+                                2 -> pView
                                 else -> null
                             }
                         }
                     })
-                    .setInitialPosition(1)
+                    .setInitialPosition(9527)
                     .show()
         }
     }

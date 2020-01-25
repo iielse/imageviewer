@@ -1,14 +1,19 @@
 package com.github.iielse.imageviewer
 
 interface DataProvider {
-    fun getInitial(): List<Photo>
-    fun getMore(callback: (List<Photo>) -> Unit)
+    fun loadInitial(): List<Photo>
+    fun loadAfter(key: Int, callback: (List<Photo>) -> Unit)
+    fun loadBefore(key: Int, callback: (List<Photo>) -> Unit)
 }
 
 abstract class DataProviderAdapter : DataProvider {
-    abstract override fun getInitial(): List<Photo>
+    abstract override fun loadInitial(): List<Photo>
 
-    override fun getMore(callback: (List<Photo>) -> Unit) {
+    override fun loadAfter(key: Int, callback: (List<Photo>) -> Unit) {
+        callback(emptyList())
+    }
+
+    override fun loadBefore(key: Int, callback: (List<Photo>) -> Unit) {
         callback(emptyList())
     }
 }

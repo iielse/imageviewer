@@ -3,6 +3,7 @@ package com.github.iielse.imageviewer
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
+import java.lang.IllegalArgumentException
 
 class ImageViewerBuilder(private val context: Context?) {
     private var dataProvider: DataProvider? = null
@@ -29,8 +30,13 @@ class ImageViewerBuilder(private val context: Context?) {
     fun show() {
         (context as? FragmentActivity?)?.let {
             val viewModel = ViewModelProviders.of(it).get(ImageViewerViewModel::class.java)
-            viewModel.initialize(dataProvider, transform)
+            viewModel.initialize(dataProvider, transform, initialPosition)
             create().show(it.supportFragmentManager)
         }
+    }
+
+    private fun assert() {
+        if (dataProvider == null) throw IllegalArgumentException("data provider is null")
+        if (initialPosition >= dataProvider!!.getInitial().size) throw IllegalArgumentException("initial position should < initial photo list size")
     }
 }
