@@ -18,7 +18,9 @@ class ImageViewerBuilder(private val context: Context?,
     fun show() {
         (context as? FragmentActivity?)?.let {
             Components.set(imageLoader, dataProvider, transformer, initialPosition)
-            create().show(it.supportFragmentManager)
+            val viewer = create()
+            Components.attach(viewer)
+            viewer.show(it.supportFragmentManager)
         }
     }
 

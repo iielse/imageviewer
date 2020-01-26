@@ -13,7 +13,7 @@
 //                        Components.requireImageLoader(),
 //                        Components.requireDataProvider(),
 //                        Components.requireTransformer(),
-//                        Components.requireInitialPosition()) as T
+//                        Components.requireInitKey()) as T
 //        }
 //        throw IllegalArgumentException("")
 //    }

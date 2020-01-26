@@ -17,16 +17,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.adapter.ImageViewerAdapter
 import com.github.iielse.imageviewer.datasource.Components
 import com.github.iielse.imageviewer.datasource.Components.requireImageLoader
-import com.github.iielse.imageviewer.datasource.Components.requireInitialPosition
+import com.github.iielse.imageviewer.datasource.Components.requireInitKey
 import com.github.iielse.imageviewer.datasource.Components.requireTransformer
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 
 class ImageViewerDialogFragment : BaseDialogFragment() {
-    private val viewModel by lazy { ViewModelProviders.of(requireActivity()).get(ImageViewerViewModel::class.java) }
-    private val initialPosition by lazy { requireInitialPosition() }
+    private val viewModel by lazy { ViewModelProviders.of(this).get(ImageViewerViewModel::class.java) }
+    private val initKey by lazy { requireInitKey() }
     private val imageLoader by lazy { requireImageLoader() }
     private val transformer by lazy { requireTransformer() }
-    private val adapter by lazy { ImageViewerAdapter(initialPosition) }
+    private val adapter by lazy { ImageViewerAdapter(initKey) }
     private var animator: ValueAnimator? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -36,11 +36,15 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.setListener(adapterListener)
-        (viewer.getChildAt(0) as? RecyclerView?)?.clipChildren = false
+        (viewer.getChildAt(0) as? RecyclerView?)?.let {
+            it.clipChildren = false
+            it.itemAnimator = null
+        }
         viewer.adapter = adapter
-        viewer.setCurrentItem(initialPosition, false)
 
         viewModel.dataList.observe(this, Observer {
+            log { "submitList ${it.size}  ${it.indexOfFirst { it.id == initKey }}" }
+            viewer.setCurrentItem(it.indexOfFirst { it.id == initKey }, false)
             adapter.submitList(it)
         })
     }
@@ -74,8 +78,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         super.onDestroyView()
         adapter.setListener(null)
         animator?.cancel()
-        viewModel.release()
-        Components.release()
+     //   Components.release() // TODO clear last data
     }
 
     private fun init(endView: View) {
@@ -110,7 +113,6 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
 
     private fun release(endView: View) {
         // todo animating intercept
-
         container.changeToBackgroundColor(Color.TRANSPARENT)
         val startView: View? = transformer?.getView(viewer.currentItem)
         log { "viewer fragment release ${viewer.currentItem} $startView" }
@@ -119,12 +121,10 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
             interpolator = DecelerateInterpolator()
             if (startView == null) {
                 addUpdateListener {
-
                     val fraction = it.animatedValue as Float
                     endView.alpha = fraction
                     endView.scaleX = 1 + (1 - fraction) * 0.4f
                     endView.scaleY = 1 + (1 - fraction) * 0.4f
-                    log { "release update $fraction " }
                 }
                 addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
