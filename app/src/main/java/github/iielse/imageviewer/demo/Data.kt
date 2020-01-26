@@ -29,9 +29,9 @@ fun fetchBefore(key: Int, callback: (List<Photo>) -> Unit) {
                 numPhoto(key - 4),
                 numPhoto(key - 5),
                 numPhoto(key - 6),
-                numPhoto(key - 7)).reversed())
+                numPhoto(key - 7)).filter { it.id >= 0 }.reversed())
     }, 200)
 }
 
 private val mainHandler = Handler(Looper.getMainLooper())
-private fun numPhoto(value: Int) = MyPhoto(id = value,  url = "")
+private fun numPhoto(value: Int) = MyPhoto(id = value, url = "")
