@@ -10,6 +10,7 @@ import com.github.iielse.imageviewer.core.DataProviderAdapter
 import com.github.iielse.imageviewer.core.Transformer
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.core.ImageLoader
+import com.github.iielse.imageviewer.utils.log
 import kotlinx.android.synthetic.main.activity_9.*
 
 class MainActivity6 : AppCompatActivity() {
@@ -53,6 +54,7 @@ class MainActivity6 : AppCompatActivity() {
                 },
                 transformer = object : Transformer {
                     override fun getView(key: Int): ImageView? {
+                        log { "getView key $key" }
                         return when (key) {
                             clicked.id -> clickedView
                             else -> null

@@ -29,7 +29,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     private val imageLoader by lazy { requireImageLoader() }
     private val transformer by lazy { requireTransformer() }
     private val adapter by lazy { ImageViewerAdapter(initKey) }
-    private var current: View? = null
+    private var initView: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_image_viewer_dialog, container, false)
@@ -57,8 +57,15 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 log { "onPageSelected $position ${viewer.currentItem}" }
-                current = viewer.findViewWithKeyTag(R.id.viewer_adapter_item_pos, viewer.currentItem)
+                // try fix initView tag position
+                (initView?.getTag(R.id.viewer_adapter_item_pos) as? Int?)?.let {
+                    if (it != position) {
+                        initView?.setTag(R.id.viewer_adapter_item_pos, position)
+                        initView = null
+                    }
+                }
             }
+
         }
     }
 
@@ -66,21 +73,21 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         object : ImageViewerAdapterListener {
             override fun onInit(view: PhotoView2) {
                 log { "onInit $view" }
-                current = view
+                initView = view
                 AnimHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), view)
                 container.changeToBackgroundColor(Color.BLACK)
             }
 
-            override fun onDrag(itemView: View, view: PhotoView2, fraction: Float) {
+            override fun onDrag(view: PhotoView2, fraction: Float) {
                 container.updateBackgroundColor(fraction, Color.BLACK, Color.TRANSPARENT)
             }
 
-            override fun onRestore(itemView: View, view: PhotoView2, fraction: Float) {
+            override fun onRestore(view: PhotoView2, fraction: Float) {
                 container.changeToBackgroundColor(Color.BLACK)
             }
 
-            override fun onRelease(itemView: View, view: PhotoView2) {
-                val startView = (itemView.getTag(R.id.viewer_adapter_item_data) as? Item?)?.id?.let { transformer.getView(it) }
+            override fun onRelease(view: PhotoView2) {
+                val startView = (view.getTag(R.id.viewer_adapter_item_data) as? Photo?)?.id()?.let { transformer.getView(it) }
                 AnimHelper.end(this@ImageViewerDialogFragment, startView, view)
                 container.changeToBackgroundColor(Color.TRANSPARENT)
             }
@@ -98,9 +105,9 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     }
 
     override fun onBackPressed() {
-        log { "onBackPressed ${viewer.currentItem} $current" }
-        current?.let {
-            val startView = (it.getTag(R.id.viewer_adapter_item_data) as? Item?)?.id?.let { transformer.getView(it) }
+        log { "onBackPressed ${viewer.currentItem}" }
+        viewer.findViewWithKeyTag(R.id.viewer_adapter_item_pos, viewer.currentItem)?.let {
+            val startView = (it.getTag(R.id.viewer_adapter_item_data) as? Photo?)?.id()?.let { transformer.getView(it) }
             AnimHelper.end(this, startView, it)
             container.changeToBackgroundColor(Color.TRANSPARENT)
         }

@@ -1,6 +1,5 @@
 package com.github.iielse.imageviewer.adapter
 
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.paging.PagedListAdapter
@@ -60,16 +59,16 @@ class ImageViewerAdapter(initKey: Int) : PagedListAdapter<Item, RecyclerView.Vie
             listener?.onInit(view)
         }
 
-        override fun onDrag(itemView: View, view: PhotoView2, fraction: Float) {
-            listener?.onDrag(itemView, view, fraction)
+        override fun onDrag(view: PhotoView2, fraction: Float) {
+            listener?.onDrag(view, fraction)
         }
 
-        override fun onRelease(itemView: View, view: PhotoView2) {
-            listener?.onRelease(itemView, view)
+        override fun onRelease(view: PhotoView2) {
+            listener?.onRelease(view)
         }
 
-        override fun onRestore(itemView: View, view: PhotoView2, fraction: Float) {
-            listener?.onRestore(itemView, view, fraction)
+        override fun onRestore(view: PhotoView2, fraction: Float) {
+            listener?.onRestore(view, fraction)
         }
 
         override fun onLoad(view: ImageView, item: Photo) {

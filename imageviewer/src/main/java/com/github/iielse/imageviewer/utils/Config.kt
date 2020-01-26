@@ -4,6 +4,6 @@ import com.github.iielse.imageviewer.BuildConfig
 
 object Config {
     var DEBUG = BuildConfig.DEBUG
-    var OFFSCREEN_PAGE_LIMIT = 2
+    var OFFSCREEN_PAGE_LIMIT = 1
     const val INVALID = -1
 }

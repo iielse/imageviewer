@@ -34,7 +34,7 @@ fun LifecycleOwner.onDestroy(callback: () -> Unit) {
     })
 }
 
-fun log(tag: String = "viewer", block: () -> String) {
+fun log(tag: String = "test_viewer", block: () -> String) {
     if (Config.DEBUG) Log.i(tag, block())
 }
 

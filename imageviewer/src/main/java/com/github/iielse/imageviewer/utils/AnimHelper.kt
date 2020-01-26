@@ -14,7 +14,7 @@ object AnimHelper {
     fun start(owner: LifecycleOwner, startView: View?, endView: View) {
         endView.doOnPreDraw {
             val animator = ValueAnimator.ofFloat(0f, 1f)
-            animator.duration = 200
+            animator.duration = 300
             animator.interpolator = DecelerateInterpolator()
             if (startView == null) {
                 animator.addUpdateListener {
@@ -42,7 +42,7 @@ object AnimHelper {
 
     fun end(fragment: DialogFragment, startView: View?, endView: View) {
         val animator = ValueAnimator.ofFloat(1f, 0f)
-        animator.duration = 200
+        animator.duration = 300
         animator.interpolator = DecelerateInterpolator()
         animator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
