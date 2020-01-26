@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer
+package com.github.iielse.imageviewer.widgets
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator

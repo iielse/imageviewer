@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer
+package com.github.iielse.imageviewer.core
 
 interface DataProvider {
     fun loadInitial(): List<Photo>

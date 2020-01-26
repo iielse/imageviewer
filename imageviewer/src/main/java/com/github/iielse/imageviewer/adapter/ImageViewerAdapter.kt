@@ -7,13 +7,17 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.*
-import com.github.iielse.imageviewer.Config.INVALID
+import com.github.iielse.imageviewer.core.Photo
+import com.github.iielse.imageviewer.utils.Config.INVALID
+import com.github.iielse.imageviewer.utils.inflate
+import com.github.iielse.imageviewer.utils.log
 
 import com.github.iielse.imageviewer.viewholders.MoreLoadingVH
 import com.github.iielse.imageviewer.viewholders.MoreRetryVH
 import com.github.iielse.imageviewer.viewholders.NoMoreVH
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
+import com.github.iielse.imageviewer.widgets.PhotoView2
 import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 import java.util.*
 
@@ -37,8 +41,9 @@ class ImageViewerAdapter(initKey: Int) : PagedListAdapter<Item, RecyclerView.Vie
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
+        log { "onBindViewHolder $key $position $item" }
         when (holder) {
-            is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
+            is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it, position) }
             is SubsamplingViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
         }
 
@@ -46,25 +51,25 @@ class ImageViewerAdapter(initKey: Int) : PagedListAdapter<Item, RecyclerView.Vie
             listener?.onInit(holder.itemView.photoView)
             key = INVALID
         }
-        holder.itemView.setTag(R.id.viewer_adapter_item, position)
+
     }
 
     override fun getItemViewType(position: Int) = getItem(position)?.type ?: ItemType.UNKNOWN
     private val callback: ImageViewerAdapterListener = object : ImageViewerAdapterListener {
-        override fun onInit(view: View) {
+        override fun onInit(view: PhotoView2) {
             listener?.onInit(view)
         }
 
-        override fun onDrag(view: PhotoView2, fraction: Float) {
-            listener?.onDrag(view, fraction)
+        override fun onDrag(itemView: View, view: PhotoView2, fraction: Float) {
+            listener?.onDrag(itemView, view, fraction)
         }
 
-        override fun onRelease(view: PhotoView2) {
-            listener?.onRelease(view)
+        override fun onRelease(itemView: View, view: PhotoView2) {
+            listener?.onRelease(itemView, view)
         }
 
-        override fun onRestore(view: PhotoView2, fraction: Float) {
-            listener?.onRestore(view, fraction)
+        override fun onRestore(itemView: View, view: PhotoView2, fraction: Float) {
+            listener?.onRestore(itemView, view, fraction)
         }
 
         override fun onLoad(view: ImageView, item: Photo) {

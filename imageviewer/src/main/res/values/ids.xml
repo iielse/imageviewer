@@ -1,3 +1,4 @@
 <resources>
-   <item name="viewer_adapter_item" type="id" />
+   <item name="viewer_adapter_item_pos" type="id" />
+   <item name="viewer_adapter_item_data" type="id" />
 </resources>

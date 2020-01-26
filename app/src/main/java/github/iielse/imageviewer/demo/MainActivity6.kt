@@ -6,34 +6,41 @@ import androidx.appcompat.app.AppCompatActivity
 import ch.ielse.demo.p02.R
 import com.bumptech.glide.Glide
 import com.github.iielse.imageviewer.ImageViewerBuilder
-import com.github.iielse.imageviewer.DataProviderAdapter
-import com.github.iielse.imageviewer.Transformer
-import com.github.iielse.imageviewer.Photo
-import com.github.iielse.imageviewer.`interface`.ImageLoader
+import com.github.iielse.imageviewer.core.DataProviderAdapter
+import com.github.iielse.imageviewer.core.Transformer
+import com.github.iielse.imageviewer.core.Photo
+import com.github.iielse.imageviewer.core.ImageLoader
 import kotlinx.android.synthetic.main.activity_9.*
 
 class MainActivity6 : AppCompatActivity() {
-    private val init = Photo(id = 100, url = "", height = 0, width = 0)
+    private val init100 = MyPhoto(id = 100, url = "")
+    private val init22 = MyPhoto(id = 22, url = "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_9)
 
         Glide.with(pView)
-                .load(provideBitmap(init.id))
+                .load(provideBitmap(init100.id))
                 .into(pView)
+        Glide.with(pView22)
+                .load(provideBitmap(init22.id))
+                .into(pView22)
 
         pView.setOnClickListener {
-            builder().show()
+            builder(init100, pView).show()
+        }
+        pView22.setOnClickListener {
+            builder(init22, pView22).show()
         }
     }
 
-    private fun builder(): ImageViewerBuilder {
+    private fun builder(clicked: MyPhoto, clickedView: ImageView): ImageViewerBuilder {
         return ImageViewerBuilder(
                 context = this,
                 dataProvider = object : DataProviderAdapter() {
                     override fun loadInitial(): List<Photo> {
-                        return listOf(init)
+                        return listOf(clicked)
                     }
 
                     override fun loadAfter(key: Int, callback: (List<Photo>) -> Unit) {
@@ -45,9 +52,9 @@ class MainActivity6 : AppCompatActivity() {
                     }
                 },
                 transformer = object : Transformer {
-                    override fun getView(pos: Int): ImageView? {
-                        return when (pos) {
-                            init.id -> pView
+                    override fun getView(key: Int): ImageView? {
+                        return when (key) {
+                            clicked.id -> clickedView
                             else -> null
                         }
                     }
@@ -55,11 +62,11 @@ class MainActivity6 : AppCompatActivity() {
                 imageLoader = object : ImageLoader {
                     override fun load(view: ImageView, photo: Photo) {
                         Glide.with(view)
-                                .load(provideBitmap(photo.id))
+                                .load(provideBitmap(photo.id()))
                                 .into(view)
                     }
                 },
-                initialPosition = init.id
+                initKey = clicked.id
         )
     }
 }

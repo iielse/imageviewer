@@ -1,24 +1,26 @@
 package com.github.iielse.imageviewer
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
-import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import com.github.iielse.imageviewer.utils.Config.OFFSCREEN_PAGE_LIMIT
 import com.github.iielse.imageviewer.adapter.ImageViewerAdapter
-import com.github.iielse.imageviewer.datasource.Components
-import com.github.iielse.imageviewer.datasource.Components.requireImageLoader
-import com.github.iielse.imageviewer.datasource.Components.requireInitKey
-import com.github.iielse.imageviewer.datasource.Components.requireTransformer
+import com.github.iielse.imageviewer.adapter.Item
+import com.github.iielse.imageviewer.core.Components.requireImageLoader
+import com.github.iielse.imageviewer.core.Components.requireInitKey
+import com.github.iielse.imageviewer.core.Components.requireTransformer
+import com.github.iielse.imageviewer.core.Photo
+import com.github.iielse.imageviewer.utils.AnimHelper
+import com.github.iielse.imageviewer.utils.findViewWithKeyTag
+import com.github.iielse.imageviewer.utils.log
+import com.github.iielse.imageviewer.widgets.PhotoView2
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 
 class ImageViewerDialogFragment : BaseDialogFragment() {
@@ -27,7 +29,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     private val imageLoader by lazy { requireImageLoader() }
     private val transformer by lazy { requireTransformer() }
     private val adapter by lazy { ImageViewerAdapter(initKey) }
-    private var animator: ValueAnimator? = null
+    private var current: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_image_viewer_dialog, container, false)
@@ -40,32 +42,47 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
             it.clipChildren = false
             it.itemAnimator = null
         }
+        viewer.registerOnPageChangeCallback(pageChangeCallback)
+        viewer.offscreenPageLimit = OFFSCREEN_PAGE_LIMIT
         viewer.adapter = adapter
 
         viewModel.dataList.observe(this, Observer {
-            log { "submitList ${it.size}  ${it.indexOfFirst { it.id == initKey }}" }
-            viewer.setCurrentItem(it.indexOfFirst { it.id == initKey }, false)
+            log { "submitList ${it.size}" }
             adapter.submitList(it)
+            viewer.setCurrentItem(it.indexOfFirst { it.id == initKey }, false)
         })
+    }
+
+    private val pageChangeCallback by lazy {
+        object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                log { "onPageSelected $position ${viewer.currentItem}" }
+                current = viewer.findViewWithKeyTag(R.id.viewer_adapter_item_pos, viewer.currentItem)
+            }
+        }
     }
 
     private val adapterListener by lazy {
         object : ImageViewerAdapterListener {
-            override fun onInit(view: View) {
-                init(view)
+            override fun onInit(view: PhotoView2) {
+                log { "onInit $view" }
+                current = view
+                AnimHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), view)
                 container.changeToBackgroundColor(Color.BLACK)
             }
 
-            override fun onDrag(view: PhotoView2, fraction: Float) {
+            override fun onDrag(itemView: View, view: PhotoView2, fraction: Float) {
                 container.updateBackgroundColor(fraction, Color.BLACK, Color.TRANSPARENT)
             }
 
-            override fun onRestore(view: PhotoView2, fraction: Float) {
+            override fun onRestore(itemView: View, view: PhotoView2, fraction: Float) {
                 container.changeToBackgroundColor(Color.BLACK)
             }
 
-            override fun onRelease(view: PhotoView2) {
-                release(view)
+            override fun onRelease(itemView: View, view: PhotoView2) {
+                val startView = (itemView.getTag(R.id.viewer_adapter_item_data) as? Item?)?.id?.let { transformer.getView(it) }
+                AnimHelper.end(this@ImageViewerDialogFragment, startView, view)
+                container.changeToBackgroundColor(Color.TRANSPARENT)
             }
 
             override fun onLoad(view: ImageView, item: Photo) {
@@ -76,94 +93,16 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewer.unregisterOnPageChangeCallback(pageChangeCallback)
         adapter.setListener(null)
-        animator?.cancel()
-     //   Components.release() // TODO clear last data
-    }
-
-    private fun init(endView: View) {
-        val startView: View? = transformer?.getView(0)
-        endView.doOnPreDraw {
-            animator = ValueAnimator.ofFloat(0f, 1f).apply {
-                duration = 200
-                interpolator = DecelerateInterpolator()
-                if (startView == null) {
-                    addUpdateListener {
-                        val fraction = it.animatedValue as Float
-                        endView.alpha = fraction
-                    }
-                } else {
-                    val w1 = startView.width
-                    val w2 = endView.width
-                    val h1 = startView.height
-                    val h2 = endView.height
-                    addUpdateListener {
-                        val fraction = it.animatedValue as Float
-                        endView.layoutParams = (endView.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
-                            width = (w1 + (w2 - w1) * fraction).toInt()
-                            height = (h1 + (h2 - h1) * fraction).toInt()
-                            setMargins((startView.left * (1 - fraction)).toInt(), (startView.top * (1 - fraction)).toInt(), 0, 0)
-                        }
-                    }
-                }
-            }
-            animator?.start()
-        }
-    }
-
-    private fun release(endView: View) {
-        // todo animating intercept
-        container.changeToBackgroundColor(Color.TRANSPARENT)
-        val startView: View? = transformer?.getView(viewer.currentItem)
-        log { "viewer fragment release ${viewer.currentItem} $startView" }
-        animator = ValueAnimator.ofFloat(1f, 0f).apply {
-            duration = 200
-            interpolator = DecelerateInterpolator()
-            if (startView == null) {
-                addUpdateListener {
-                    val fraction = it.animatedValue as Float
-                    endView.alpha = fraction
-                    endView.scaleX = 1 + (1 - fraction) * 0.4f
-                    endView.scaleY = 1 + (1 - fraction) * 0.4f
-                }
-                addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator?) {
-                        dismissAllowingStateLoss()
-                    }
-                })
-            } else {
-                val w1 = startView.width
-                val w2 = endView.width
-                val h1 = startView.height
-                val h2 = endView.height
-
-                val transX = endView.translationX
-                val transY = endView.translationY
-                val scaleX = endView.scaleX
-                val scaleY = endView.scaleY
-                addUpdateListener {
-                    val fraction = it.animatedValue as Float
-                    endView.translationX = fraction * transX
-                    endView.translationY = fraction * transY
-                    endView.scaleX = 1 + (scaleX - 1) * fraction
-                    endView.scaleY = 1 + (scaleY - 1) * fraction
-                    endView.layoutParams = (endView.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
-                        width = (w1 + (w2 - w1) * fraction).toInt()
-                        height = (h1 + (h2 - h1) * fraction).toInt()
-                        setMargins((startView.left * (1 - fraction)).toInt(), (startView.top * (1 - fraction)).toInt(), 0, 0)
-                    }
-                }
-                addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator?) {
-                        dismissAllowingStateLoss()
-                    }
-                })
-            }
-        }
-        animator?.start()
     }
 
     override fun onBackPressed() {
-        viewer.findViewWithKeyTag(R.id.viewer_adapter_item, viewer.currentItem)?.let { release(it) }
+        log { "onBackPressed ${viewer.currentItem} $current" }
+        current?.let {
+            val startView = (it.getTag(R.id.viewer_adapter_item_data) as? Item?)?.id?.let { transformer.getView(it) }
+            AnimHelper.end(this, startView, it)
+            container.changeToBackgroundColor(Color.TRANSPARENT)
+        }
     }
 }

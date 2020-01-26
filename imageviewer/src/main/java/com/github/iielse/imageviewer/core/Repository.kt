@@ -1,14 +1,10 @@
-package com.github.iielse.imageviewer.datasource
+package com.github.iielse.imageviewer.core
 
 import androidx.paging.DataSource
 import androidx.paging.ItemKeyedDataSource
-import com.github.iielse.imageviewer.DataProvider
-import com.github.iielse.imageviewer.Photo
 import com.github.iielse.imageviewer.adapter.Item
 import com.github.iielse.imageviewer.adapter.ItemType.PHOTO
-import com.github.iielse.imageviewer.log
-import kotlin.math.max
-import kotlin.math.min
+import com.github.iielse.imageviewer.utils.log
 
 class Repository {
     private val dataProvider by lazy { Components.requireDataProvider() }
@@ -25,20 +21,20 @@ class Repository {
         override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Item>) {
             val result = dataProvider.loadInitial()
             log { "loadInitial ${result.size}" }
-            callback.onResult(result.map { Item(PHOTO, it.id, it) }, 0, result.size)
+            callback.onResult(result.map { Item(PHOTO, it.id(), it) }, 0, result.size)
         }
 
         override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Item>) {
             dataProvider.loadAfter(params.key) {
                 log { "loadAfter ${params.key} ${it.size}" }
-                callback.onResult(it.map { Item(PHOTO, it.id, it) })
+                callback.onResult(it.map { Item(PHOTO, it.id(), it) })
             }
         }
 
         override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Item>) {
             dataProvider.loadBefore(params.key) {
                 log { "loadBefore ${params.key} ${it.size}" }
-                callback.onResult(it.map { Item(PHOTO, it.id, it) })
+                callback.onResult(it.map { Item(PHOTO, it.id(), it) })
             }
         }
 

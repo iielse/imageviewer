@@ -2,9 +2,12 @@ package github.iielse.imageviewer.demo
 
 import android.os.Handler
 import android.os.Looper
-import com.github.iielse.imageviewer.Photo
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.github.iielse.imageviewer.core.Photo
+
+data class MyPhoto(val id: Int, val url: String) : Photo {
+    override fun id(): Int = id
+    override fun url(): String = url
+}
 
 fun fetchAfter(key: Int, callback: (List<Photo>) -> Unit) {
     mainHandler.postDelayed({
@@ -31,4 +34,4 @@ fun fetchBefore(key: Int, callback: (List<Photo>) -> Unit) {
 }
 
 private val mainHandler = Handler(Looper.getMainLooper())
-private fun numPhoto(value: Int) = Photo(id = value, width = 0, height = 0, url = "")
+private fun numPhoto(value: Int) = MyPhoto(id = value,  url = "")

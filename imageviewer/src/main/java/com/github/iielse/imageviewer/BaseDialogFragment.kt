@@ -7,6 +7,8 @@ import android.view.*
 import androidx.annotation.CallSuper
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.github.iielse.imageviewer.utils.Config
+import com.github.iielse.imageviewer.utils.log
 
 open class BaseDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

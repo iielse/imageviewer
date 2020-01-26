@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer
+package com.github.iielse.imageviewer.widgets
 
 import android.content.Context
 import android.graphics.RectF
@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import com.github.chrisbanes.photoview.OnMatrixChangedListener
 import com.github.chrisbanes.photoview.PhotoView
+import com.github.iielse.imageviewer.utils.decimal2
 import kotlin.math.min
 
 class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
@@ -16,12 +17,12 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
     }
 
     interface Listener {
-        fun onDrag(view: PhotoView2, fraction: Float) {}
-        fun onRestore(view: PhotoView2, fraction: Float) {}
-        fun onRelease(view: PhotoView2) {}
+        fun onDrag(view: PhotoView2, fraction: Float)
+        fun onRestore(view: PhotoView2, fraction: Float)
+        fun onRelease(view: PhotoView2)
     }
 
-    private val dismissEdge by lazy { height * 0.25f }
+    private val dismissEdge by lazy { height * 0.15f }
     private var scrollEdge = EDGE_NONE
     private var lastRect: RectF? = null
     private var singleTouch = true

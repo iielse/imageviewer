@@ -1,10 +1,14 @@
-package com.github.iielse.imageviewer
+package com.github.iielse.imageviewer.utils
 
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.forEach
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 
 val Float.decimal2: Float get() = (this * 100).toInt() / 100f
 
@@ -21,6 +25,13 @@ fun ViewGroup.findViewWithKeyTag(key: Int, tag: Any): View? {
         }
     }
     return null
+}
+
+fun LifecycleOwner.onDestroy(callback: () -> Unit) {
+    lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        fun onDestroy() = callback()
+    })
 }
 
 fun log(tag: String = "viewer", block: () -> String) {

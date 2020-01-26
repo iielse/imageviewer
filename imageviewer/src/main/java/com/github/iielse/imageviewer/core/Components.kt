@@ -1,13 +1,9 @@
-package com.github.iielse.imageviewer.datasource
+package com.github.iielse.imageviewer.core
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
-import com.github.iielse.imageviewer.DataProvider
-import com.github.iielse.imageviewer.Transformer
-import com.github.iielse.imageviewer.`interface`.ImageLoader
-import com.github.iielse.imageviewer.log
+import com.github.iielse.imageviewer.utils.log
+import com.github.iielse.imageviewer.utils.onDestroy
+import java.lang.IllegalStateException
 
 object Components {
     private var working = false
@@ -18,17 +14,16 @@ object Components {
 
     fun set(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Int) {
         log { "Components set" }
-        this.imageLoader = imageLoader
-        this.dataProvider = dataProvider
-        this.transformer = transformer
-        this.initKey = initKey
+        if (working) throw IllegalStateException("")
+        Components.imageLoader = imageLoader
+        Components.dataProvider = dataProvider
+        Components.transformer = transformer
+        Components.initKey = initKey
+        working = true
     }
 
     fun attach(owner: LifecycleOwner) {
-        owner.lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun onDestroy() = release()
-        })
+        owner.onDestroy { release() }
     }
 
     fun requireImageLoader() = imageLoader!!

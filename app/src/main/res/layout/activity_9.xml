@@ -15,4 +15,14 @@
         android:layout_marginTop="50dp"
         tools:background="#eee" />
 
+
+
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/pView22"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="100dp"
+        tools:background="#eee" />
+
 </LinearLayout>
