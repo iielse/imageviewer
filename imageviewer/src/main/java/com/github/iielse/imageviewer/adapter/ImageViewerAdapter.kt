@@ -2,6 +2,7 @@ package com.github.iielse.imageviewer.adapter
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +18,6 @@ import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 import java.util.*
 
 class ImageViewerAdapter(initialPosition: Int) : PagedListAdapter<Item, RecyclerView.ViewHolder>(diff) {
-
     private var listener: ImageViewerAdapterListener? = null
     private var initPos = initialPosition
 
@@ -67,8 +67,8 @@ class ImageViewerAdapter(initialPosition: Int) : PagedListAdapter<Item, Recycler
             listener?.onRestore(view, fraction)
         }
 
-        override fun onLoadMore() {
-            listener?.onLoadMore()
+        override fun onLoad(view: ImageView, item: Photo) {
+            listener?.onLoad(view, item)
         }
     }
 }

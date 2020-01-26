@@ -9,16 +9,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
+import android.widget.ImageView
 import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.adapter.ImageViewerAdapter
+import com.github.iielse.imageviewer.datasource.Components
+import com.github.iielse.imageviewer.datasource.Components.requireImageLoader
+import com.github.iielse.imageviewer.datasource.Components.requireInitialPosition
+import com.github.iielse.imageviewer.datasource.Components.requireTransformer
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 
 class ImageViewerDialogFragment : BaseDialogFragment() {
     private val viewModel by lazy { ViewModelProviders.of(requireActivity()).get(ImageViewerViewModel::class.java) }
-    private val adapter by lazy { ImageViewerAdapter(viewModel.initialPosition) }
+    private val initialPosition by lazy { requireInitialPosition() }
+    private val imageLoader by lazy { requireImageLoader() }
+    private val transformer by lazy { requireTransformer() }
+    private val adapter by lazy { ImageViewerAdapter(initialPosition) }
     private var animator: ValueAnimator? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -30,13 +38,12 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         adapter.setListener(adapterListener)
         (viewer.getChildAt(0) as? RecyclerView?)?.clipChildren = false
         viewer.adapter = adapter
-        viewer.setCurrentItem (viewModel.initialPosition, false)
+        viewer.setCurrentItem(initialPosition, false)
 
         viewModel.dataList.observe(this, Observer {
             adapter.submitList(it)
         })
     }
-
 
     private val adapterListener by lazy {
         object : ImageViewerAdapterListener {
@@ -56,6 +63,10 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
             override fun onRelease(view: PhotoView2) {
                 release(view)
             }
+
+            override fun onLoad(view: ImageView, item: Photo) {
+                imageLoader.load(view, item)
+            }
         }
     }
 
@@ -63,10 +74,12 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         super.onDestroyView()
         adapter.setListener(null)
         animator?.cancel()
+        viewModel.release()
+        Components.release()
     }
 
     private fun init(endView: View) {
-        val startView: View? = viewModel.transform?.getOriginView(0)
+        val startView: View? = transformer?.getView(0)
         endView.doOnPreDraw {
             animator = ValueAnimator.ofFloat(0f, 1f).apply {
                 duration = 200
@@ -99,7 +112,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         // todo animating intercept
 
         container.changeToBackgroundColor(Color.TRANSPARENT)
-        val startView: View? = viewModel.transform?.getOriginView(viewer.currentItem)
+        val startView: View? = transformer?.getView(viewer.currentItem)
         log { "viewer fragment release ${viewer.currentItem} $startView" }
         animator = ValueAnimator.ofFloat(1f, 0f).apply {
             duration = 200

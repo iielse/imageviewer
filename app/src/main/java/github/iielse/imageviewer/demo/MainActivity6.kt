@@ -7,45 +7,59 @@ import ch.ielse.demo.p02.R
 import com.bumptech.glide.Glide
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.DataProviderAdapter
-import com.github.iielse.imageviewer.Transform
+import com.github.iielse.imageviewer.Transformer
 import com.github.iielse.imageviewer.Photo
+import com.github.iielse.imageviewer.`interface`.ImageLoader
 import kotlinx.android.synthetic.main.activity_9.*
 
 class MainActivity6 : AppCompatActivity() {
+    private val init = Photo(id = 100, url = "", height = 0, width = 0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_9)
 
         Glide.with(pView)
-                .load(provideBitmap(9527))
+                .load(provideBitmap(init.id))
                 .into(pView)
 
         pView.setOnClickListener {
-            ImageViewerBuilder(this)
-                    .setDataProvider(object : DataProviderAdapter() {
-
-                        var curr = 0
-                        override fun loadInitial(): List<Photo> {
-                            return listOf(Photo(id = 9527, url = "", height = 0, width = 0))
-                        }
-
-                        override fun getMore(callback: (List<Photo>) -> Unit) {
-                            fetch(curr) {
-                                 callback(it.map { Photo(id= it.id.toString(), url = it.imageUrl , width = 0, height = 0) })
-                                curr++
-                            }
-                        }
-                    })
-                    .setTransform(object : Transform {
-                        override fun getOriginView(pos: Int): ImageView? {
-                            return when (pos) {
-                                2 -> pView
-                                else -> null
-                            }
-                        }
-                    })
-                    .setInitialPosition(9527)
-                    .show()
+            builder().show()
         }
+    }
+
+    private fun builder(): ImageViewerBuilder {
+        return ImageViewerBuilder(
+                context = this,
+                dataProvider = object : DataProviderAdapter() {
+                    override fun loadInitial(): List<Photo> {
+                        return listOf(init)
+                    }
+
+                    override fun loadAfter(key: Int, callback: (List<Photo>) -> Unit) {
+                        fetchAfter(key, callback)
+                    }
+
+                    override fun loadBefore(key: Int, callback: (List<Photo>) -> Unit) {
+                        fetchBefore(key, callback)
+                    }
+                },
+                transformer = object : Transformer {
+                    override fun getView(pos: Int): ImageView? {
+                        return when (pos) {
+                            init.id -> pView
+                            else -> null
+                        }
+                    }
+                },
+                imageLoader = object : ImageLoader {
+                    override fun load(view: ImageView, photo: Photo) {
+                        Glide.with(view)
+                                .load(provideBitmap(photo.id))
+                                .into(view)
+                    }
+                },
+                initialPosition = init.id
+        )
     }
 }
