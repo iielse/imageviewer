@@ -21,7 +21,6 @@ import java.io.IOException
 
 data class MyPhoto(val id: Long, val url: String = "") : Photo {
     override fun id(): Long = id
-    override fun url(): String = url
     override fun subsampling() = id % 5 == 0L
 }
 

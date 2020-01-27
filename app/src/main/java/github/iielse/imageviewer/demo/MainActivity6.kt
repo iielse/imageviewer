@@ -68,19 +68,19 @@ class MainActivity6 : AppCompatActivity() {
                         }
                     }
                 },
-                imageLoader = object : ImageLoader {
-                    override fun load(view: ImageView, photo: Photo) {
+                imageLoader = object : ImageLoader<MyPhoto> {
+                    override fun load(view: ImageView, data: MyPhoto) {
                         Glide.with(view)
-                                .load(provideBitmap(photo.id()))
+                                .load(provideBitmap(data.id()))
                                 .into(view)
                     }
 
-                    override fun load(subsamplingView: SubsamplingScaleImageView, photo: Photo) {
+                    override fun load(subsamplingView: SubsamplingScaleImageView, data: MyPhoto) {
                         runOnIOThread {
-                            val fileName = "subsampling_${photo.id()}"
+                            val fileName = "subsampling_${data.id()}"
                             val file = File(cacheDir, fileName)//将要保存图片的路径
                             if (!file.exists()) {
-                                val s = provideBitmap(photo.id())
+                                val s = provideBitmap(data.id())
                                 saveBitmapFile(s, file)
                             }
                             runOnUIThread {
