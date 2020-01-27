@@ -1,4 +1,4 @@
-这个项目创建大约于2017年1月.目的为分享出一个简单易用且体验不错的图片查看框架.但由于视(ji)野(shu)不(guo)足(cai).出现了 [#27](https://github.com/iielse/ImageWatcher/issues/27 "#27")[#67](https://github.com/iielse/ImageWatcher/issues/67 "#67")[#74](https://github.com/iielse/ImageWatcher/issues/74 "#74")  无法解决. 又由于工(zi)作(shen)繁(lan)忙(duo)无限搁置.现在利用春节'大好时光'打算做一个更好的. 代码在imageviewer分支上.缓慢地doing. 
+这个项目创建大约于2017年1月.目的为分享出一个简单易用且体验不错的图片查看框架.但由于视(ji)野(shu)不(guo)足(cai).出现了 [#27](https://github.com/iielse/ImageWatcher/issues/27 "#27")[#67](https://github.com/iielse/ImageWatcher/issues/67 "#67")[#74](https://github.com/iielse/ImageWatcher/issues/74 "#74")  无法解决. 又由于工(zi)作(shen)繁(lan)忙(duo)无限搁置.现在开始尝试做更好的.代码在imageviewer分支上.缓慢地doing. 
 
 
 ==========================================
