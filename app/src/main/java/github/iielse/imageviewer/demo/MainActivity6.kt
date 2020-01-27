@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_9.*
 
 class MainActivity6 : AppCompatActivity() {
     private val init100 = MyPhoto(id = 100, url = "")
-    private val init12 = MyPhoto(id = 12, url = "")
+    private val initx = MyPhoto(id = 0, url = "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,15 +24,15 @@ class MainActivity6 : AppCompatActivity() {
         Glide.with(pView)
                 .load(provideBitmap(init100.id))
                 .into(pView)
-        Glide.with(pView12)
-                .load(provideBitmap(init12.id))
-                .into(pView12)
+        Glide.with(pViewx)
+                .load(provideBitmap(initx.id))
+                .into(pViewx)
 
         pView.setOnClickListener {
             builder(init100, pView).show()
         }
-        pView12.setOnClickListener {
-            builder(init12, pView12).show()
+        pViewx.setOnClickListener {
+            builder(initx, pViewx).show()
         }
     }
 

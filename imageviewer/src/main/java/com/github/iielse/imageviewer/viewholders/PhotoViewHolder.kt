@@ -15,7 +15,7 @@ class PhotoViewHolder(override val containerView: View, private val callback: Im
     }
 
     fun bind(item: Photo, pos: Int) {
-        photoView.setTag(R.id.viewer_adapter_item_pos, pos)
+        photoView.setTag(R.id.viewer_adapter_item_key, item.id())
         photoView.setTag(R.id.viewer_adapter_item_data, item)
         callback.onLoad(photoView, item)
     }

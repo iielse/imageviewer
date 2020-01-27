@@ -18,7 +18,7 @@
 
 
     <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/pView12"
+        android:id="@+id/pViewx"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginStart="100dp"

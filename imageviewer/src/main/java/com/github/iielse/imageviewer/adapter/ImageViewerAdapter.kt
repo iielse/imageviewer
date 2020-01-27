@@ -5,9 +5,9 @@ import android.widget.ImageView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.NO_ID
 import com.github.iielse.imageviewer.*
 import com.github.iielse.imageviewer.core.Photo
-import com.github.iielse.imageviewer.utils.Config.INVALID
 import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.utils.log
 
@@ -48,11 +48,12 @@ class ImageViewerAdapter(initKey: Int) : PagedListAdapter<Item, RecyclerView.Vie
 
         if (item?.id == key) {
             listener?.onInit(holder.itemView.photoView)
-            key = INVALID
+            key = NO_ID.toInt()
         }
 
     }
 
+    override fun getItemId(position: Int): Long = getItem(position)?.id?.toLong() ?: NO_ID
     override fun getItemViewType(position: Int) = getItem(position)?.type ?: ItemType.UNKNOWN
     private val callback: ImageViewerAdapterListener = object : ImageViewerAdapterListener {
         override fun onInit(view: PhotoView2) {

@@ -29,7 +29,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     private val imageLoader by lazy { requireImageLoader() }
     private val transformer by lazy { requireTransformer() }
     private val adapter by lazy { ImageViewerAdapter(initKey) }
-    private var initView: View? = null
+//    private var initView: View? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_image_viewer_dialog, container, false)
@@ -58,12 +58,12 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
             override fun onPageSelected(position: Int) {
                 log { "onPageSelected $position ${viewer.currentItem}" }
                 // try fix initView tag position
-                (initView?.getTag(R.id.viewer_adapter_item_pos) as? Int?)?.let {
-                    if (it != position) {
-                        initView?.setTag(R.id.viewer_adapter_item_pos, position)
-                        initView = null
-                    }
-                }
+//                (initView?.getTag(R.id.viewer_adapter_item_pos) as? Int?)?.let {
+//                    if (it != position) {
+//                        initView?.setTag(R.id.viewer_adapter_item_pos, position)
+//                        initView = null
+//                    }
+//                }
             }
 
         }
@@ -73,7 +73,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         object : ImageViewerAdapterListener {
             override fun onInit(view: PhotoView2) {
                 log { "onInit $view" }
-                initView = view
+//                initView = view
                 AnimHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), view)
                 container.changeToBackgroundColor(Color.BLACK)
             }
@@ -105,11 +105,20 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     }
 
     override fun onBackPressed() {
-        log { "onBackPressed ${viewer.currentItem}" }
-        viewer.findViewWithKeyTag(R.id.viewer_adapter_item_pos, viewer.currentItem)?.let {
-            val startView = (it.getTag(R.id.viewer_adapter_item_data) as? Photo?)?.id()?.let { transformer.getView(it) }
+        log { "onBackPressed 1  ${viewer.currentItem}" }
+
+        val currentKey = adapter.getItemId(viewer.currentItem).toInt()
+        viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)?.let {
+            val startView = transformer.getView(currentKey)
             AnimHelper.end(this, startView, it)
             container.changeToBackgroundColor(Color.TRANSPARENT)
         }
+
+//
+//        viewer.findViewWithKeyTag(R.id.viewer_adapter_item_pos, viewer.currentItem)?.let {
+//            val startView = (it.getTag(R.id.viewer_adapter_item_data) as? Photo?)?.id()?.let { transformer.getView(it) }
+//            AnimHelper.end(this, startView, it)
+//            container.changeToBackgroundColor(Color.TRANSPARENT)
+//        }
     }
 }
