@@ -4,12 +4,12 @@ import android.os.Handler
 import android.os.Looper
 import com.github.iielse.imageviewer.core.Photo
 
-data class MyPhoto(val id: Int, val url: String) : Photo {
-    override fun id(): Int = id
+data class MyPhoto(val id: Long, val url: String) : Photo {
+    override fun id(): Long = id
     override fun url(): String = url
 }
 
-fun fetchAfter(key: Int, callback: (List<Photo>) -> Unit) {
+fun fetchAfter(key: Long, callback: (List<Photo>) -> Unit) {
     mainHandler.postDelayed({
         callback(listOf(numPhoto(key + 1),
                 numPhoto(key + 2),
@@ -21,7 +21,7 @@ fun fetchAfter(key: Int, callback: (List<Photo>) -> Unit) {
     }, 200)
 }
 
-fun fetchBefore(key: Int, callback: (List<Photo>) -> Unit) {
+fun fetchBefore(key: Long, callback: (List<Photo>) -> Unit) {
     mainHandler.postDelayed({
         callback(listOf(numPhoto(key - 1),
                 numPhoto(key - 2),
@@ -34,4 +34,4 @@ fun fetchBefore(key: Int, callback: (List<Photo>) -> Unit) {
 }
 
 private val mainHandler = Handler(Looper.getMainLooper())
-private fun numPhoto(value: Int) = MyPhoto(id = value, url = "")
+private fun numPhoto(value: Long) = MyPhoto(id = value, url = "")

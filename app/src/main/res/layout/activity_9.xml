@@ -16,7 +16,6 @@
         tools:background="#eee" />
 
 
-
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/pViewx"
         android:layout_width="100dp"
@@ -25,4 +24,14 @@
         android:layout_marginTop="100dp"
         tools:background="#eee" />
 
+
+    <TextView
+        android:id="@+id/toTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginTop="80dp"
+        android:background="#ccc"
+        android:padding="10dp"
+        android:text="to watcher" />
 </LinearLayout>

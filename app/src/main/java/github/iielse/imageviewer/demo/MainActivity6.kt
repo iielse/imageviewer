@@ -1,9 +1,11 @@
 package github.iielse.imageviewer.demo
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import ch.ielse.demo.p02.R
+import ch.ielse.demo.p02.TestActivity
 import com.bumptech.glide.Glide
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.core.DataProviderAdapter
@@ -20,6 +22,7 @@ class MainActivity6 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_9)
+        toTest.setOnClickListener { startActivity(Intent(this, TestActivity::class.java)) }
 
         Glide.with(pView)
                 .load(provideBitmap(init100.id))
@@ -44,16 +47,16 @@ class MainActivity6 : AppCompatActivity() {
                         return listOf(clicked)
                     }
 
-                    override fun loadAfter(key: Int, callback: (List<Photo>) -> Unit) {
+                    override fun loadAfter(key: Long, callback: (List<Photo>) -> Unit) {
                         fetchAfter(key, callback)
                     }
 
-                    override fun loadBefore(key: Int, callback: (List<Photo>) -> Unit) {
+                    override fun loadBefore(key: Long, callback: (List<Photo>) -> Unit) {
                         fetchBefore(key, callback)
                     }
                 },
                 transformer = object : Transformer {
-                    override fun getView(key: Int): ImageView? {
+                    override fun getView(key: Long): ImageView? {
                         log { "getView key $key" }
                         return when (key) {
                             clicked.id -> clickedView

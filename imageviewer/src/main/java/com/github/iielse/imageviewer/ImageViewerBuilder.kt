@@ -12,7 +12,7 @@ class ImageViewerBuilder(private val context: Context?,
                          private val imageLoader: ImageLoader,
                          private val dataProvider: DataProvider,
                          private val transformer: Transformer = DefaultTransformer(),
-                         private val initKey: Int = 0
+                         private val initKey: Long = 0
 ) {
     private fun create(): ImageViewerDialogFragment {
         return ImageViewerDialogFragment()

@@ -1,6 +1,6 @@
 package com.github.iielse.imageviewer.core
 
 interface Photo {
-    fun id(): Int
+    fun id(): Long
     fun url(): String
 }

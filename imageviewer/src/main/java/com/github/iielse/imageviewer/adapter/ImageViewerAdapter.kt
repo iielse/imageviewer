@@ -20,7 +20,7 @@ import com.github.iielse.imageviewer.widgets.PhotoView2
 import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 import java.util.*
 
-class ImageViewerAdapter(initKey: Int) : PagedListAdapter<Item, RecyclerView.ViewHolder>(diff) {
+class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.ViewHolder>(diff) {
     private var listener: ImageViewerAdapterListener? = null
     private var key = initKey
 
@@ -42,18 +42,18 @@ class ImageViewerAdapter(initKey: Int) : PagedListAdapter<Item, RecyclerView.Vie
         val item = getItem(position)
         log { "onBindViewHolder $key $position $item" }
         when (holder) {
-            is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it, position) }
+            is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
             is SubsamplingViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
         }
 
         if (item?.id == key) {
             listener?.onInit(holder.itemView.photoView)
-            key = NO_ID.toInt()
+            key = NO_ID
         }
 
     }
 
-    override fun getItemId(position: Int): Long = getItem(position)?.id?.toLong() ?: NO_ID
+    override fun getItemId(position: Int): Long = getItem(position)?.id ?: NO_ID
     override fun getItemViewType(position: Int) = getItem(position)?.type ?: ItemType.UNKNOWN
     private val callback: ImageViewerAdapterListener = object : ImageViewerAdapterListener {
         override fun onInit(view: PhotoView2) {
@@ -70,10 +70,6 @@ class ImageViewerAdapter(initKey: Int) : PagedListAdapter<Item, RecyclerView.Vie
 
         override fun onRestore(view: PhotoView2, fraction: Float) {
             listener?.onRestore(view, fraction)
-        }
-
-        override fun onLoad(view: ImageView, item: Photo) {
-            listener?.onLoad(view, item)
         }
     }
 }

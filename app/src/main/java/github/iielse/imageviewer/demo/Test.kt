@@ -1,6 +1,5 @@
 package github.iielse.imageviewer.demo
 
-import android.graphics.drawable.Drawable
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -21,12 +20,12 @@ private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
     color = Color.BLACK
 }
 
-fun provideBitmap(value: Int): Bitmap {
+fun provideBitmap(value: Long): Bitmap {
     val w = 1080 / 2
     val h = w / 2
     val b = Bitmap.createBitmap(w, h, Bitmap.Config.RGB_565)
     val c = Canvas(b)
-    c.drawColor(colors[abs(value) % colors.size])
+    c.drawColor(colors[(abs(value) % colors.size).toInt()])
     c.drawText(value.toString(), w / 2f, h / 2f, paint)
     return b
 }

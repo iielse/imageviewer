@@ -10,9 +10,9 @@ object Components {
     private var imageLoader: ImageLoader? = null
     private var dataProvider: DataProvider? = null
     private var transformer: Transformer? = null
-    private var initKey: Int? = null
+    private var initKey: Long? = null
 
-    fun set(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Int) {
+    fun set(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Long) {
         log { "Components set" }
         if (working) throw IllegalStateException("")
         Components.imageLoader = imageLoader
