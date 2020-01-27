@@ -15,8 +15,10 @@ import com.github.iielse.imageviewer.core.Components.requireTransformer
 import com.github.iielse.imageviewer.utils.AnimHelper
 import com.github.iielse.imageviewer.utils.findViewWithKeyTag
 import com.github.iielse.imageviewer.utils.log
+import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.widgets.PhotoView2
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
+import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 
 class ImageViewerDialogFragment : BaseDialogFragment() {
     private val viewModel by lazy { ViewModelProviders.of(this).get(ImageViewerViewModel::class.java) }
@@ -47,8 +49,12 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
 
     private val adapterListener by lazy {
         object : ImageViewerAdapterListener {
-            override fun onInit(view: PhotoView2) {
-                AnimHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), view)
+            override fun onInit(viewHolder: RecyclerView.ViewHolder) {
+                when(viewHolder) {
+                    is PhotoViewHolder -> {
+                        AnimHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), viewHolder.itemView.photoView)
+                    }
+                }
                 container.changeToBackgroundColor(Color.BLACK)
             }
 

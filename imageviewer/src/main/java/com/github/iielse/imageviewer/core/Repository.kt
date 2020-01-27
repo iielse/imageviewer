@@ -21,20 +21,20 @@ class Repository {
         override fun loadInitial(params: LoadInitialParams<Long>, callback: LoadInitialCallback<Item>) {
             val result = dataProvider.loadInitial()
             log { "loadInitial ${result.size}" }
-            callback.onResult(result.map { Item(PHOTO, it.id(), it) }, 0, result.size)
+            callback.onResult(result.map { Item.from(it) }, 0, result.size)
         }
 
         override fun loadAfter(params: LoadParams<Long>, callback: LoadCallback<Item>) {
             dataProvider.loadAfter(params.key) {
                 log { "loadAfter ${params.key} ${it.size}" }
-                callback.onResult(it.map { Item(PHOTO, it.id(), it) })
+                callback.onResult(it.map { Item.from(it) })
             }
         }
 
         override fun loadBefore(params: LoadParams<Long>, callback: LoadCallback<Item>) {
             dataProvider.loadBefore(params.key) {
                 log { "loadBefore ${params.key} ${it.size}" }
-                callback.onResult(it.map { Item(PHOTO, it.id(), it) })
+                callback.onResult(it.map { Item.from(it) })
             }
         }
 

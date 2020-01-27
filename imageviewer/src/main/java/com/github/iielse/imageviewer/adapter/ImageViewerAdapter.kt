@@ -47,7 +47,7 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
         }
 
         if (item?.id == key) {
-            listener?.onInit(holder.itemView.photoView)
+            listener?.onInit(holder)
             key = NO_ID
         }
 
@@ -56,8 +56,8 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
     override fun getItemId(position: Int): Long = getItem(position)?.id ?: NO_ID
     override fun getItemViewType(position: Int) = getItem(position)?.type ?: ItemType.UNKNOWN
     private val callback: ImageViewerAdapterListener = object : ImageViewerAdapterListener {
-        override fun onInit(view: PhotoView2) {
-            listener?.onInit(view)
+        override fun onInit(viewHolder: RecyclerView.ViewHolder) {
+            listener?.onInit(viewHolder)
         }
 
         override fun onDrag(view: PhotoView2, fraction: Float) {
