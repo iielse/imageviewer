@@ -17,6 +17,7 @@ class SubsamplingViewHolder(override val containerView: View) : RecyclerView.Vie
 
     fun bind(item: Photo) {
         subsamplingView.setTag(R.id.viewer_adapter_item_key, item.id())
+        subsamplingView.setTag(R.id.viewer_adapter_item_holder, this)
         requireImageLoader().load(subsamplingView, item)
         requireVHCustomizer().bind(ItemType.SUBSAMPLING, item, this)
     }

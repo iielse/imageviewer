@@ -14,7 +14,7 @@ object AnimHelper {
     fun start(owner: LifecycleOwner, startView: View?, endView: View) {
         endView.doOnPreDraw {
             val animator = ValueAnimator.ofFloat(0f, 1f)
-            animator.duration = 300
+            animator.duration = Config.DURATION_TRANSFORMER
             animator.interpolator = DecelerateInterpolator()
             if (startView == null) {
                 animator.addUpdateListener {

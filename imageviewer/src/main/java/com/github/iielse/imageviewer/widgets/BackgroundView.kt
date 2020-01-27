@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.github.iielse.imageviewer.utils.Config.DURATION_BG
 
 class BackgroundView @JvmOverloads constructor(
         context: Context,
@@ -18,7 +19,7 @@ class BackgroundView @JvmOverloads constructor(
 
     fun changeToBackgroundColor(targetColor: Int) {
         animator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 200
+            duration = DURATION_BG
             interpolator = DecelerateInterpolator()
             val start = bgColor
             addUpdateListener {

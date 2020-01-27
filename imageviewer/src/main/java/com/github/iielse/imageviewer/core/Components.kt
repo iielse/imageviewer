@@ -13,6 +13,7 @@ object Components {
     private var initKey: Long? = null
 
     private var vhCustomizer: VHCustomizer? = null
+    private var viewerCallback: ViewerCallbackAdapter? = null
 
     fun initialize(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Long) {
         log { "Components set" }
@@ -28,6 +29,10 @@ object Components {
         Components.vhCustomizer = vhCustomizer
     }
 
+    fun setViewerCallback(viewerCallback: ViewerCallbackAdapter?) {
+        Components.viewerCallback = viewerCallback
+    }
+
     fun attach(owner: LifecycleOwner) {
         owner.onDestroy { release() }
     }
@@ -37,6 +42,7 @@ object Components {
     fun requireTransformer() = transformer!!
     fun requireInitKey() = initKey!!
     fun requireVHCustomizer() = vhCustomizer ?: object : VHCustomizer {}
+    fun requireViewerCallback() = viewerCallback ?: ViewerCallbackAdapter()
 
     private fun release() {
         log { "Components release" }
@@ -45,5 +51,8 @@ object Components {
         dataProvider = null
         transformer = null
         initKey = null
+
+        vhCustomizer = null
+        viewerCallback = null
     }
 }

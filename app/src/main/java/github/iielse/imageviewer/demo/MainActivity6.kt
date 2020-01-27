@@ -19,12 +19,13 @@ import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.core.*
 import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.utils.log
+import com.github.iielse.imageviewer.widgets.PhotoView2
 import kotlinx.android.synthetic.main.activity_9.*
 import kotlinx.android.synthetic.main.item_photo_custom_layout.*
 import java.io.File
 
 class MainActivity6 : AppCompatActivity() {
-    private val init100 = MyViewerData(id = 100, url = "")
+    private val init100 = MyViewerData(id = 101, url = "")
     private val initx = MyViewerData(id = 0, url = "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,6 +110,24 @@ class MainActivity6 : AppCompatActivity() {
                         }
                     }
                 })
+                .setViewerCallback(object : ViewerCallbackAdapter() {
+                    override fun onInit(viewHolder: RecyclerView.ViewHolder) {
+                    }
+
+                    override fun onRestore(viewHolder: RecyclerView.ViewHolder, view: PhotoView2, fraction: Float) {
+                    }
+
+                    override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: PhotoView2, fraction: Float) {
+                    }
+
+                    override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {
+                        viewHolder.itemView.findViewById<View>(R.id.customizeDecor)
+                                .animate().setDuration(200).alpha(0f).start()
+                    }
+
+                    override fun onPageSelected(position: Int) {
+                        log { "onPageSelected $position" }
+                    }
+                })
     }
 }
-
