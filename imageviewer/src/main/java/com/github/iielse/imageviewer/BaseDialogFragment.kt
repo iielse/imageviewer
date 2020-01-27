@@ -2,12 +2,10 @@ package com.github.iielse.imageviewer
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.annotation.CallSuper
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.log
 
 open class BaseDialogFragment : DialogFragment() {
@@ -47,8 +45,8 @@ open class BaseDialogFragment : DialogFragment() {
 
     fun show(fragmentManager: FragmentManager?) {
         when {
-            fragmentManager == null -> if (Config.DEBUG) Log.e(javaClass.simpleName, "fragmentManager is detach after parent destroy")
-            fragmentManager.isStateSaved -> if (Config.DEBUG) Log.e(javaClass.simpleName, "dialog fragment show when fragmentManager isStateSaved")
+            fragmentManager == null -> log { "fragmentManager is detach after parent destroy" }
+            fragmentManager.isStateSaved -> log { "dialog fragment show when fragmentManager isStateSaved" }
             else -> show(fragmentManager, javaClass.simpleName)
         }
     }

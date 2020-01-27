@@ -8,7 +8,7 @@ import android.util.AttributeSet
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 
-class ViewerContainerLayout @JvmOverloads constructor(
+class BackgroundView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {

@@ -1,27 +1,31 @@
 package github.iielse.imageviewer.demo
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import ch.ielse.demo.p02.R
 import ch.ielse.demo.p02.TestActivity
 import com.bumptech.glide.Glide
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.iielse.imageviewer.ImageViewerBuilder
-import com.github.iielse.imageviewer.core.DataProviderAdapter
-import com.github.iielse.imageviewer.core.Transformer
-import com.github.iielse.imageviewer.core.Photo
-import com.github.iielse.imageviewer.core.ImageLoader
+import com.github.iielse.imageviewer.core.*
+import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.utils.log
 import kotlinx.android.synthetic.main.activity_9.*
+import kotlinx.android.synthetic.main.item_photo_custom_layout.*
 import java.io.File
 
 class MainActivity6 : AppCompatActivity() {
-    private val init100 = MyPhoto(id = 100, url = "")
-    private val initx = MyPhoto(id = 0, url = "")
+    private val init100 = MyViewerData(id = 100, url = "")
+    private val initx = MyViewerData(id = 0, url = "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +47,7 @@ class MainActivity6 : AppCompatActivity() {
         }
     }
 
-    private fun builder(clicked: MyPhoto, clickedView: ImageView): ImageViewerBuilder {
+    private fun builder(clicked: MyViewerData, clickedView: ImageView): ImageViewerBuilder {
         return ImageViewerBuilder(
                 context = this,
                 dataProvider = object : DataProviderAdapter() {
@@ -68,14 +72,14 @@ class MainActivity6 : AppCompatActivity() {
                         }
                     }
                 },
-                imageLoader = object : ImageLoader<MyPhoto> {
-                    override fun load(view: ImageView, data: MyPhoto) {
+                imageLoader = object : ImageLoader {
+                    override fun load(view: ImageView, data: Photo) {
                         Glide.with(view)
                                 .load(provideBitmap(data.id()))
                                 .into(view)
                     }
 
-                    override fun load(subsamplingView: SubsamplingScaleImageView, data: MyPhoto) {
+                    override fun load(subsamplingView: SubsamplingScaleImageView, data: Photo) {
                         runOnIOThread {
                             val fileName = "subsampling_${data.id()}"
                             val file = File(cacheDir, fileName)//将要保存图片的路径
@@ -91,5 +95,20 @@ class MainActivity6 : AppCompatActivity() {
                 },
                 initKey = clicked.id
         )
+                .setVHCustomizer(object : VHCustomizer {
+                    override fun initialize(type: Int, viewHolder: RecyclerView.ViewHolder) {
+                        (viewHolder.itemView as? ViewGroup?)?.let {
+                            it.addView(it.inflate(R.layout.item_photo_custom_layout))
+                        }
+                    }
+
+                    override fun bind(type: Int, data: Photo, viewHolder: RecyclerView.ViewHolder) {
+                        (viewHolder.itemView as? ViewGroup?)?.let {
+                            val x = data as MyViewerData
+                            it.findViewById<TextView>(R.id.exText).text = x.desc
+                        }
+                    }
+                })
     }
 }
+

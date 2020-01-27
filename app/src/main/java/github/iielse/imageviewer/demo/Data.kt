@@ -1,25 +1,29 @@
 package github.iielse.imageviewer.demo
 
-import android.content.Context
 import android.graphics.*
 import android.os.Handler
 import android.os.Looper
-import androidx.core.text.TextUtilsCompat
-import androidx.core.view.ViewCompat
 import com.github.iielse.imageviewer.core.Photo
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlin.math.abs
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
+private fun desc(num: Long): String {
+    return when (num % 5) {
+        0L -> "desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 "
+        1L -> "desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 "
+        2L -> "desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 "
+        3L -> "desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 "
+        else -> "desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 "
+    }
+}
 
-data class MyPhoto(val id: Long, val url: String = "") : Photo {
+data class MyViewerData(val id: Long, val url: String = "", val desc: String = desc(id)) : Photo {
     override fun id(): Long = id
     override fun subsampling() = id % 5 == 0L
 }
@@ -105,7 +109,7 @@ fun saveBitmapFile(bitmap: Bitmap, file: File) {
 }
 
 
-fun fetchAfter(key: Long, callback: (List<Photo>) -> Unit) {
+fun fetchAfter(key: Long, callback: (List<MyViewerData>) -> Unit) {
     mainHandler.postDelayed({
         callback(listOf(numPhoto(key + 1),
                 numPhoto(key + 2),
@@ -117,7 +121,7 @@ fun fetchAfter(key: Long, callback: (List<Photo>) -> Unit) {
     }, 200)
 }
 
-fun fetchBefore(key: Long, callback: (List<Photo>) -> Unit) {
+fun fetchBefore(key: Long, callback: (List<MyViewerData>) -> Unit) {
     mainHandler.postDelayed({
         callback(listOf(numPhoto(key - 1),
                 numPhoto(key - 2),
@@ -129,10 +133,13 @@ fun fetchBefore(key: Long, callback: (List<Photo>) -> Unit) {
     }, 200)
 }
 
-private fun numPhoto(value: Long) = MyPhoto(id = value)
+private fun numPhoto(value: Long) = MyViewerData(id = value)
 
 fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 fun runOnIOThread(block: () -> Unit): Disposable = Observable.fromCallable { block() }.subscribeOn(Schedulers.io()).subscribe()
 fun runOnUIThread(block: () -> Unit) {
     if (isMainThread()) block() else mainHandler.post(block)
 }
+
+
+

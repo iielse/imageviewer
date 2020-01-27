@@ -3,7 +3,6 @@ package com.github.iielse.imageviewer.core
 import androidx.paging.DataSource
 import androidx.paging.ItemKeyedDataSource
 import com.github.iielse.imageviewer.adapter.Item
-import com.github.iielse.imageviewer.adapter.ItemType.PHOTO
 import com.github.iielse.imageviewer.utils.log
 
 class Repository {

@@ -1,7 +1,6 @@
 package com.github.iielse.imageviewer.adapter
 
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +16,6 @@ import com.github.iielse.imageviewer.viewholders.NoMoreVH
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.widgets.PhotoView2
-import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 import java.util.*
 
 class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.ViewHolder>(diff) {

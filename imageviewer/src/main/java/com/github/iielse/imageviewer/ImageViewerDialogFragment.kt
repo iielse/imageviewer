@@ -55,21 +55,21 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
                         AnimHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), viewHolder.itemView.photoView)
                     }
                 }
-                container.changeToBackgroundColor(Color.BLACK)
+                background.changeToBackgroundColor(Color.BLACK)
             }
 
             override fun onDrag(view: PhotoView2, fraction: Float) {
-                container.updateBackgroundColor(fraction, Color.BLACK, Color.TRANSPARENT)
+                background.updateBackgroundColor(fraction, Color.BLACK, Color.TRANSPARENT)
             }
 
             override fun onRestore(view: PhotoView2, fraction: Float) {
-                container.changeToBackgroundColor(Color.BLACK)
+                background.changeToBackgroundColor(Color.BLACK)
             }
 
             override fun onRelease(view: PhotoView2) {
                 val startView = (view.getTag(R.id.viewer_adapter_item_key) as? Long?)?.let { transformer.getView(it) }
                 AnimHelper.end(this@ImageViewerDialogFragment, startView, view)
-                container.changeToBackgroundColor(Color.TRANSPARENT)
+                background.changeToBackgroundColor(Color.TRANSPARENT)
             }
         }
     }
@@ -85,7 +85,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)?.let {
             val startView = transformer.getView(currentKey)
             AnimHelper.end(this, startView, it)
-            container.changeToBackgroundColor(Color.TRANSPARENT)
+            background.changeToBackgroundColor(Color.TRANSPARENT)
         }
     }
 }

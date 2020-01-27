@@ -12,7 +12,9 @@ object Components {
     private var transformer: Transformer? = null
     private var initKey: Long? = null
 
-    fun set(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Long) {
+    private var vhCustomizer: VHCustomizer? = null
+
+    fun initialize(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Long) {
         log { "Components set" }
         if (working) throw IllegalStateException("")
         Components.imageLoader = imageLoader
@@ -20,6 +22,10 @@ object Components {
         Components.transformer = transformer
         Components.initKey = initKey
         working = true
+    }
+
+    fun setVHCustomizer(vhCustomizer: VHCustomizer?) {
+        Components.vhCustomizer = vhCustomizer
     }
 
     fun attach(owner: LifecycleOwner) {
@@ -30,6 +36,7 @@ object Components {
     fun requireDataProvider() = dataProvider!!
     fun requireTransformer() = transformer!!
     fun requireInitKey() = initKey!!
+    fun requireVHCustomizer() = vhCustomizer ?: object : VHCustomizer {}
 
     private fun release() {
         log { "Components release" }

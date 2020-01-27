@@ -2,25 +2,29 @@ package com.github.iielse.imageviewer
 
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
-import com.github.iielse.imageviewer.core.ImageLoader
-import com.github.iielse.imageviewer.core.Components
-import com.github.iielse.imageviewer.core.DataProvider
-import com.github.iielse.imageviewer.core.DefaultTransformer
-import com.github.iielse.imageviewer.core.Transformer
+import com.github.iielse.imageviewer.core.*
 
 class ImageViewerBuilder(private val context: Context?,
-                         private val imageLoader: ImageLoader,
-                         private val dataProvider: DataProvider,
-                         private val transformer: Transformer = DefaultTransformer(),
-                         private val initKey: Long = 0
+                                    private val imageLoader: ImageLoader,
+                                    private val dataProvider: DataProvider,
+                                    private val transformer: Transformer = DefaultTransformer(),
+                                    private val initKey: Long = 0
 ) {
+    private var vhCustomizer: VHCustomizer? = null
+
+    fun setVHCustomizer(vhCustomizer: VHCustomizer): ImageViewerBuilder {
+        this.vhCustomizer = vhCustomizer
+        return this
+    }
+
     private fun create(): ImageViewerDialogFragment {
         return ImageViewerDialogFragment()
     }
 
     fun show() {
         (context as? FragmentActivity?)?.let {
-            Components.set(imageLoader, dataProvider, transformer, initKey)
+            Components.initialize(imageLoader, dataProvider, transformer, initKey)
+            Components.setVHCustomizer(vhCustomizer)
             val viewer = create()
             Components.attach(viewer)
             viewer.show(it.supportFragmentManager)
