@@ -10,8 +10,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 
-val Float.decimal2: Float get() = (this * 100).toInt() / 100f
-
 fun ViewGroup.inflate(resId: Int): View {
     return LayoutInflater.from(context).inflate(resId, this, false)
 }

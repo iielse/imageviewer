@@ -12,6 +12,7 @@ class ImageViewerBuilder(private val context: Context?,
 ) {
     private var vhCustomizer: VHCustomizer? = null
     private var viewerCallback: ViewerCallbackAdapter? = null
+    private var overlayCustomizer: OverlayCustomizer? = null
 
     fun setVHCustomizer(vhCustomizer: VHCustomizer): ImageViewerBuilder {
         this.vhCustomizer = vhCustomizer
@@ -20,6 +21,11 @@ class ImageViewerBuilder(private val context: Context?,
 
     fun setViewerCallback(viewerCallback: ViewerCallbackAdapter): ImageViewerBuilder {
         this.viewerCallback = viewerCallback
+        return this
+    }
+
+    fun setOverlayCustomizer(overlayCustomizer: OverlayCustomizer?) : ImageViewerBuilder{
+        this.overlayCustomizer = overlayCustomizer
         return this
     }
 
@@ -32,6 +38,7 @@ class ImageViewerBuilder(private val context: Context?,
             Components.initialize(imageLoader, dataProvider, transformer, initKey)
             Components.setVHCustomizer(vhCustomizer)
             Components.setViewerCallback(viewerCallback)
+            Components.setOverlayCustomizer(overlayCustomizer)
             val viewer = create()
             Components.attach(viewer)
             viewer.show(it.supportFragmentManager)

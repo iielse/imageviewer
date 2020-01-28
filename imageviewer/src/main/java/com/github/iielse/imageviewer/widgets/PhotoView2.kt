@@ -1,12 +1,12 @@
 package com.github.iielse.imageviewer.widgets
 
 import android.content.Context
-import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.MotionEvent
-import com.github.chrisbanes.photoview.OnMatrixChangedListener
+import android.view.ViewParent
+import androidx.viewpager2.widget.ViewPager2
 import com.github.chrisbanes.photoview.PhotoView
-import com.github.iielse.imageviewer.utils.decimal2
+import com.github.iielse.imageviewer.utils.Config
 import kotlin.math.min
 
 class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
@@ -16,8 +16,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         fun onRestore(view: PhotoView2, fraction: Float)
         fun onRelease(view: PhotoView2)
     }
-
-    private val dismissEdge by lazy { height * 0.15f }
+    private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
     private var singleTouch = true
     private var lastX = 0f
     private var lastY = 0f
@@ -28,7 +27,9 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
     }
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-        handleDispatchTouchEvent(event)
+        if (Config.SWIPE_DISMISS && Config.VIEWER_ORIENTATION == ViewPager2.ORIENTATION_HORIZONTAL) {
+            handleDispatchTouchEvent(event)
+        }
         return super.dispatchTouchEvent(event)
     }
 

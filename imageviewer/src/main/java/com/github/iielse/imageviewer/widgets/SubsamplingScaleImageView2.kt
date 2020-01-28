@@ -3,13 +3,25 @@ package com.github.iielse.imageviewer.widgets
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
+import androidx.viewpager2.widget.ViewPager2
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.log
 import kotlin.math.min
 
 class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null)
     : SubsamplingScaleImageView(context, attrs) {
+    interface Listener {
+        fun onDrag(view: SubsamplingScaleImageView2, fraction: Float)
+        fun onRestore(view: SubsamplingScaleImageView2, fraction: Float)
+        fun onRelease(view: SubsamplingScaleImageView2)
+    }
     private var initScale = scale
+    private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
+    private var singleTouch = true
+    private var lastX = 0f
+    private var lastY = 0f
+    private var listener: Listener? = null
 
     init {
         setOnImageEventListener(object : DefaultOnImageEventListener() {
@@ -19,25 +31,14 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
         })
     }
 
-    interface Listener {
-        fun onDrag(view: SubsamplingScaleImageView2, fraction: Float)
-        fun onRestore(view: SubsamplingScaleImageView2, fraction: Float)
-        fun onRelease(view: SubsamplingScaleImageView2)
-    }
-
-    private val dismissEdge by lazy { height * 0.15f }
-    private var singleTouch = true
-    private var lastX = 0f
-    private var lastY = 0f
-    private var listener: Listener? = null
-
     fun setListener(listener: Listener?) {
         this.listener = listener
     }
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-        log { "dispatchTouchEvent ${event?.actionMasked} " }
-        handleDispatchTouchEvent(event)
+        if (Config.SWIPE_DISMISS && Config.VIEWER_ORIENTATION == ViewPager2.ORIENTATION_HORIZONTAL) {
+            handleDispatchTouchEvent(event)
+        }
         return super.dispatchTouchEvent(event)
     }
 
@@ -51,7 +52,6 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> up()
             MotionEvent.ACTION_MOVE -> {
-                log { "dispatchTouchEvent ACTION_MOVE $singleTouch $scale" }
                 if (singleTouch && scale == initScale) {
                     if (lastX == 0f) lastX = event.rawX
                     if (lastY == 0f) lastY = event.rawY
@@ -64,7 +64,6 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
     }
 
     private fun fakeDrag(offsetX: Float, offsetY: Float) {
-        log { "fakeDrag $offsetX $offsetY" }
         parent?.requestDisallowInterceptTouchEvent(true)
         val fraction = min(1f, offsetY / height)
         val fakeScale = 1 - min(0.4f, fraction)

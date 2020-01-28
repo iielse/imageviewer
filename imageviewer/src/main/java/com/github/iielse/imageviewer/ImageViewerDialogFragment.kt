@@ -12,9 +12,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.github.iielse.imageviewer.utils.Config.OFFSCREEN_PAGE_LIMIT
 import com.github.iielse.imageviewer.adapter.ImageViewerAdapter
 import com.github.iielse.imageviewer.core.Components.requireInitKey
+import com.github.iielse.imageviewer.core.Components.requireOverlayCustomizer
 import com.github.iielse.imageviewer.core.Components.requireTransformer
 import com.github.iielse.imageviewer.core.Components.requireViewerCallback
 import com.github.iielse.imageviewer.utils.AnimHelper
+import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.findViewWithKeyTag
 import com.github.iielse.imageviewer.utils.log
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
@@ -40,9 +42,12 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
             it.clipChildren = false
             it.itemAnimator = null
         }
+        viewer.orientation = Config.VIEWER_ORIENTATION
         viewer.registerOnPageChangeCallback(pagerCallback)
         viewer.offscreenPageLimit = OFFSCREEN_PAGE_LIMIT
         viewer.adapter = adapter
+
+        overlayView.addView(requireOverlayCustomizer().provideView(overlayView))
 
         viewModel.dataList.observe(this, Observer {
             log { "submitList ${it.size}" }

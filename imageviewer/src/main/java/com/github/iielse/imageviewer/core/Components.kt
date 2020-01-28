@@ -13,6 +13,7 @@ object Components {
     private var initKey: Long? = null
 
     private var vhCustomizer: VHCustomizer? = null
+    private var overlayCustomizer: OverlayCustomizer? = null
     private var viewerCallback: ViewerCallbackAdapter? = null
 
     fun initialize(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Long) {
@@ -33,6 +34,10 @@ object Components {
         Components.viewerCallback = viewerCallback
     }
 
+    fun setOverlayCustomizer(overlayCustomizer: OverlayCustomizer?) {
+        Components.overlayCustomizer = overlayCustomizer
+    }
+
     fun attach(owner: LifecycleOwner) {
         owner.onDestroy { release() }
     }
@@ -43,6 +48,7 @@ object Components {
     fun requireInitKey() = initKey!!
     fun requireVHCustomizer() = vhCustomizer ?: object : VHCustomizer {}
     fun requireViewerCallback() = viewerCallback ?: ViewerCallbackAdapter()
+    fun requireOverlayCustomizer() = overlayCustomizer ?: object : OverlayCustomizer {}
 
     private fun release() {
         log { "Components release" }
@@ -54,5 +60,6 @@ object Components {
 
         vhCustomizer = null
         viewerCallback = null
+        overlayCustomizer = null
     }
 }

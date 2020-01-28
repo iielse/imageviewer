@@ -1,6 +1,5 @@
 package github.iielse.imageviewer.demo
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import ch.ielse.demo.p02.R
 import ch.ielse.demo.p02.TestActivity
 import com.bumptech.glide.Glide
@@ -17,21 +17,28 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.core.*
+import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.utils.log
-import com.github.iielse.imageviewer.widgets.PhotoView2
 import kotlinx.android.synthetic.main.activity_9.*
-import kotlinx.android.synthetic.main.item_photo_custom_layout.*
 import java.io.File
 
 class MainActivity6 : AppCompatActivity() {
     private val init100 = MyViewerData(id = 101, url = "")
     private val initx = MyViewerData(id = 0, url = "")
+    private var overlayIndicator : TextView? = null
+    private var orientationH = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_9)
         toTest.setOnClickListener { startActivity(Intent(this, TestActivity::class.java)) }
+        orientation.setOnClickListener {
+            orientationH = !orientationH
+            orientation.text = if (orientationH) " HORIZONTAL" else "VERTICAL"
+            Config.VIEWER_ORIENTATION = if (orientationH) ViewPager2.ORIENTATION_HORIZONTAL else ViewPager2.ORIENTATION_VERTICAL
+        }
+
 
         Glide.with(pView)
                 .load(provideBitmap(init100.id))
@@ -46,6 +53,7 @@ class MainActivity6 : AppCompatActivity() {
         pViewx.setOnClickListener {
             builder(initx, pViewx).show()
         }
+
     }
 
     private fun builder(clicked: MyViewerData, clickedView: ImageView): ImageViewerBuilder {
@@ -111,22 +119,22 @@ class MainActivity6 : AppCompatActivity() {
                     }
                 })
                 .setViewerCallback(object : ViewerCallbackAdapter() {
-                    override fun onInit(viewHolder: RecyclerView.ViewHolder) {
-                    }
-
-                    override fun onRestore(viewHolder: RecyclerView.ViewHolder, view: PhotoView2, fraction: Float) {
-                    }
-
-                    override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: PhotoView2, fraction: Float) {
-                    }
-
                     override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {
                         viewHolder.itemView.findViewById<View>(R.id.customizeDecor)
                                 .animate().setDuration(200).alpha(0f).start()
+
+                        overlayIndicator?.animate()?.setDuration(200)?.alpha(0f)?.start()
                     }
 
                     override fun onPageSelected(position: Int) {
-                        log { "onPageSelected $position" }
+                        overlayIndicator?.text = position.toString()
+                    }
+                })
+                .setOverlayCustomizer(object : OverlayCustomizer {
+                    override fun provideView(parent: ViewGroup): View? {
+                        return parent.inflate(R.layout.layout_indicator).also {
+                            overlayIndicator = it.findViewById(R.id.indicator)
+                        }
                     }
                 })
     }
