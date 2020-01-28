@@ -190,6 +190,10 @@ class MainActivity6 : AppCompatActivity() {
                             nextIndicator?.setOnClickListener {
                                 viewerActions.setCurrentItem(currentPosition + 1)
                             }
+
+                            it.findViewById<View>(R.id.dismiss).setOnClickListener {
+                                viewerActions.dismiss()
+                            }
                         }
                     }
                 })
