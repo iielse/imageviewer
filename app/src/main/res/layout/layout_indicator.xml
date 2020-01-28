@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:id="@+id/indicatorDecor"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="30dp"
         android:background="#f0c"
         android:gravity="center"
@@ -18,4 +22,30 @@
         android:textSize="20dp"
         tools:text="x" />
 
-</FrameLayout>
+    <TextView
+        app:layout_constraintTop_toTopOf="@id/indicator"
+        app:layout_constraintEnd_toStartOf="@id/indicator"
+        android:background="#c0f"
+        android:gravity="center"
+        android:layout_marginEnd="10dp"
+        android:minWidth="30dp"
+        android:minHeight="30dp"
+        android:id="@+id/pre"
+        android:text="click to pre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        app:layout_constraintStart_toEndOf="@id/indicator"
+        app:layout_constraintTop_toTopOf="@id/indicator"
+        android:background="#c0f"
+        android:gravity="center"
+        android:layout_marginStart="10dp"
+        android:minWidth="30dp"
+        android:minHeight="30dp"
+        android:id="@+id/next"
+        android:text="click to next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

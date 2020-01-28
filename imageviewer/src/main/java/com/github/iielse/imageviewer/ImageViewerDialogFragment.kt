@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.github.iielse.imageviewer.utils.Config.OFFSCREEN_PAGE_LIMIT
@@ -20,12 +20,14 @@ import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.findViewWithKeyTag
 import com.github.iielse.imageviewer.utils.log
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
-import com.github.iielse.imageviewer.widgets.PhotoView2
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
+import kotlin.math.max
+import kotlin.math.min
 
 class ImageViewerDialogFragment : BaseDialogFragment() {
-    private val viewModel by lazy { ViewModelProviders.of(this).get(ImageViewerViewModel::class.java) }
+    private val events by lazy { ViewModelProvider(requireActivity()).get(ImageViewerActionViewModel::class.java) }
+    private val viewModel by lazy { ViewModelProvider(this).get(ImageViewerViewModel::class.java) }
     private val userCallback by lazy { requireViewerCallback() }
     private val initKey by lazy { requireInitKey() }
     private val transformer by lazy { requireTransformer() }
@@ -49,11 +51,19 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
 
         overlayView.addView(requireOverlayCustomizer().provideView(overlayView))
 
-        viewModel.dataList.observe(this, Observer {
+        viewModel.dataList.observe(viewLifecycleOwner, Observer {
             log { "submitList ${it.size}" }
             adapter.submitList(it)
             viewer.setCurrentItem(it.indexOfFirst { it.id == initKey }, false)
         })
+
+        events.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
+    }
+
+    private fun handle(action: Pair<String, Any?>?) {
+        when (action?.first) {
+            ViewerActions.SET_CURRENT_ITEM -> viewer.currentItem = min(max(action.second as Int, 0), adapter.itemCount)
+        }
     }
 
     private val adapterListener by lazy {

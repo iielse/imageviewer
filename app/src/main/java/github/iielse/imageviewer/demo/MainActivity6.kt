@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import ch.ielse.demo.p02.R
@@ -15,6 +16,7 @@ import ch.ielse.demo.p02.TestActivity
 import com.bumptech.glide.Glide
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.github.iielse.imageviewer.ImageViewerActionViewModel
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.core.*
 import com.github.iielse.imageviewer.utils.Config
@@ -24,10 +26,16 @@ import kotlinx.android.synthetic.main.activity_9.*
 import java.io.File
 
 class MainActivity6 : AppCompatActivity() {
-    private val init100 = MyViewerData(id = 101, url = "")
-    private val initx = MyViewerData(id = 0, url = "")
-    private var overlayIndicator : TextView? = null
+    private val viewerActions by lazy { ViewModelProvider(this).get(ImageViewerActionViewModel::class.java) }
+
+    private val init101 = MyViewerData(id = 101, url = "")
+    private val initX = MyViewerData(id = 0, url = "")
+    private var indicatorDecor: View? = null
+    private var overlayIndicator: TextView? = null
+    private var preIndicator: TextView? = null
+    private var nextIndicator: TextView? = null
     private var orientationH = true
+    private var currentPosition = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,17 +49,17 @@ class MainActivity6 : AppCompatActivity() {
 
 
         Glide.with(pView)
-                .load(provideBitmap(init100.id))
+                .load(provideBitmap(init101.id))
                 .into(pView)
         Glide.with(pViewx)
-                .load(provideBitmap(initx.id))
+                .load(provideBitmap(initX.id))
                 .into(pViewx)
 
         pView.setOnClickListener {
-            builder(init100, pView).show()
+            builder(init101, pView).show()
         }
         pViewx.setOnClickListener {
-            builder(initx, pViewx).show()
+            builder(initX, pViewx).show()
         }
 
     }
@@ -123,17 +131,28 @@ class MainActivity6 : AppCompatActivity() {
                         viewHolder.itemView.findViewById<View>(R.id.customizeDecor)
                                 .animate().setDuration(200).alpha(0f).start()
 
-                        overlayIndicator?.animate()?.setDuration(200)?.alpha(0f)?.start()
+                        indicatorDecor?.animate()?.setDuration(200)?.alpha(0f)?.start()
                     }
 
                     override fun onPageSelected(position: Int) {
+                        currentPosition = position
                         overlayIndicator?.text = position.toString()
                     }
                 })
                 .setOverlayCustomizer(object : OverlayCustomizer {
                     override fun provideView(parent: ViewGroup): View? {
                         return parent.inflate(R.layout.layout_indicator).also {
+                            indicatorDecor = it.findViewById(R.id.indicatorDecor)
                             overlayIndicator = it.findViewById(R.id.indicator)
+                            preIndicator = it.findViewById(R.id.pre)
+                            nextIndicator = it.findViewById(R.id.next)
+
+                            preIndicator?.setOnClickListener {
+                                viewerActions.setCurrentItem(currentPosition - 1)
+                            }
+                            nextIndicator?.setOnClickListener {
+                                viewerActions.setCurrentItem(currentPosition + 1)
+                            }
                         }
                     }
                 })
