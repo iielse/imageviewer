@@ -8,7 +8,6 @@ import android.util.AttributeSet
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.github.iielse.imageviewer.utils.Config.DURATION_BG
-import com.github.iielse.imageviewer.utils.log
 import kotlin.math.min
 
 class BackgroundView @JvmOverloads constructor(
@@ -33,7 +32,6 @@ class BackgroundView @JvmOverloads constructor(
     }
 
     fun updateBackgroundColor(fraction: Float, startValue: Int, endValue: Int) {
-        log { "updateBackgroundColor $fraction" }
         setBackgroundColor(argbEvaluator.evaluate(min(fraction * 2, 1f), startValue, endValue) as Int)
     }
 

@@ -18,7 +18,7 @@ object Components {
 
     fun initialize(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Long) {
         log { "Components set" }
-        if (working) throw IllegalStateException("")
+        if (working) throw IllegalStateException()
         Components.imageLoader = imageLoader
         Components.dataProvider = dataProvider
         Components.transformer = transformer
@@ -57,7 +57,6 @@ object Components {
         dataProvider = null
         transformer = null
         initKey = null
-
         vhCustomizer = null
         viewerCallback = null
         overlayCustomizer = null

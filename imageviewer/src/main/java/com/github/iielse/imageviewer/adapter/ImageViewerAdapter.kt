@@ -47,7 +47,6 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
             listener?.onInit(holder)
             key = NO_ID
         }
-
     }
 
     override fun getItemId(position: Int): Long = getItem(position)?.id ?: NO_ID

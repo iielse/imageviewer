@@ -79,7 +79,6 @@ object AnimHelper {
                     setMargins((startView.left * (1 - fraction)).toInt(), (startView.top * (1 - fraction)).toInt(), 0, 0)
                 }
             }
-
         }
 
         animator.start()

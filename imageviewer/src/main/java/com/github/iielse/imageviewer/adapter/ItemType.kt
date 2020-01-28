@@ -1,7 +1,5 @@
 package com.github.iielse.imageviewer.adapter
 
-
-
 object ItemType {
     var itemTypeProvider = 1
     val UNKNOWN = -1

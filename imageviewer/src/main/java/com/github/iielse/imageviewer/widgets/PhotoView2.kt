@@ -3,7 +3,6 @@ package com.github.iielse.imageviewer.widgets
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.ViewParent
 import androidx.viewpager2.widget.ViewPager2
 import com.github.chrisbanes.photoview.PhotoView
 import com.github.iielse.imageviewer.utils.Config
