@@ -1,12 +1,18 @@
 package github.iielse.imageviewer.demo
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +20,10 @@ import androidx.viewpager2.widget.ViewPager2
 import ch.ielse.demo.p02.R
 import ch.ielse.demo.p02.TestActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.iielse.imageviewer.ImageViewerActionViewModel
@@ -39,6 +49,7 @@ class MainActivity6 : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        X.appContext = this.applicationContext
         setContentView(R.layout.activity_9)
         toTest.setOnClickListener { startActivity(Intent(this, TestActivity::class.java)) }
         orientation.setOnClickListener {
@@ -90,13 +101,39 @@ class MainActivity6 : AppCompatActivity() {
                     }
                 },
                 imageLoader = object : ImageLoader {
-                    override fun load(view: ImageView, data: Photo) {
+                    override fun load(view: ImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
+                        if (data.id() == 3L) {
+                            // loading ui test
+                            Glide.with(view).clear(view)
+                            val loading = viewHolder.itemView.findViewById<ProgressBar>(R.id.loading)
+                            loading.visibility = View.VISIBLE
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                Glide.with(view)
+                                        .asBitmap()
+                                        .load("https://www.google.cn/landing/cnexp/google-search.png")
+                                        .addListener(object : RequestListener<Bitmap> {
+                                            override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                                                loading.visibility = View.GONE
+                                                return false
+                                            }
+
+                                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                                                toast("13 load failed")
+                                                loading.visibility = View.GONE
+                                                return false
+                                            }
+                                        })
+                                        .into(view)
+                            }, 5000)
+                            return
+                        }
+
                         Glide.with(view)
                                 .load(provideBitmap(data.id()))
                                 .into(view)
                     }
 
-                    override fun load(subsamplingView: SubsamplingScaleImageView, data: Photo) {
+                    override fun load(subsamplingView: SubsamplingScaleImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
                         runOnIOThread {
                             val fileName = "subsampling_${data.id()}"
                             val file = File(cacheDir, fileName)//将要保存图片的路径
@@ -158,3 +195,10 @@ class MainActivity6 : AppCompatActivity() {
                 })
     }
 }
+
+object X {
+    var appContext: Context? = null
+}
+
+fun appContext() = X.appContext!!
+fun toast(message: String) = runOnUIThread { Toast.makeText(appContext(), message, Toast.LENGTH_SHORT).show() }
