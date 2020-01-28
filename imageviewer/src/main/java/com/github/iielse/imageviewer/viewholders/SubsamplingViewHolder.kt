@@ -25,8 +25,8 @@ class SubsamplingViewHolder(override val containerView: View, callback: ImageVie
     fun bind(item: Photo) {
         subsamplingView.setTag(R.id.viewer_adapter_item_key, item.id())
         subsamplingView.setTag(R.id.viewer_adapter_item_holder, this)
-        requireImageLoader().load(subsamplingView, item, this)
         requireVHCustomizer().bind(ItemType.SUBSAMPLING, item, this)
+        requireImageLoader().load(subsamplingView, item, this)
     }
 }
 

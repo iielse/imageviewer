@@ -97,19 +97,16 @@ fun saveBitmapFile(bitmap: Bitmap, file: File) {
     try {
         bos = BufferedOutputStream(FileOutputStream(file))
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
-        bos.flush()
-        bos.close()
     } catch (e: IOException) {
         e.printStackTrace()
     } finally {
         bos?.flush()
         bos?.close()
     }
-
 }
 
 
-fun fetchAfter(key: Long, callback: (List<MyViewerData>) -> Unit) {
+fun testFetchAfter(key: Long, callback: (List<MyViewerData>) -> Unit) {
     mainHandler.postDelayed({
         callback(listOf(numPhoto(key + 1),
                 numPhoto(key + 2),
@@ -121,7 +118,7 @@ fun fetchAfter(key: Long, callback: (List<MyViewerData>) -> Unit) {
     }, 200)
 }
 
-fun fetchBefore(key: Long, callback: (List<MyViewerData>) -> Unit) {
+fun testFetchBefore(key: Long, callback: (List<MyViewerData>) -> Unit) {
     mainHandler.postDelayed({
         callback(listOf(numPhoto(key - 1),
                 numPhoto(key - 2),

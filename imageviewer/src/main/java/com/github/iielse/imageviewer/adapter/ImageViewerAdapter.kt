@@ -85,5 +85,4 @@ private val diff = object : DiffUtil.ItemCallback<Item>() {
         return newItem.type == oldItem.type && newItem.id == oldItem.id
                 && Objects.equals(newItem.extra, oldItem.extra)
     }
-
 }

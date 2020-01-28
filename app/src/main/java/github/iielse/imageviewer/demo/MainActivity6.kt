@@ -31,7 +31,6 @@ import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.core.*
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.inflate
-import com.github.iielse.imageviewer.utils.log
 import kotlinx.android.synthetic.main.activity_9.*
 import java.io.File
 
@@ -84,16 +83,15 @@ class MainActivity6 : AppCompatActivity() {
                     }
 
                     override fun loadAfter(key: Long, callback: (List<Photo>) -> Unit) {
-                        fetchAfter(key, callback)
+                        testFetchAfter(key, callback)
                     }
 
                     override fun loadBefore(key: Long, callback: (List<Photo>) -> Unit) {
-                        fetchBefore(key, callback)
+                        testFetchBefore(key, callback)
                     }
                 },
                 transformer = object : Transformer {
                     override fun getView(key: Long): ImageView? {
-                        log { "getView key $key" }
                         return when (key) {
                             clicked.id -> clickedView
                             else -> null

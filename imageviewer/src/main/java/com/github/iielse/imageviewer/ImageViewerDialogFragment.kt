@@ -62,7 +62,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
 
     private fun handle(action: Pair<String, Any?>?) {
         when (action?.first) {
-            ViewerActions.SET_CURRENT_ITEM -> viewer.currentItem = min(max(action.second as Int, 0), adapter.itemCount)
+            ViewerActions.SET_CURRENT_ITEM -> viewer.currentItem = max(action.second as Int, 0)
             ViewerActions.DISMISS -> onBackPressed()
         }
     }

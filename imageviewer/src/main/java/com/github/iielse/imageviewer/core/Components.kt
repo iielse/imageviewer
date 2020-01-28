@@ -11,13 +11,12 @@ object Components {
     private var dataProvider: DataProvider? = null
     private var transformer: Transformer? = null
     private var initKey: Long? = null
-
     private var vhCustomizer: VHCustomizer? = null
     private var overlayCustomizer: OverlayCustomizer? = null
     private var viewerCallback: ViewerCallbackAdapter? = null
 
     fun initialize(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Long) {
-        log { "Components set" }
+        log { "Components initialize" }
         if (working) throw IllegalStateException()
         Components.imageLoader = imageLoader
         Components.dataProvider = dataProvider

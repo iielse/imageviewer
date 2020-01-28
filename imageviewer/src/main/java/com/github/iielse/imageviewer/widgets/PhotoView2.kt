@@ -1,5 +1,7 @@
 package com.github.iielse.imageviewer.widgets
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -15,6 +17,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         fun onRestore(view: PhotoView2, fraction: Float)
         fun onRelease(view: PhotoView2)
     }
+
     private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
     private var singleTouch = true
     private var lastX = 0f
@@ -36,8 +39,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         when (event?.actionMasked) {
             MotionEvent.ACTION_POINTER_DOWN -> {
                 singleTouch = false
-                animate()
-                        .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
+                animate().translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
                         .setDuration(200).start()
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> up()
@@ -73,15 +75,12 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         if (translationY > dismissEdge) {
             listener?.onRelease(this)
         } else {
-            animate()
-                    .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
-                    .setDuration(200)
-                    .setUpdateListener {
-                        val offsetY = translationY
-                        val fraction = min(1f, offsetY / dismissEdge)
-                        listener?.onRestore(this, fraction)
-                    }
-                    .start()
+            val offsetY = translationY
+            val fraction = min(1f, offsetY / height)
+            listener?.onRestore(this, fraction)
+
+            animate().translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
+                    .setDuration(200).start()
         }
     }
 

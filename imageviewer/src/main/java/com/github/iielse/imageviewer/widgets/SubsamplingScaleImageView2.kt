@@ -83,15 +83,13 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
         if (translationY > dismissEdge) {
             listener?.onRelease(this)
         } else {
+            val offsetY = translationY
+            val fraction = min(1f, offsetY / height)
+            listener?.onRestore(this, fraction)
+
             animate()
                     .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
-                    .setDuration(200)
-                    .setUpdateListener {
-                        val offsetY = translationY
-                        val fraction = min(1f, offsetY / dismissEdge)
-                        listener?.onRestore(this, fraction)
-                    }
-                    .start()
+                    .setDuration(200).start()
         }
     }
 
