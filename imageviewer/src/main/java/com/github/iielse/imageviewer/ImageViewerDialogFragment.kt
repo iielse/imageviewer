@@ -75,17 +75,17 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
                         AnimHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), viewHolder.itemView.photoView)
                     }
                 }
-                background.changeToBackgroundColor(Color.BLACK)
+                background.changeToBackgroundColor(Config.VIEWER_BACKGROUND_COLOR)
                 userCallback.onInit(viewHolder)
             }
 
             override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {
-                background.updateBackgroundColor(fraction, Color.BLACK, Color.TRANSPARENT)
+                background.updateBackgroundColor(fraction, Config.VIEWER_BACKGROUND_COLOR, Color.TRANSPARENT)
                 userCallback.onDrag(viewHolder, view, fraction)
             }
 
             override fun onRestore(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {
-                background.changeToBackgroundColor(Color.BLACK)
+                background.changeToBackgroundColor(Config.VIEWER_BACKGROUND_COLOR)
                 userCallback.onRestore(viewHolder, view, fraction)
             }
 
