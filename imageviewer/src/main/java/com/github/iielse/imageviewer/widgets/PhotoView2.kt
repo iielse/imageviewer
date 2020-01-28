@@ -10,12 +10,7 @@ import com.github.iielse.imageviewer.utils.decimal2
 import kotlin.math.min
 
 class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
-    : PhotoView(context, attrs, defStyleAttr), OnMatrixChangedListener {
-    companion object {
-        private const val EDGE_NONE = -1
-        private const val EDGE_TOP = 3
-    }
-
+    : PhotoView(context, attrs, defStyleAttr) {
     interface Listener {
         fun onDrag(view: PhotoView2, fraction: Float)
         fun onRestore(view: PhotoView2, fraction: Float)
@@ -23,16 +18,10 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
     }
 
     private val dismissEdge by lazy { height * 0.15f }
-    private var scrollEdge = EDGE_NONE
-    private var lastRect: RectF? = null
     private var singleTouch = true
     private var lastX = 0f
     private var lastY = 0f
     private var listener: Listener? = null
-
-    init {
-        setOnMatrixChangeListener(this)
-    }
 
     fun setListener(listener: Listener?) {
         this.listener = listener
@@ -41,12 +30,6 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
         handleDispatchTouchEvent(event)
         return super.dispatchTouchEvent(event)
-    }
-
-    override fun onMatrixChanged(rect: RectF?) {
-        val last = lastRect
-        scrollEdge = if (rect != null && last != null && rect.top.decimal2 >= last.top.decimal2) EDGE_TOP else EDGE_NONE
-        lastRect = rect
     }
 
     private fun handleDispatchTouchEvent(event: MotionEvent?) {
@@ -59,7 +42,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> up()
             MotionEvent.ACTION_MOVE -> {
-                if (singleTouch && scale == 1f && scrollEdge == EDGE_TOP) {
+                if (singleTouch && scale == 1f) {
                     if (lastX == 0f) lastX = event.rawX
                     if (lastY == 0f) lastY = event.rawY
                     val offsetX = event.rawX - lastX

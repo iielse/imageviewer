@@ -63,12 +63,12 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
                 userCallback.onInit(viewHolder)
             }
 
-            override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: PhotoView2, fraction: Float) {
+            override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {
                 background.updateBackgroundColor(fraction, Color.BLACK, Color.TRANSPARENT)
                 userCallback.onDrag(viewHolder, view, fraction)
             }
 
-            override fun onRestore(viewHolder: RecyclerView.ViewHolder, view: PhotoView2, fraction: Float) {
+            override fun onRestore(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {
                 background.changeToBackgroundColor(Color.BLACK)
                 userCallback.onRestore(viewHolder, view, fraction)
             }

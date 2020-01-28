@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+    <com.github.iielse.imageviewer.widgets.SubsamplingScaleImageView2
         android:id="@+id/subsamplingView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

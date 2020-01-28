@@ -30,7 +30,7 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ItemType.PHOTO -> PhotoViewHolder(parent.inflate(R.layout.item_imageviewer_photo), callback)
-            ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent.inflate(R.layout.item_imageviewer_subsampling))
+            ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent.inflate(R.layout.item_imageviewer_subsampling), callback)
             ItemType.MORE_LOADING -> MoreLoadingVH(parent.inflate(R.layout.item_imageviewer_more_loading))
             ItemType.MORE_RETRY -> MoreRetryVH(parent.inflate(R.layout.item_imageviewer_more_retry))
             else -> NoMoreVH(parent.inflate(R.layout.item_imageviewer_no_more))
@@ -59,7 +59,7 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
             listener?.onInit(viewHolder)
         }
 
-        override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: PhotoView2, fraction: Float) {
+        override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {
             listener?.onDrag(viewHolder, view, fraction)
         }
 
@@ -67,7 +67,7 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
             listener?.onRelease(viewHolder, view)
         }
 
-        override fun onRestore(viewHolder: RecyclerView.ViewHolder, view: PhotoView2, fraction: Float) {
+        override fun onRestore(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {
             listener?.onRestore(viewHolder, view, fraction)
         }
     }
