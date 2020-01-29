@@ -7,49 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.LifecycleOwner
 import com.github.iielse.imageviewer.widgets.PhotoView2
 
-object AnimHelper {
-    private var ending = false // end animation running
-
-    fun start(owner: LifecycleOwner, startView: View?, endView: View) {
-        endView.doOnPreDraw {
-            val animator = ValueAnimator.ofFloat(0f, 1f)
-            animator.duration = Config.DURATION_TRANSFORMER
-            animator.startDelay = Config.DURATION_ENTER_START_DELAY
-            animator.interpolator = DecelerateInterpolator()
-            if (startView == null) {
-                animator.addUpdateListener {
-                    val fraction = it.animatedValue as Float
-                    endView.alpha = fraction
-                }
-            } else {
-                val w1 = startView.width
-                val w2 = endView.width
-                val h1 = startView.height
-                val h2 = endView.height
-
-                val animTransform: ((Float) -> Unit) = { fraction ->
-                    endView.layoutParams = (endView.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
-                        width = (w1 + (w2 - w1) * fraction).toInt()
-                        height = (h1 + (h2 - h1) * fraction).toInt()
-                        setMargins((startView.left * (1 - fraction)).toInt(), (startView.top * (1 - fraction)).toInt(), 0, 0)
-                    }
-                }
-
-                animTransform(0f)
-                animator.addUpdateListener { animTransform(it.animatedValue as Float) }
-            }
-            animator.start()
-            owner.onDestroy { animator.cancel() }
-        }
-    }
+object AnimEndHelper {
+    private var animating = false
 
     fun end(fragment: DialogFragment, startView: View?, endView: View) {
-        if (ending) return
+        if (animating) return
 
         val animator = ValueAnimator.ofFloat(1f, 0f)
         animator.duration = Config.DURATION_TRANSFORMER
@@ -57,15 +22,15 @@ object AnimHelper {
         animator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 fragment.dismissAllowingStateLoss()
-                ending = false
+                animating = false
             }
 
             override fun onAnimationCancel(animation: Animator?) {
-                ending = false
+                animating = false
             }
 
             override fun onAnimationStart(animation: Animator?) {
-                ending = true
+                animating = true
             }
         })
 

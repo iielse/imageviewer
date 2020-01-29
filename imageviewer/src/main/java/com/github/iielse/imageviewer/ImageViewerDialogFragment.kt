@@ -15,10 +15,7 @@ import com.github.iielse.imageviewer.core.Components.requireInitKey
 import com.github.iielse.imageviewer.core.Components.requireOverlayCustomizer
 import com.github.iielse.imageviewer.core.Components.requireTransformer
 import com.github.iielse.imageviewer.core.Components.requireViewerCallback
-import com.github.iielse.imageviewer.utils.AnimHelper
-import com.github.iielse.imageviewer.utils.Config
-import com.github.iielse.imageviewer.utils.findViewWithKeyTag
-import com.github.iielse.imageviewer.utils.log
+import com.github.iielse.imageviewer.utils.*
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
@@ -71,7 +68,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
             override fun onInit(viewHolder: RecyclerView.ViewHolder) {
                 when (viewHolder) {
                     is PhotoViewHolder -> {
-                        AnimHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), viewHolder.itemView.photoView)
+                        AnimStartHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), viewHolder.itemView.photoView)
                     }
                 }
                 background.changeToBackgroundColor(Config.VIEWER_BACKGROUND_COLOR)
@@ -90,7 +87,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
 
             override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {
                 val startView = (view.getTag(R.id.viewer_adapter_item_key) as? Long?)?.let { transformer.getView(it) }
-                AnimHelper.end(this@ImageViewerDialogFragment, startView, view)
+                AnimEndHelper.end(this@ImageViewerDialogFragment, startView, view)
                 background.changeToBackgroundColor(Color.TRANSPARENT)
                 userCallback.onRelease(viewHolder, view)
             }
@@ -124,7 +121,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         val currentKey = adapter.getItemId(viewer.currentItem)
         viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)?.let { endView ->
             val startView = transformer.getView(currentKey)
-            AnimHelper.end(this, startView, endView)
+            AnimEndHelper.end(this, startView, endView)
             background.changeToBackgroundColor(Color.TRANSPARENT)
 
             (endView.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?)?.let {
