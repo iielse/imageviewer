@@ -14,6 +14,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="50dp"
         android:background="#efefef"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,8 +25,9 @@
         android:layout_marginStart="100dp"
         android:layout_marginTop="30dp"
         android:background="#efefef"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pView1"/>
+        app:layout_constraintTop_toBottomOf="@id/pView1" />
 
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/pView3"
@@ -41,11 +43,11 @@
         android:id="@+id/pView4"
         android:layout_width="110dp"
         android:layout_height="140dp"
-        android:layout_marginBottom="20dp"
         android:layout_marginStart="100dp"
         android:layout_marginTop="30dp"
-        android:background="#efefef"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="#efefef"
         app:layout_constraintBottom_toTopOf="@id/pView3"
         app:layout_constraintEnd_toEndOf="parent" />
 
