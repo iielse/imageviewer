@@ -38,6 +38,10 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated use {@link com.github.iielse.imageviewer.ImageViewerBuilder}
+ */
+@Deprecated
 public class ImageWatcher extends FrameLayout implements GestureDetector.OnGestureListener, ViewPager.OnPageChangeListener {
     private static final int SINGLE_TAP_UP_CONFIRMED = 1;
     private static final int DATA_INITIAL = 2;

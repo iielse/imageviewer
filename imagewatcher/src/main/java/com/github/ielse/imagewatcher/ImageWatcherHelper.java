@@ -16,7 +16,10 @@ import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * @deprecated use {@link com.github.iielse.imageviewer.ImageViewerBuilder}
+ */
+@Deprecated
 public class ImageWatcherHelper {
     private static final int VIEW_DECORATION_ID = R.id.view_decoration;
     private static final int VIEW_IMAGE_WATCHER_ID = R.id.view_image_watcher;
