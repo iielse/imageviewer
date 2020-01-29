@@ -40,7 +40,7 @@
         android:textColor="#000"
         android:textSize="15sp"/>
 
-    <ch.ielse.demo.p02.MessagePicturesLayout
+    <com.github.iielse.imagewatcher.demo.MessagePicturesLayout
         android:id="@+id/l_pictures"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
