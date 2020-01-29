@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.github.iielse.imagewatcher.ImageWatcher;
 import com.github.iielse.imagewatcher.ImageWatcherHelper;
+import com.github.iielse.imageviewer.demo.R;
 
 public class DecorationLayout extends FrameLayout implements ViewPager.OnPageChangeListener, View.OnClickListener {
 

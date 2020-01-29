@@ -13,6 +13,7 @@ import com.github.iielse.imagewatcher.ImageWatcherHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.github.iielse.imageviewer.demo.R;
 
 public class MainActivity4 extends AppCompatActivity {
     private List<Uri> dataList = new ArrayList<>();

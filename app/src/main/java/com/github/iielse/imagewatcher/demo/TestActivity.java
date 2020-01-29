@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.github.iielse.imageviewer.demo.MainActivity6;
 import com.github.iielse.imageviewer.demo.MainActivity7;
+import com.github.iielse.imageviewer.demo.R;
 
 
 public class TestActivity extends Activity {

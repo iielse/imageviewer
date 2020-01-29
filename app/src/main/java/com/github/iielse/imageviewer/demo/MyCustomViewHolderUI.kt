@@ -3,7 +3,6 @@ package com.github.iielse.imageviewer.demo
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import ch.ielse.demo.p02.R
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.core.VHCustomizer
 import com.github.iielse.imageviewer.utils.inflate

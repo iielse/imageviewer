@@ -23,6 +23,7 @@ import com.github.iielse.imagewatcher.ImageWatcher;
 import com.github.iielse.imagewatcher.ImageWatcherHelper;
 
 import java.util.List;
+import com.github.iielse.imageviewer.demo.R;
 
 public class MainActivity2 extends AppCompatActivity implements MessagePicturesLayout.Callback {
 

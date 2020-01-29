@@ -9,7 +9,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.github.iielse.imagewatcher.ImageWatcher;
-
+import com.github.iielse.imageviewer.demo.R;
 
 public class CustomLoadingUIProvider2 implements ImageWatcher.LoadingUIProvider {
     private final FrameLayout.LayoutParams lpCenterInParent = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

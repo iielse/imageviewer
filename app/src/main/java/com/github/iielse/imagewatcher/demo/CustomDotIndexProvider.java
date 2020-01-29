@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import com.github.iielse.imagewatcher.ImageWatcher;
 
 import java.util.List;
+import com.github.iielse.imageviewer.demo.R;
 
 public class CustomDotIndexProvider implements ImageWatcher.IndexProvider {
     private boolean initLayout;

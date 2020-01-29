@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.github.iielse.imageviewer.demo.R;
 
 /**
  * QQ 517309507

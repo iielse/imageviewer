@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.iielse.imagewatcher.ImageWatcher;
 
 import java.util.List;
+import com.github.iielse.imageviewer.demo.R;
 
 
 public class MainActivity extends AppCompatActivity implements MessagePicturesLayout.Callback, ImageWatcher.OnPictureLongPressListener {

@@ -24,6 +24,7 @@ import com.github.iielse.imagewatcher.ImageWatcherHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.github.iielse.imageviewer.demo.R;
 
 
 public class Fragment1 extends Fragment {

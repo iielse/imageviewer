@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.github.iielse.imageviewer.demo.R;
 
 public class MessageAdapter extends RecyclerView.Adapter {
     private final List<Data> mDataList = new ArrayList<>();

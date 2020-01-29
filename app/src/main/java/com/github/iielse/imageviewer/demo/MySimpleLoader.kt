@@ -1,5 +1,6 @@
 package com.github.iielse.imageviewer.demo
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Handler
@@ -8,7 +9,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
-import ch.ielse.demo.p02.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -57,6 +57,9 @@ private fun testLoading(view: ImageView, data: Photo, viewHolder: RecyclerView.V
     val loading = viewHolder.itemView.findViewById<ProgressBar>(R.id.loading)
     loading?.visibility = View.VISIBLE
     Handler(Looper.getMainLooper()).postDelayed({
+        // 开发者自己管理好生命周期.
+        if ((view.context as? Activity?)?.isFinishing == true) return@postDelayed
+
         Glide.with(view)
                 .asBitmap()
                 .load("https://www.google.cn/landing/cnexp/google-search.png")
