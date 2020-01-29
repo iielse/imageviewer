@@ -1,9 +1,9 @@
 package github.iielse.imageviewer.demo
 
+import android.content.Context
 import android.graphics.*
-import android.os.Handler
 import android.os.Looper
-import com.github.iielse.imageviewer.core.Photo
+import android.widget.Toast
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -13,22 +13,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-private fun desc(num: Long): String {
-    return when (num % 5) {
-        0L -> "desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 desc 1111 "
-        1L -> "desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 desc 2222 "
-        2L -> "desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 desc 3333 "
-        3L -> "desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 desc 4444 "
-        else -> "desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 desc 5555 "
-    }
-}
-
-data class MyViewerData(val id: Long, val url: String = "", val desc: String = desc(id)) : Photo {
-    override fun id(): Long = id
-    override fun subsampling() = id % 5 == 0L
-}
-
-private val mainHandler = Handler(Looper.getMainLooper())
 private val colors: List<Int> = listOf(
         0xfff2fefe.toInt(),
         0xffece9f6.toInt(),
@@ -106,37 +90,15 @@ fun saveBitmapFile(bitmap: Bitmap, file: File) {
 }
 
 
-fun testFetchAfter(key: Long, callback: (List<MyViewerData>) -> Unit) {
-    mainHandler.postDelayed({
-        callback(listOf(numPhoto(key + 1),
-                numPhoto(key + 2),
-                numPhoto(key + 3),
-                numPhoto(key + 4),
-                numPhoto(key + 5),
-                numPhoto(key + 6),
-                numPhoto(key + 7)))
-    }, 200)
-}
-
-fun testFetchBefore(key: Long, callback: (List<MyViewerData>) -> Unit) {
-    mainHandler.postDelayed({
-        callback(listOf(numPhoto(key - 1),
-                numPhoto(key - 2),
-                numPhoto(key - 3),
-                numPhoto(key - 4),
-                numPhoto(key - 5),
-                numPhoto(key - 6),
-                numPhoto(key - 7)).filter { it.id >= 0 }.reversed())
-    }, 200)
-}
-
-private fun numPhoto(value: Long) = MyViewerData(id = value)
-
 fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 fun runOnIOThread(block: () -> Unit): Disposable = Observable.fromCallable { block() }.subscribeOn(Schedulers.io()).subscribe()
 fun runOnUIThread(block: () -> Unit) {
     if (isMainThread()) block() else mainHandler.post(block)
 }
 
+object X {
+    var appContext: Context? = null
+}
 
-
+fun appContext() = X.appContext!!
+fun toast(message: String) = runOnUIThread { Toast.makeText(appContext(), message, Toast.LENGTH_SHORT).show() }

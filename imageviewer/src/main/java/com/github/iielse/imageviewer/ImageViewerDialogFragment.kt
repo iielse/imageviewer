@@ -23,7 +23,6 @@ import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 import kotlin.math.max
-import kotlin.math.min
 
 class ImageViewerDialogFragment : BaseDialogFragment() {
     private val events by lazy { ViewModelProvider(requireActivity()).get(ImageViewerActionViewModel::class.java) }
