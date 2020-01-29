@@ -45,7 +45,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         viewer.offscreenPageLimit = OFFSCREEN_PAGE_LIMIT
         viewer.adapter = adapter
 
-        overlayView.addView(requireOverlayCustomizer().provideView(overlayView))
+        requireOverlayCustomizer().provideView(overlayView)?.let(overlayView::addView)
 
         viewModel.dataList.observe(viewLifecycleOwner, Observer {
             log { "submitList ${it.size}" }

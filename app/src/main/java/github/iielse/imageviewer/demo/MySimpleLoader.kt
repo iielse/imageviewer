@@ -55,20 +55,20 @@ class MySimpleLoader : ImageLoader {
 private fun testLoading(view: ImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
     Glide.with(view).clear(view)
     val loading = viewHolder.itemView.findViewById<ProgressBar>(R.id.loading)
-    loading.visibility = View.VISIBLE
+    loading?.visibility = View.VISIBLE
     Handler(Looper.getMainLooper()).postDelayed({
         Glide.with(view)
                 .asBitmap()
                 .load("https://www.google.cn/landing/cnexp/google-search.png")
                 .addListener(object : RequestListener<Bitmap> {
                     override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        loading.visibility = View.GONE
+                        loading?.visibility = View.GONE
                         return false
                     }
 
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
                         toast("13 load failed")
-                        loading.visibility = View.GONE
+                        loading?.visibility = View.GONE
                         return false
                     }
                 })

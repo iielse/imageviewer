@@ -110,6 +110,13 @@
             android:text="to viewer"
             android:textAllCaps="false" />
 
+        <Button
+            android:id="@+id/button7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="to viewer java"
+            android:textAllCaps="false" />
+
 
     </LinearLayout>
 
