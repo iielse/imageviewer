@@ -17,7 +17,7 @@
 //        if (animating) return
 //
 //        val animator = ValueAnimator.ofFloat(1f, 0f)
-//        animator.duration = Config.DURATION_TRANSFORMER
+//        animator.duration = Config.DURATION_TRANSITION
 //        animator.interpolator = DecelerateInterpolator()
 //        animator.addListener(object : AnimatorListenerAdapter() {
 //            override fun onAnimationEnd(animation: Animator?) {

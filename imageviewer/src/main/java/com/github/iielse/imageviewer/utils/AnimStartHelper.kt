@@ -23,7 +23,7 @@
 //
 //        endView.doOnPreDraw {
 //            val animator = ValueAnimator.ofFloat(0f, 1f)
-//            animator.duration = Config.DURATION_TRANSFORMER
+//            animator.duration = Config.DURATION_TRANSITION
 //            animator.startDelay = Config.DURATION_ENTER_START_DELAY
 //            animator.interpolator = DecelerateInterpolator()
 //

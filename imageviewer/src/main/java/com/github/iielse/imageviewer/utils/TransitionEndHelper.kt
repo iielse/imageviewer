@@ -2,24 +2,35 @@ package com.github.iielse.imageviewer.utils
 
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
 
 object TransitionEndHelper {
-    fun end(owner: DialogFragment, startView: View?, holder: RecyclerView.ViewHolder) {
+    var animating = false
+
+    fun end(fragment: DialogFragment, startView: View?, holder: RecyclerView.ViewHolder) {
         val doTransition = {
-            TransitionManager.beginDelayedTransition(holder.itemView as ViewGroup, transitionSet(owner))
+            TransitionManager.beginDelayedTransition(holder.itemView as ViewGroup, transitionSet().also {
+                it.addListener(object : TransitionListenerAdapter() {
+                    override fun onTransitionStart(transition: Transition) {
+                        animating = true
+                    }
+
+                    override fun onTransitionEnd(transition: Transition) {
+                        animating = false
+                        holder.itemView.post { fragment.dismissAllowingStateLoss() }
+                    }
+                })
+            })
             transition(startView, holder)
         }
         holder.itemView.post(doTransition)
-        owner.onDestroy {
+        fragment.onDestroy {
             holder.itemView.removeCallbacks(doTransition)
             TransitionManager.endTransitions(holder.itemView as ViewGroup)
         }
@@ -46,24 +57,13 @@ object TransitionEndHelper {
         }
     }
 
-    private fun transitionSet(fragment: DialogFragment): Transition {
+    private fun transitionSet(): Transition {
         return TransitionSet().apply {
             addTransition(ChangeBounds())
-            addTransition(ChangeClipBounds())
-            addTransition(ChangeTransform())
             addTransition(ChangeImageTransform())
-            duration = 2000
+            addTransition(ChangeTransform())
+            duration = Config.DURATION_TRANSITION
             interpolator = DecelerateInterpolator()
-            addListener(object : TransitionListenerAdapter() {
-                override fun onTransitionStart(transition: Transition) {
-                    log { "onTransitionStart" }
-                }
-
-                override fun onTransitionEnd(transition: Transition) {
-                    fragment.dismissAllowingStateLoss()
-                    log { "onTransitionEnd" }
-                }
-            })
         }
     }
 }

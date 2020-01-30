@@ -81,7 +81,6 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
 
             override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {
                 val startView = (view.getTag(R.id.viewer_adapter_item_key) as? Long?)?.let { transformer.getView(it) }
-                //    AnimEndHelper.end(this@ImageViewerDialogFragment, startView, view)
                 TransitionEndHelper.end(this@ImageViewerDialogFragment, startView, viewHolder)
                 background.changeToBackgroundColor(Color.TRANSPARENT)
                 userCallback.onRelease(viewHolder, view)
@@ -116,7 +115,6 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         val currentKey = adapter.getItemId(viewer.currentItem)
         viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)?.let { endView ->
             val startView = transformer.getView(currentKey)
-//            AnimEndHelper.end(this, startView, endView)
             background.changeToBackgroundColor(Color.TRANSPARENT)
 
             (endView.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?)?.let {
@@ -125,4 +123,6 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
             }
         }
     }
+
+
 }

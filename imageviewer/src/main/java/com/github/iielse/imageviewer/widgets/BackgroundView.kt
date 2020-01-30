@@ -32,7 +32,7 @@ class BackgroundView @JvmOverloads constructor(
     }
 
     fun updateBackgroundColor(fraction: Float, startValue: Int, endValue: Int) {
-        setBackgroundColor(argbEvaluator.evaluate(min(fraction * 2, 1f), startValue, endValue) as Int)
+        setBackgroundColor(argbEvaluator.evaluate(fraction, startValue, endValue) as Int)
     }
 
     override fun setBackgroundColor(color: Int) {

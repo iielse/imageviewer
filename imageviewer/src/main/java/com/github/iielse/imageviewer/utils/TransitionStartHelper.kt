@@ -12,13 +12,25 @@ import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
 
 object TransitionStartHelper {
+    var animating = false
+
     fun start(owner: LifecycleOwner, startView: View?, holder: RecyclerView.ViewHolder) {
         beforeTransition(startView, holder)
         val doTransition = {
-            TransitionManager.beginDelayedTransition(holder.itemView as ViewGroup, transitionSet())
+            TransitionManager.beginDelayedTransition(holder.itemView as ViewGroup, transitionSet().also {
+                it.addListener(object : TransitionListenerAdapter() {
+                    override fun onTransitionStart(transition: Transition) {
+                        animating = true
+                    }
+
+                    override fun onTransitionEnd(transition: Transition) {
+                        animating = false
+                    }
+                })
+            })
             transition(holder)
         }
-        holder.itemView.post(doTransition)
+        holder.itemView.postDelayed(doTransition, 50)
         owner.onDestroy {
             holder.itemView.removeCallbacks(doTransition)
             TransitionManager.endTransitions(holder.itemView as ViewGroup)
@@ -61,19 +73,9 @@ object TransitionStartHelper {
     private fun transitionSet(): Transition {
         return TransitionSet().apply {
             addTransition(ChangeBounds())
-            addTransition(ChangeTransform())
             addTransition(ChangeImageTransform())
-            duration = 2000
+            duration = Config.DURATION_TRANSITION
             interpolator = DecelerateInterpolator()
-            addListener(object : TransitionListenerAdapter() {
-                override fun onTransitionStart(transition: Transition) {
-                    log { "onTransitionStart" }
-                }
-
-                override fun onTransitionEnd(transition: Transition) {
-                    log { "onTransitionEnd" }
-                }
-            })
         }
     }
 }
