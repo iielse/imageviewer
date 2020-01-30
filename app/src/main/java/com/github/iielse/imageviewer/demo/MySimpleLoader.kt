@@ -56,25 +56,20 @@ private fun testLoading(view: ImageView, data: Photo, viewHolder: RecyclerView.V
     Glide.with(view).clear(view)
     val loading = viewHolder.itemView.findViewById<ProgressBar>(R.id.loading)
     loading?.visibility = View.VISIBLE
-    Handler(Looper.getMainLooper()).postDelayed({
-        // 开发者自己管理好生命周期.
-        if ((view.context as? Activity?)?.isFinishing == true) return@postDelayed
+    Glide.with(view)
+            .asBitmap()
+            .load("https://www.google.cn/landing/cnexp/google-search.png")
+            .addListener(object : RequestListener<Bitmap> {
+                override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    loading?.visibility = View.GONE
+                    return false
+                }
 
-        Glide.with(view)
-                .asBitmap()
-                .load("https://www.google.cn/landing/cnexp/google-search.png")
-                .addListener(object : RequestListener<Bitmap> {
-                    override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        loading?.visibility = View.GONE
-                        return false
-                    }
-
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                        toast("13 load failed")
-                        loading?.visibility = View.GONE
-                        return false
-                    }
-                })
-                .into(view)
-    }, 5000)
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                    toast("13 load failed")
+                    loading?.visibility = View.GONE
+                    return false
+                }
+            })
+            .into(view)
 }

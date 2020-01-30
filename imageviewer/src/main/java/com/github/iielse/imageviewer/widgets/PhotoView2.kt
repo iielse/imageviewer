@@ -1,7 +1,5 @@
 package com.github.iielse.imageviewer.widgets
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent

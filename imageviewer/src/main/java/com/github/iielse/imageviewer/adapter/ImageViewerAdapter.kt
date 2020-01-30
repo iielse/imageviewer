@@ -13,6 +13,7 @@ import com.github.iielse.imageviewer.utils.log
 import com.github.iielse.imageviewer.viewholders.UnknownViewHolder
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
+import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 import java.util.*
 
 class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.ViewHolder>(diff) {
