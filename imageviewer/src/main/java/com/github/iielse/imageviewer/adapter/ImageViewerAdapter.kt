@@ -10,9 +10,7 @@ import com.github.iielse.imageviewer.*
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.utils.log
-import com.github.iielse.imageviewer.viewholders.MoreLoadingVH
-import com.github.iielse.imageviewer.viewholders.MoreRetryVH
-import com.github.iielse.imageviewer.viewholders.NoMoreVH
+import com.github.iielse.imageviewer.viewholders.UnknownViewHolder
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import java.util.*
@@ -29,9 +27,7 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
         return when (viewType) {
             ItemType.PHOTO -> PhotoViewHolder(parent.inflate(R.layout.item_imageviewer_photo), callback)
             ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent.inflate(R.layout.item_imageviewer_subsampling), callback)
-            ItemType.MORE_LOADING -> MoreLoadingVH(parent.inflate(R.layout.item_imageviewer_more_loading))
-            ItemType.MORE_RETRY -> MoreRetryVH(parent.inflate(R.layout.item_imageviewer_more_retry))
-            else -> NoMoreVH(parent.inflate(R.layout.item_imageviewer_no_more))
+            else -> UnknownViewHolder(View(parent.context))
         }
     }
 

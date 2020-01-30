@@ -4,4 +4,4 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
 
-class MoreRetryVH(itemView: View) : RecyclerView.ViewHolder(itemView)
+class UnknownViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
