@@ -1,8 +1,8 @@
-package com.github.iielse.imageviewer.core
+package com.github.iielse.imageviewer.adapter
 
 import androidx.paging.DataSource
 import androidx.paging.ItemKeyedDataSource
-import com.github.iielse.imageviewer.adapter.Item
+import com.github.iielse.imageviewer.core.Components
 import com.github.iielse.imageviewer.utils.log
 
 class Repository {

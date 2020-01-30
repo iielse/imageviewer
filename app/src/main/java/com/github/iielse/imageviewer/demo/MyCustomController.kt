@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.ImageViewerActionViewModel
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.core.OverlayCustomizer
-import com.github.iielse.imageviewer.core.ViewerCallbackAdapter
+import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.utils.inflate
 
 class MyCustomController(private val activity: FragmentActivity) {
@@ -44,7 +44,7 @@ class MyCustomController(private val activity: FragmentActivity) {
                 }
             }
         })
-        builder.setViewerCallback(object : ViewerCallbackAdapter() {
+        builder.setViewerCallback(object : ViewerCallback {
             override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {
                 viewHolder.itemView.findViewById<View>(R.id.customizeDecor)
                         .animate().setDuration(200).alpha(0f).start()

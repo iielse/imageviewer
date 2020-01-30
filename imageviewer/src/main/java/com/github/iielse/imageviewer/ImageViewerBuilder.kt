@@ -7,11 +7,11 @@ import com.github.iielse.imageviewer.core.*
 class ImageViewerBuilder(private val context: Context?,
                          private val imageLoader: ImageLoader,
                          private val dataProvider: DataProvider,
-                         private val transformer: Transformer = DefaultTransformer(),
+                         private val transformer: Transformer,
                          private val initKey: Long = 0
 ) {
     private var vhCustomizer: VHCustomizer? = null
-    private var viewerCallback: ViewerCallbackAdapter? = null
+    private var viewerCallback: ViewerCallback? = null
     private var overlayCustomizer: OverlayCustomizer? = null
 
     fun setVHCustomizer(vhCustomizer: VHCustomizer): ImageViewerBuilder {
@@ -19,7 +19,7 @@ class ImageViewerBuilder(private val context: Context?,
         return this
     }
 
-    fun setViewerCallback(viewerCallback: ViewerCallbackAdapter): ImageViewerBuilder {
+    fun setViewerCallback(viewerCallback: ViewerCallback): ImageViewerBuilder {
         this.viewerCallback = viewerCallback
         return this
     }
