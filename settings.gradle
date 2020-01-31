@@ -1,1 +1,1 @@
-include ':app', ':imagewatcher', ':imageviewer'
+include ':app', ':imageviewer'

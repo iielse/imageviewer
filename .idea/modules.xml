@@ -10,7 +10,6 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/imageviewer-app.iml" filepath="$PROJECT_DIR$/app/imageviewer-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/imageviewer/imageviewer-imageviewer.iml" filepath="$PROJECT_DIR$/imageviewer/imageviewer-imageviewer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/imagewatcher/imageviewer-imagewatcher.iml" filepath="$PROJECT_DIR$/imagewatcher/imageviewer-imagewatcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/imagewatcher/imagewatcher.iml" filepath="$PROJECT_DIR$/imagewatcher/imagewatcher.iml" />
     </modules>
   </component>

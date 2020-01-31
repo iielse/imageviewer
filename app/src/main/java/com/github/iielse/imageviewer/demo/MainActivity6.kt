@@ -1,16 +1,11 @@
 package com.github.iielse.imageviewer.demo
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.LongSparseArray
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.util.forEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.paging.toLiveData
 import androidx.recyclerview.widget.DiffUtil
@@ -22,11 +17,8 @@ import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.utils.log
-import com.github.iielse.imagewatcher.demo.TestActivity
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_10.*
-import kotlinx.android.synthetic.main.activity_9.orientation
-import kotlinx.android.synthetic.main.activity_9.toTest
 import kotlinx.android.synthetic.main.item_image.*
 import java.util.*
 
@@ -45,7 +37,6 @@ class MainActivity6 : AppCompatActivity() {
         X.appContext = this.applicationContext
         Config.TRANSITION_OFFSET_Y = statusBarHeight()
         setContentView(R.layout.activity_10)
-        toTest.setOnClickListener { startActivity(Intent(this, TestActivity::class.java)) }
         orientation.setOnClickListener {
             var orientationH = it.tag as? Boolean? ?: true
             orientationH = !orientationH
