@@ -115,7 +115,7 @@ class DataViewHolder(override val containerView: View) : RecyclerView.ViewHolder
 
     fun bind(item: MyData, pos: Int) {
         itemView.tag = item
-        posTxt.text = pos.toString()
+        posTxt.text = "$pos ${if (item.subsampling) "subsampling" else ""}"
         Glide.with(imageView).load(item.url).into(imageView)
         log { "DataViewHolder bind ${item.id}" }
     }
