@@ -15,6 +15,8 @@ import com.github.iielse.imageviewer.core.Components.requireInitKey
 import com.github.iielse.imageviewer.core.Components.requireOverlayCustomizer
 import com.github.iielse.imageviewer.core.Components.requireTransformer
 import com.github.iielse.imageviewer.core.Components.requireViewerCallback
+import com.github.iielse.imageviewer.utils.TransitionEndHelper
+import com.github.iielse.imageviewer.utils.TransitionStartHelper
 import com.github.iielse.imageviewer.utils.*
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 import kotlin.math.max

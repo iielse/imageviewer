@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.item_imageviewer_subsampling.*
 
 class SubsamplingViewHolder(override val containerView: View, callback: ImageViewerAdapterListener) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     init {
+        subsamplingView.setMinimumScaleType(Config.SUBSAMPLING_SCALE_TYPE)
         subsamplingView.setListener(object : SubsamplingScaleImageView2.Listener {
             override fun onDrag(view: SubsamplingScaleImageView2, fraction: Float) = callback.onDrag(this@SubsamplingViewHolder, view, fraction)
             override fun onRestore(view: SubsamplingScaleImageView2, fraction: Float) = callback.onRestore(this@SubsamplingViewHolder, view, fraction)

@@ -9,7 +9,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
+import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
+import kotlinx.android.synthetic.main.item_imageviewer_subsampling.*
 
 object TransitionStartHelper {
     var animating = false
@@ -51,6 +53,16 @@ object TransitionStartHelper {
                     }
                 }
             }
+            is SubsamplingViewHolder -> {
+                holder.subsamplingView.layoutParams = holder.subsamplingView.layoutParams.apply {
+                    width = startView?.width ?: width
+                    height = startView?.height ?: height
+                    if (this is ViewGroup.MarginLayoutParams) {
+                        marginStart = startView?.left ?: marginStart
+                        topMargin = startView?.top ?: topMargin
+                    }
+                }
+            }
         }
     }
 
@@ -67,6 +79,16 @@ object TransitionStartHelper {
                     }
                 }
             }
+            is SubsamplingViewHolder -> {
+                holder.subsamplingView.layoutParams = holder.subsamplingView.layoutParams.apply {
+                    width = MATCH_PARENT
+                    height = MATCH_PARENT
+                    if (this is ViewGroup.MarginLayoutParams) {
+                        marginStart = 0
+                        topMargin = 0
+                    }
+                }
+            }
         }
     }
 
@@ -74,6 +96,7 @@ object TransitionStartHelper {
         return TransitionSet().apply {
             addTransition(ChangeBounds())
             addTransition(ChangeImageTransform())
+            // https://github.com/davemorrissey/subsampling-scale-image-view/issues/313
             duration = Config.DURATION_TRANSITION
             interpolator = DecelerateInterpolator()
         }
