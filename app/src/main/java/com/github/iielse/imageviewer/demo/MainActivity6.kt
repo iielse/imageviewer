@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.util.forEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
@@ -20,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.inflate
+import com.github.iielse.imageviewer.utils.log
 import com.github.iielse.imagewatcher.demo.TestActivity
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_10.*
@@ -33,13 +35,9 @@ class MainActivity6 : AppCompatActivity() {
     private val myCustomController by lazy { MyCustomController(this) }
     private val adapter by lazy { DataAdapter() }
 
-    companion object {
-        val transformerMapping = LongSparseArray<ImageView>()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        transformerMapping.clear()
+        Trans.mapping.clear()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +66,7 @@ class MainActivity6 : AppCompatActivity() {
                 initKey = clickedData.id,
                 dataProvider = MyTestDataProvider(clickedData),
                 imageLoader = MySimpleLoader(),
-                transformer = MyTransformer(transformerMapping)
+                transformer = MyTransformer()
         ).also { myCustomController.init(it) }
     }
 
@@ -86,8 +84,29 @@ class DataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(diff1) {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
         when (holder) {
-            is DataViewHolder -> item?.let { holder.bind(it) }
+            is DataViewHolder -> item?.let { holder.bind(it, position) }
         }
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        if (holder is DataViewHolder) {
+            (holder.itemView.tag as? MyData?)?.let {
+                log { "DataViewHolder onViewAttachedToWindow ${it.id}" }
+                Trans.mapping.put(it.id, holder.imageView)
+            }
+        }
+    }
+
+    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        if (holder is DataViewHolder) {
+            (holder.itemView.tag as? MyData?)?.let {
+                log { "DataViewHolder onViewDetachedFromWindow ${it.id}" }
+                Trans.mapping.remove(it.id)
+            }
+        }
+
     }
 }
 
@@ -103,10 +122,11 @@ class DataViewHolder(override val containerView: View) : RecyclerView.ViewHolder
         }
     }
 
-    fun bind(item: MyData) {
+    fun bind(item: MyData, pos: Int) {
         itemView.tag = item
+        posTxt.text = pos.toString()
         Glide.with(imageView).load(item.url).into(imageView)
-        MainActivity6.transformerMapping.put(item.id, imageView)
+        log { "DataViewHolder bind ${item.id}" }
     }
 }
 

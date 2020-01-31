@@ -1,7 +1,5 @@
 package com.github.iielse.imageviewer.demo
 
-import android.os.Handler
-import android.os.Looper
 import com.github.iielse.imageviewer.core.DataProvider
 import com.github.iielse.imageviewer.core.Photo
 
