@@ -3,6 +3,7 @@ package com.github.iielse.imageviewer.demo
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +21,7 @@ import com.github.iielse.imageviewer.utils.log
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_10.*
 import kotlinx.android.synthetic.main.item_image.*
+import kotlinx.android.synthetic.main.item_image.view.*
 import java.util.*
 
 class MainActivity6 : AppCompatActivity() {
@@ -116,6 +118,11 @@ class DataViewHolder(override val containerView: View) : RecyclerView.ViewHolder
     fun bind(item: MyData, pos: Int) {
         itemView.tag = item
         posTxt.text = "$pos ${if (item.subsampling) "subsampling" else ""}"
+        if (pos == 19) {
+            itemView.imageView.scaleType = ImageView.ScaleType.FIT_XY
+        } else {
+            itemView.imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+        }
         Glide.with(imageView).load(item.url).into(imageView)
         log { "DataViewHolder bind ${item.id}" }
     }
