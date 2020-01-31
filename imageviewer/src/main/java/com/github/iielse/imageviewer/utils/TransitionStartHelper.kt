@@ -44,12 +44,15 @@ object TransitionStartHelper {
             is PhotoViewHolder -> {
                 holder.photoView.scaleType = (startView as? ImageView?)?.scaleType
                         ?: ImageView.ScaleType.FIT_CENTER
+
                 holder.photoView.layoutParams = holder.photoView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
+                    val location = IntArray(2)
+                    startView?.getLocationOnScreen(location)
                     if (this is ViewGroup.MarginLayoutParams) {
-                        marginStart = startView?.left ?: marginStart
-                        topMargin = startView?.top ?: topMargin
+                        marginStart = location[0]
+                        topMargin = location[1] - Config.TRANSITION_OFFSET_Y
                     }
                 }
             }
@@ -57,9 +60,11 @@ object TransitionStartHelper {
                 holder.subsamplingView.layoutParams = holder.subsamplingView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
+                    val location = IntArray(2)
+                    startView?.getLocationOnScreen(location)
                     if (this is ViewGroup.MarginLayoutParams) {
-                        marginStart = startView?.left ?: marginStart
-                        topMargin = startView?.top ?: topMargin
+                        marginStart = location[0]
+                        topMargin = location[1] - Config.TRANSITION_OFFSET_Y
                     }
                 }
             }

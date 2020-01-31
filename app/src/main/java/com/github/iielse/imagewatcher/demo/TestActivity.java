@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.github.iielse.imageviewer.demo.MainActivity6;
-import com.github.iielse.imageviewer.demo.MainActivity7;
 import com.github.iielse.imageviewer.demo.R;
 
 
@@ -56,14 +55,6 @@ public class TestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TestActivity.this, MainActivity6.class);
-                startActivity(intent);
-            }
-        });
-
-        findViewById(R.id.button7).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(TestActivity.this, MainActivity7.class);
                 startActivity(intent);
             }
         });

@@ -3,32 +3,50 @@ package com.github.iielse.imageviewer.demo
 import android.content.Intent
 import android.os.Bundle
 import android.util.LongSparseArray
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.paging.PagedList
+import androidx.paging.PagedListAdapter
+import androidx.paging.toLiveData
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.github.iielse.imagewatcher.demo.TestActivity
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.utils.Config
-import kotlinx.android.synthetic.main.activity_9.*
+import com.github.iielse.imageviewer.utils.inflate
+import com.github.iielse.imagewatcher.demo.TestActivity
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.activity_10.*
+import kotlinx.android.synthetic.main.activity_9.orientation
+import kotlinx.android.synthetic.main.activity_9.toTest
+import kotlinx.android.synthetic.main.item_image.*
+import java.util.*
 
 class MainActivity6 : AppCompatActivity() {
+    private val viewModel by lazy { ViewModelProvider(this).get(DataViewModel::class.java) }
     private val myCustomController by lazy { MyCustomController(this) }
+    private val adapter by lazy { DataAdapter() }
 
-    private val transformerMapping by lazy {
-        LongSparseArray<ImageView>().apply {
-            put(myData21.id, pView1)
-            put(myData0.id, pView2)
-            put(myData9.id, pView3)
-            put(myData4.id, pView4)
-        }
+    companion object {
+        val transformerMapping = LongSparseArray<ImageView>()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        transformerMapping.clear()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         X.appContext = this.applicationContext
-        setContentView(R.layout.activity_9)
+        Config.TRANSITION_OFFSET_Y = statusBarHeight()
+        setContentView(R.layout.activity_10)
         toTest.setOnClickListener { startActivity(Intent(this, TestActivity::class.java)) }
         orientation.setOnClickListener {
             var orientationH = it.tag as? Boolean? ?: true
@@ -38,17 +56,10 @@ class MainActivity6 : AppCompatActivity() {
             it.tag = orientationH
         }
 
-        Glide.with(pView1).load(provideBitmap(myData21.id)).into(pView1)
-        Glide.with(pView2).load(provideBitmap(myData0.id)).into(pView2)
-        Glide.with(pView3).load(myData9.url).into(pView3)
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
+        recyclerView.adapter = adapter
 
-        Glide.with(pView4).load(myData4.url).apply(RequestOptions.centerCropTransform()).into(pView4)
-                .also { pView4.scaleType = ImageView.ScaleType.CENTER_CROP }
-
-        pView1.setOnClickListener { builder(myData21).show() }
-        pView2.setOnClickListener { builder(myData0).show() }
-        pView3.setOnClickListener { builder(myData9).show() }
-        pView4.setOnClickListener { builder(myData4).show() }
+        viewModel.dataList.observe(this, androidx.lifecycle.Observer(adapter::submitList))
     }
 
     private fun builder(clickedData: MyData): ImageViewerBuilder {
@@ -60,4 +71,64 @@ class MainActivity6 : AppCompatActivity() {
                 transformer = MyTransformer(transformerMapping)
         ).also { myCustomController.init(it) }
     }
+
+    fun showViewer(item: MyData) {
+        builder(item).show()
+    }
+}
+
+
+class DataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(diff1) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return DataViewHolder(parent.inflate(R.layout.item_image))
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = getItem(position)
+        when (holder) {
+            is DataViewHolder -> item?.let { holder.bind(it) }
+        }
+    }
+}
+
+
+class DataViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+    init {
+        itemView.setOnClickListener {
+            (it.context as? MainActivity6?)?.let { activity ->
+                (itemView.tag as? MyData?)?.let {
+                    activity.showViewer(it)
+                }
+            }
+        }
+    }
+
+    fun bind(item: MyData) {
+        itemView.tag = item
+        Glide.with(imageView).load(item.url).into(imageView)
+        MainActivity6.transformerMapping.put(item.id, imageView)
+    }
+}
+
+private val diff1 = object : DiffUtil.ItemCallback<MyData>() {
+    override fun areItemsTheSame(
+            oldItem: MyData,
+            newItem: MyData
+    ): Boolean {
+        return newItem.id == oldItem.id
+    }
+
+    override fun areContentsTheSame(
+            oldItem: MyData,
+            newItem: MyData
+    ): Boolean {
+        return newItem.id == oldItem.id
+                && Objects.equals(newItem.url, oldItem.url)
+                && Objects.equals(newItem.desc, oldItem.desc)
+    }
+}
+
+
+class DataViewModel : ViewModel() {
+    val dataList = dataSourceFactory().toLiveData(pageSize = 1)
 }

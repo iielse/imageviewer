@@ -102,3 +102,12 @@ object X {
 
 fun appContext() = X.appContext!!
 fun toast(message: String) = runOnUIThread { Toast.makeText(appContext(), message, Toast.LENGTH_SHORT).show() }
+
+fun statusBarHeight(): Int {
+    var height = 0
+    val resourceId = appContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
+    if (resourceId > 0) {
+        height = appContext().getResources().getDimensionPixelSize(resourceId);
+    }
+    return height
+}
