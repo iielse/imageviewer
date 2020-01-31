@@ -8,7 +8,6 @@ import com.github.iielse.imageviewer.adapter.ItemType
 import com.github.iielse.imageviewer.core.Components.requireImageLoader
 import com.github.iielse.imageviewer.core.Components.requireVHCustomizer
 import com.github.iielse.imageviewer.core.Photo
-import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.PhotoView2
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*

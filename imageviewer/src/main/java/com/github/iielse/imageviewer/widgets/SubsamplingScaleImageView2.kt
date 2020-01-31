@@ -6,7 +6,6 @@ import android.view.MotionEvent
 import androidx.viewpager2.widget.ViewPager2
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.iielse.imageviewer.utils.Config
-import com.github.iielse.imageviewer.utils.log
 import kotlin.math.min
 
 class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null)

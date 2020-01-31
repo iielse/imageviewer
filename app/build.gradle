@@ -17,7 +17,7 @@ android {
     buildToolsVersion '29.0.2'
     defaultConfig {
         applicationId "com.github.iielse.imageviewer.demo"
-        minSdkVersion 14
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -44,8 +44,8 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.2.0'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
 
-    implementation project(':imageviewer')
-//    implementation 'com.github.iielse.imageviewer:imageviewer:2.0.1'
+    // implementation project(':imageviewer')
+    implementation 'com.github.iielse:imageviewer:2.0.2'
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.7'

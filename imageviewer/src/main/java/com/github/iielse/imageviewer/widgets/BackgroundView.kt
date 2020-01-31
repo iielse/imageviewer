@@ -8,7 +8,6 @@ import android.util.AttributeSet
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.github.iielse.imageviewer.utils.Config.DURATION_BG
-import kotlin.math.min
 
 class BackgroundView @JvmOverloads constructor(
         context: Context,

@@ -1,5 +1,4 @@
 ### 图片浏览器
-
 - 支持左右翻页滑动&上下翻页滑动
 - 支持常用的图片操作手势.双击放大/缩小等（基于[PhotoView](https://github.com/chrisbanes/PhotoView)）
 - 支持查看超大图（基于[SubsamplingScaleImageView](https://github.com/davemorrissey/subsampling-scale-image-view)）
@@ -9,7 +8,7 @@
 
 #### 使用
 ```
-implementation 'com.github.iielse.imageviewer:imageviewer:2.0.1'
+implementation 'com.github.iielse:imageviewer:2.0.2'
 ```
 ```
 val builder = ImageViewerBuilder(

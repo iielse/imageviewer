@@ -32,7 +32,7 @@ fun LifecycleOwner.onDestroy(callback: () -> Unit) {
     })
 }
 
-fun Any.log(tag: String = "test_${javaClass.simpleName}", block: () -> String) {
+fun Any.log(tag: String = "test", block: () -> String) {
     if (Config.DEBUG) Log.i(tag, block())
 }
 
