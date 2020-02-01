@@ -10,7 +10,9 @@ import androidx.transition.*
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
+import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 import kotlinx.android.synthetic.main.item_imageviewer_subsampling.*
+import kotlin.math.max
 
 object TransitionEndHelper {
     var animating = false
@@ -25,7 +27,7 @@ object TransitionEndHelper {
 
                     override fun onTransitionEnd(transition: Transition) {
                         animating = false
-                        holder.itemView.post { fragment.dismissAllowingStateLoss() }
+                        fragment.dismissAllowingStateLoss()
                     }
                 })
             })
@@ -48,7 +50,7 @@ object TransitionEndHelper {
                 holder.photoView.scaleX = if (startView != null) 1f else 2f
                 holder.photoView.scaleY = if (startView != null) 1f else 2f
                 // holder.photoView.alpha = startView?.alpha ?: 0f
-                if (startView == null) fade(holder)
+                fade(holder, startView)
                 holder.photoView.layoutParams = holder.photoView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
@@ -92,11 +94,18 @@ object TransitionEndHelper {
         }
     }
 
-    private fun fade(holder: RecyclerView.ViewHolder) {
+    private fun fade(holder: RecyclerView.ViewHolder, startView: View? = null) {
         when (holder) {
             is PhotoViewHolder -> {
-                holder.photoView.animate().setDuration(Config.DURATION_TRANSITION)
-                        .alpha(0f).start()
+                if (startView != null) {
+                    holder.photoView.animate()
+                            .setDuration(0)
+                            .setStartDelay(max(Config.DURATION_TRANSITION - 20, 0))
+                            .alpha(0f).start()
+                } else {
+                    holder.photoView.animate().setDuration(Config.DURATION_TRANSITION)
+                            .alpha(0f).start()
+                }
             }
             is SubsamplingViewHolder -> {
                 holder.subsamplingView.animate().setDuration(Config.DURATION_TRANSITION)
