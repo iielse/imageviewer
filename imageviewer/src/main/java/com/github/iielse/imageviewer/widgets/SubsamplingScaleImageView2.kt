@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import androidx.viewpager2.widget.ViewPager2
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.iielse.imageviewer.utils.Config
+import com.github.iielse.imageviewer.utils.log
 import kotlin.math.min
 
 class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null)
@@ -15,7 +16,8 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
         fun onRestore(view: SubsamplingScaleImageView2, fraction: Float)
         fun onRelease(view: SubsamplingScaleImageView2)
     }
-    private var initScale = scale
+
+    private var initScale: Float? = null
     private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
     private var singleTouch = true
     private var lastX = 0f
@@ -25,7 +27,7 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
     init {
         setOnImageEventListener(object : DefaultOnImageEventListener() {
             override fun onImageLoaded() {
-                initScale = scale
+                initScale = null
             }
         })
     }
@@ -49,6 +51,7 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
                         .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
                         .setDuration(200).start()
             }
+            MotionEvent.ACTION_DOWN -> if (initScale == null) initScale = scale
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> up()
             MotionEvent.ACTION_MOVE -> {
                 if (singleTouch && scale == initScale) {
