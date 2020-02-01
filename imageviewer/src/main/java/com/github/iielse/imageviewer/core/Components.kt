@@ -3,10 +3,11 @@ package com.github.iielse.imageviewer.core
 import androidx.lifecycle.LifecycleOwner
 import com.github.iielse.imageviewer.utils.log
 import com.github.iielse.imageviewer.utils.onDestroy
-import java.lang.IllegalStateException
+import kotlin.IllegalStateException
 
 object Components {
-    private var working = false
+    private var initialize = false
+    val working get() = initialize
     private var imageLoader: ImageLoader? = null
     private var dataProvider: DataProvider? = null
     private var transformer: Transformer? = null
@@ -17,12 +18,12 @@ object Components {
 
     fun initialize(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Long) {
         log { "Components initialize" }
-        if (working) throw IllegalStateException()
+        if (initialize) throw IllegalStateException()
         Components.imageLoader = imageLoader
         Components.dataProvider = dataProvider
         Components.transformer = transformer
         Components.initKey = initKey
-        working = true
+        initialize = true
     }
 
     fun setVHCustomizer(vhCustomizer: VHCustomizer?) {
@@ -51,7 +52,7 @@ object Components {
 
     private fun release() {
         log { "Components release" }
-        working = false
+        initialize = false
         imageLoader = null
         dataProvider = null
         transformer = null

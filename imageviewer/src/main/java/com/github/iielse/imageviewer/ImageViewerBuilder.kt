@@ -24,7 +24,7 @@ class ImageViewerBuilder(private val context: Context?,
         return this
     }
 
-    fun setOverlayCustomizer(overlayCustomizer: OverlayCustomizer?) : ImageViewerBuilder{
+    fun setOverlayCustomizer(overlayCustomizer: OverlayCustomizer?): ImageViewerBuilder {
         this.overlayCustomizer = overlayCustomizer
         return this
     }
@@ -34,6 +34,7 @@ class ImageViewerBuilder(private val context: Context?,
     }
 
     fun show() {
+        if (Components.working) return
         (context as? FragmentActivity?)?.let {
             Components.initialize(imageLoader, dataProvider, transformer, initKey)
             Components.setVHCustomizer(vhCustomizer)
