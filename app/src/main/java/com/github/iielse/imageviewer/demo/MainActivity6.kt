@@ -47,7 +47,7 @@ class MainActivity6 : AppCompatActivity() {
             it.tag = orientationH
         }
 
-        recyclerView.layoutManager = GridLayoutManager(this, 2)
+        recyclerView.layoutManager = GridLayoutManager(this, 3)
         recyclerView.adapter = adapter
 
         viewModel.dataList.observe(this, androidx.lifecycle.Observer(adapter::submitList))

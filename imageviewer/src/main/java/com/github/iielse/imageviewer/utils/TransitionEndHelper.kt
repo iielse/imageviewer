@@ -4,13 +4,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
-import kotlinx.android.synthetic.main.item_imageviewer_photo.view.*
 import kotlinx.android.synthetic.main.item_imageviewer_subsampling.*
 import kotlin.math.max
 
@@ -55,7 +55,7 @@ object TransitionEndHelper {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
-                    startView?.getLocationOnScreen(location)
+                    getLocationOnScreen(startView, location)
                     if (this is ViewGroup.MarginLayoutParams) {
                         marginStart = location[0]
                         topMargin = location[1] - Config.TRANSITION_OFFSET_Y
@@ -73,7 +73,7 @@ object TransitionEndHelper {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
-                    startView?.getLocationOnScreen(location)
+                    getLocationOnScreen(startView, location)
                     if (this is ViewGroup.MarginLayoutParams) {
                         marginStart = location[0]
                         topMargin = location[1] - Config.TRANSITION_OFFSET_Y
@@ -111,6 +111,13 @@ object TransitionEndHelper {
                 holder.subsamplingView.animate().setDuration(Config.DURATION_TRANSITION)
                         .alpha(0f).start()
             }
+        }
+    }
+
+    private fun getLocationOnScreen(startView: View?, location: IntArray) {
+        startView?.getLocationOnScreen(location)
+        if (startView?.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL) {
+            location[0] = startView.context.resources.displayMetrics.widthPixels - location[0]- startView.width
         }
     }
 }

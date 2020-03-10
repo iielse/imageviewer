@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
@@ -49,7 +50,7 @@ object TransitionStartHelper {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
-                    startView?.getLocationOnScreen(location)
+                    getLocationOnScreen(startView, location)
                     if (this is ViewGroup.MarginLayoutParams) {
                         marginStart = location[0]
                         topMargin = location[1] - Config.TRANSITION_OFFSET_Y
@@ -61,7 +62,7 @@ object TransitionStartHelper {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
-                    startView?.getLocationOnScreen(location)
+                    getLocationOnScreen(startView, location)
                     if (this is ViewGroup.MarginLayoutParams) {
                         marginStart = location[0]
                         topMargin = location[1] - Config.TRANSITION_OFFSET_Y
@@ -104,6 +105,13 @@ object TransitionStartHelper {
             // https://github.com/davemorrissey/subsampling-scale-image-view/issues/313
             duration = Config.DURATION_TRANSITION
             interpolator = DecelerateInterpolator()
+        }
+    }
+
+    private fun getLocationOnScreen(startView: View?, location: IntArray) {
+        startView?.getLocationOnScreen(location)
+        if (startView?.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL) {
+            location[0] = startView.context.resources.displayMetrics.widthPixels - location[0] - startView.width
         }
     }
 }
