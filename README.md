@@ -11,7 +11,7 @@
 
 #### 使用
 ```
-implementation 'com.github.iielse:imageviewer:2.0.5'
+implementation 'com.github.iielse:imageviewer:2.0.6'
 ```
 ```
 val builder = ImageViewerBuilder(
