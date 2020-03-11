@@ -17,6 +17,10 @@ android {
         versionName "0.0.5"
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     buildTypes {
         release {
             minifyEnabled false
