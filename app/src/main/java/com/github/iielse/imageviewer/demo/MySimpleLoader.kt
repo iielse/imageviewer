@@ -13,7 +13,7 @@ import java.io.File
 
 class MySimpleLoader : ImageLoader {
     override fun load(view: ImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
-        val it =  (data as? MyData?)?.url!!
+        val it = (data as? MyData?)?.url!!
         Glide.with(view).load(it).into(view)
     }
 
@@ -22,9 +22,15 @@ class MySimpleLoader : ImageLoader {
             val fileName = "data_subsampling_${data.id()}"
             val file = File(appContext().cacheDir, fileName)
             if (!file.exists()) {
-                val it =  (data as? MyData?)?.url!!
-                val s : Bitmap = Glide.with(appContext()).asBitmap().load(it).submit().get()
-                saveBitmapFile(s, file)
+                val it = (data as? MyData?)?.url!!
+
+                try {
+                    val s: Bitmap = Glide.with(appContext()).asBitmap().load(it).submit().get()
+                    saveBitmapFile(s, file)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    e.message?.let(::toast)
+                }
             }
 
             runOnUIThread {
