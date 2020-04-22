@@ -50,7 +50,6 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         viewModel.dataList.observe(viewLifecycleOwner, Observer {
             log { "submitList ${it.size}" }
             adapter.submitList(it)
-            viewer.setCurrentItem(it.indexOfFirst { it.id == initKey }, false)
         })
 
         events.actionEvent.observe(viewLifecycleOwner, Observer(::handle))

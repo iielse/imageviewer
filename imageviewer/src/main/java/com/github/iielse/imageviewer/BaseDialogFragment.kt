@@ -20,13 +20,17 @@ open class BaseDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.isFocusableInTouchMode = true
-        view.requestFocus()
         view.setOnKeyListener { _, keyCode, event ->
             val backPressed = event.action == MotionEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK
             log { "keyCode $keyCode  event $event backPressed $backPressed" }
             if (backPressed) onBackPressed()
             backPressed
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        view?.requestFocus()
     }
 
     @CallSuper
