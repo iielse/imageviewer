@@ -5,19 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.github.iielse.imageviewer.utils.Config.OFFSCREEN_PAGE_LIMIT
 import com.github.iielse.imageviewer.adapter.ImageViewerAdapter
+import com.github.iielse.imageviewer.core.Components
 import com.github.iielse.imageviewer.core.Components.requireInitKey
 import com.github.iielse.imageviewer.core.Components.requireOverlayCustomizer
 import com.github.iielse.imageviewer.core.Components.requireTransformer
 import com.github.iielse.imageviewer.core.Components.requireViewerCallback
-import com.github.iielse.imageviewer.utils.TransitionEndHelper
-import com.github.iielse.imageviewer.utils.TransitionStartHelper
 import com.github.iielse.imageviewer.utils.*
+import com.github.iielse.imageviewer.utils.Config.OFFSCREEN_PAGE_LIMIT
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 import kotlin.math.max
 
@@ -83,9 +83,7 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
 
             override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {
                 val startView = (view.getTag(R.id.viewer_adapter_item_key) as? Long?)?.let { transformer.getView(it) }
-                TransitionEndHelper.end(this@ImageViewerDialogFragment, startView, viewHolder)
-                background.changeToBackgroundColor(Color.TRANSPARENT)
-                userCallback.onRelease(viewHolder, view)
+                release(startView, viewHolder, view)
             }
         }
     }
@@ -115,16 +113,17 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     override fun onBackPressed() {
         log { "onBackPressed ${viewer.currentItem}" }
         val currentKey = adapter.getItemId(viewer.currentItem)
-        viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)?.let { endView ->
-            val startView = transformer.getView(currentKey)
-            background.changeToBackgroundColor(Color.TRANSPARENT)
-
-            (endView.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?)?.let {
-                TransitionEndHelper.end(this, startView, it)
-                userCallback.onRelease(it, endView)
-            }
-        }
+        val startView = transformer.getView(currentKey)
+        val endView = viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)
+        val viewHolder = endView?.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?
+        release(startView, viewHolder, endView)
     }
 
-
+    private fun release(startView: ImageView?, viewHolder: RecyclerView.ViewHolder?, endView: View?) {
+        if (viewHolder == null || endView == null) return
+        TransitionEndHelper.end(this, startView, viewHolder)
+        background.changeToBackgroundColor(Color.TRANSPARENT)
+        userCallback.onRelease(viewHolder, endView)
+        Components.release()
+    }
 }

@@ -2,7 +2,6 @@ package com.github.iielse.imageviewer.core
 
 import androidx.lifecycle.LifecycleOwner
 import com.github.iielse.imageviewer.utils.log
-import com.github.iielse.imageviewer.utils.onDestroy
 import kotlin.IllegalStateException
 
 object Components {
@@ -38,19 +37,15 @@ object Components {
         Components.overlayCustomizer = overlayCustomizer
     }
 
-    fun attach(owner: LifecycleOwner) {
-        owner.onDestroy { release() }
-    }
-
     fun requireImageLoader() = imageLoader!!
     fun requireDataProvider() = dataProvider!!
-    fun requireTransformer() = transformer!!
+    fun requireTransformer() = transformer ?: object : Transformer {}
     fun requireInitKey() = initKey!!
     fun requireVHCustomizer() = vhCustomizer ?: object : VHCustomizer {}
     fun requireViewerCallback() = viewerCallback ?: object : ViewerCallback {}
     fun requireOverlayCustomizer() = overlayCustomizer ?: object : OverlayCustomizer {}
 
-    private fun release() {
+    fun release() {
         log { "Components release" }
         initialize = false
         imageLoader = null

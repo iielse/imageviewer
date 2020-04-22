@@ -41,7 +41,6 @@ class ImageViewerBuilder(private val context: Context?,
             Components.setViewerCallback(viewerCallback)
             Components.setOverlayCustomizer(overlayCustomizer)
             val viewer = create()
-            Components.attach(viewer)
             viewer.show(it.supportFragmentManager)
         }
     }
