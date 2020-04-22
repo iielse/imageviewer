@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ImageWatcher.iml" filepath="$PROJECT_DIR$/ImageWatcher.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/imageviewer.iml" filepath="$PROJECT_DIR$/imageviewer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/imageviewer-app.iml" filepath="$PROJECT_DIR$/app/imageviewer-app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/imageviewer/imageviewer-imageviewer.iml" filepath="$PROJECT_DIR$/imageviewer/imageviewer-imageviewer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/imagewatcher/imagewatcher.iml" filepath="$PROJECT_DIR$/imagewatcher/imagewatcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="imageviewer/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/imageviewer.iml" filepath="$PROJECT_DIR$/.idea/imageviewer.iml" group="imageviewer" />
+      <module fileurl="file://$PROJECT_DIR$/imageviewer/imageviewer-imageviewer.iml" filepath="$PROJECT_DIR$/imageviewer/imageviewer-imageviewer.iml" group="imageviewer/imageviewer" />
     </modules>
   </component>
 </project>
