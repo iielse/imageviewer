@@ -6,13 +6,14 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_ID
-import com.github.iielse.imageviewer.*
+import com.github.iielse.imageviewer.ImageViewerAdapterListener
+import com.github.iielse.imageviewer.R
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.utils.log
-import com.github.iielse.imageviewer.viewholders.UnknownViewHolder
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
+import com.github.iielse.imageviewer.viewholders.UnknownViewHolder
 import java.util.*
 
 class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.ViewHolder>(diff) {
@@ -45,8 +46,8 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
         }
     }
 
-    override fun getItemId(position: Int): Long = getItem(position)?.id ?: NO_ID
-    override fun getItemViewType(position: Int) = getItem(position)?.type ?: ItemType.UNKNOWN
+    override fun getItemId(position: Int): Long = provideItem(position)?.id ?: NO_ID
+    override fun getItemViewType(position: Int) = provideItem(position)?.type ?: ItemType.UNKNOWN
     private val callback: ImageViewerAdapterListener = object : ImageViewerAdapterListener {
         override fun onInit(viewHolder: RecyclerView.ViewHolder) {
             listener?.onInit(viewHolder)
@@ -63,6 +64,12 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
         override fun onRestore(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {
             listener?.onRestore(viewHolder, view, fraction)
         }
+    }
+
+    private fun provideItem(position: Int) = try {
+        getItem(position) // IndexOutOfBoundsException Item count is zero, getItem() call is invalid
+    } catch (e: Exception) {
+        null
     }
 }
 

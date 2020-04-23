@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +27,11 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
     private val initKey by lazy { requireInitKey() }
     private val transformer by lazy { requireTransformer() }
     private val adapter by lazy { ImageViewerAdapter(initKey) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!Components.working) dismissAllowingStateLoss()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_image_viewer_dialog, container, false)
@@ -82,7 +86,9 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
 
             override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {
                 val startView = (view.getTag(R.id.viewer_adapter_item_key) as? Long?)?.let { transformer.getView(it) }
-                release(startView, viewHolder, view)
+                TransitionEndHelper.end(this@ImageViewerDialogFragment, startView, viewHolder)
+                background.changeToBackgroundColor(Color.TRANSPARENT)
+                userCallback.onRelease(viewHolder, view)
             }
         }
     }
@@ -107,22 +113,22 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         super.onDestroyView()
         adapter.setListener(null)
         viewer.unregisterOnPageChangeCallback(pagerCallback)
+        Components.release()
     }
 
     override fun onBackPressed() {
+        if (TransitionStartHelper.animating || TransitionEndHelper.animating) return
         log { "onBackPressed ${viewer.currentItem}" }
-        val currentKey = adapter.getItemId(viewer.currentItem)
-        val startView = transformer.getView(currentKey)
-        val endView = viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)
-        val viewHolder = endView?.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?
-        release(startView, viewHolder, endView)
-    }
 
-    private fun release(startView: ImageView?, viewHolder: RecyclerView.ViewHolder?, endView: View?) {
-        if (viewHolder == null || endView == null) return
-        TransitionEndHelper.end(this, startView, viewHolder)
-        background.changeToBackgroundColor(Color.TRANSPARENT)
-        userCallback.onRelease(viewHolder, endView)
-        Components.release()
+        val currentKey = adapter.getItemId(viewer.currentItem)
+        viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)?.let { endView ->
+            val startView = transformer.getView(currentKey)
+            background.changeToBackgroundColor(Color.TRANSPARENT)
+
+            (endView.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?)?.let {
+                TransitionEndHelper.end(this, startView, it)
+                userCallback.onRelease(it, endView)
+            }
+        }
     }
 }

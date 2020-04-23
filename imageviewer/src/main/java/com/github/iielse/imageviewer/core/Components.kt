@@ -1,6 +1,5 @@
 package com.github.iielse.imageviewer.core
 
-import androidx.lifecycle.LifecycleOwner
 import com.github.iielse.imageviewer.utils.log
 import kotlin.IllegalStateException
 
@@ -37,10 +36,10 @@ object Components {
         Components.overlayCustomizer = overlayCustomizer
     }
 
-    fun requireImageLoader() = imageLoader!!
-    fun requireDataProvider() = dataProvider!!
+    fun requireImageLoader() = imageLoader ?: object : ImageLoader {}
+    fun requireDataProvider() = dataProvider ?: object : DataProvider {}
     fun requireTransformer() = transformer ?: object : Transformer {}
-    fun requireInitKey() = initKey!!
+    fun requireInitKey() = initKey ?: 0
     fun requireVHCustomizer() = vhCustomizer ?: object : VHCustomizer {}
     fun requireViewerCallback() = viewerCallback ?: object : ViewerCallback {}
     fun requireOverlayCustomizer() = overlayCustomizer ?: object : OverlayCustomizer {}
