@@ -3,9 +3,12 @@ package com.github.iielse.imageviewer.widgets
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.ViewConfiguration
 import androidx.viewpager2.widget.ViewPager2
 import com.github.chrisbanes.photoview.PhotoView
 import com.github.iielse.imageviewer.utils.Config
+import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.min
 
 class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
@@ -16,6 +19,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         fun onRelease(view: PhotoView2)
     }
 
+    private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop }
     private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
     private var singleTouch = true
     private var lastX = 0f
@@ -47,7 +51,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
                     if (lastY == 0f) lastY = event.rawY
                     val offsetX = event.rawX - lastX
                     val offsetY = event.rawY - lastY
-                    if (offsetY > 0) fakeDrag(offsetX, offsetY)
+                    if (abs(offsetY) > scaledTouchSlop) fakeDrag(offsetX, offsetY)
                 }
             }
         }
@@ -55,7 +59,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     private fun fakeDrag(offsetX: Float, offsetY: Float) {
         setAllowParentInterceptOnEdge(false)
-        val fraction = min(1f, offsetY / height)
+        val fraction = abs(max(-1f, min(1f, offsetY / height)))
         val fakeScale = 1 - min(0.4f, fraction)
         scaleX = fakeScale
         scaleY = fakeScale
@@ -70,7 +74,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         lastX = 0f
         lastY = 0f
 
-        if (translationY > dismissEdge) {
+        if (abs(translationY) > dismissEdge) {
             listener?.onRelease(this)
         } else {
             val offsetY = translationY
