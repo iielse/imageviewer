@@ -11,7 +11,7 @@
 
 #### 使用
 ```
-implementation 'com.github.iielse:imageviewer:2.0.8'
+implementation 'com.github.iielse:imageviewer:2.0.9'
 ```
 ```
 val builder = ImageViewerBuilder(
@@ -35,7 +35,3 @@ Transformer | 确定被浏览的控件和页面上原有控件的对应关系
 VHCustomizer |自定义每页浏览UI
 OverlayCustomizer |自定义覆盖在Viewer之上的UI
 ViewerCallback | 提供页面滑动及浏览内容被下拽返回的状态回调
-
-
-
-欢迎提出需求建议&bug反馈
