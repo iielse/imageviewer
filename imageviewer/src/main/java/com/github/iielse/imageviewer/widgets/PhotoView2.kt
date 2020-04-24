@@ -19,7 +19,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         fun onRelease(view: PhotoView2)
     }
 
-    private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop }
+    private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop * Config.SWIPE_TOUCH_SLOP }
     private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
     private var singleTouch = true
     private var lastX = 0f
@@ -51,7 +51,9 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
                     if (lastY == 0f) lastY = event.rawY
                     val offsetX = event.rawX - lastX
                     val offsetY = event.rawY - lastY
-                    if (abs(offsetY) > scaledTouchSlop) fakeDrag(offsetX, offsetY)
+
+                    if (offsetY > scaledTouchSlop) fakeDrag(offsetX, offsetY - scaledTouchSlop)
+                    else if (offsetY < -scaledTouchSlop) fakeDrag(offsetX, offsetY + scaledTouchSlop)
                 }
             }
         }

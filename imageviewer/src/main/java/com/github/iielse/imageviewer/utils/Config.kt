@@ -13,6 +13,8 @@ object Config {
     var DURATION_BG: Long = 200L
     var SUBSAMPLING_SCALE_TYPE = SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE
     var SWIPE_DISMISS: Boolean = true
+    var SWIPE_TOUCH_SLOP = 4f
     var DISMISS_FRACTION: Float = 0.12f
     var TRANSITION_OFFSET_Y = 0
+
 }
