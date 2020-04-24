@@ -22,6 +22,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
     private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop * Config.SWIPE_TOUCH_SLOP }
     private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
     private var singleTouch = true
+    private var fakeDragOffset = 0f
     private var lastX = 0f
     private var lastY = 0f
     private var listener: Listener? = null
@@ -51,28 +52,34 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
                     if (lastY == 0f) lastY = event.rawY
                     val offsetX = event.rawX - lastX
                     val offsetY = event.rawY - lastY
-
-                    if (offsetY > scaledTouchSlop) fakeDrag(offsetX, offsetY - scaledTouchSlop)
-                    else if (offsetY < -scaledTouchSlop) fakeDrag(offsetX, offsetY + scaledTouchSlop)
+                    fakeDrag(offsetX, offsetY)
                 }
             }
         }
     }
 
     private fun fakeDrag(offsetX: Float, offsetY: Float) {
-        setAllowParentInterceptOnEdge(false)
-        val fraction = abs(max(-1f, min(1f, offsetY / height)))
-        val fakeScale = 1 - min(0.4f, fraction)
-        scaleX = fakeScale
-        scaleY = fakeScale
-        translationY = offsetY
-        translationX = offsetX / 2
-        listener?.onDrag(this, fraction)
+        if (fakeDragOffset == 0f) {
+            if (offsetY > scaledTouchSlop) fakeDragOffset = scaledTouchSlop
+            else if (offsetY < -scaledTouchSlop) fakeDragOffset = -scaledTouchSlop
+        }
+        if (fakeDragOffset != 0f) {
+            val fixedOffsetY = offsetY - fakeDragOffset
+            setAllowParentInterceptOnEdge(false)
+            val fraction = abs(max(-1f, min(1f, fixedOffsetY / height)))
+            val fakeScale = 1 - min(0.4f, fraction)
+            scaleX = fakeScale
+            scaleY = fakeScale
+            translationY = fixedOffsetY
+            translationX = offsetX / 2
+            listener?.onDrag(this, fraction)
+        }
     }
 
     private fun up() {
         setAllowParentInterceptOnEdge(true)
         singleTouch = true
+        fakeDragOffset = 0f
         lastX = 0f
         lastY = 0f
 
