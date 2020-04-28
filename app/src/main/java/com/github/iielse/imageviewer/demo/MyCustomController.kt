@@ -8,7 +8,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.ImageViewerActionViewModel
 import com.github.iielse.imageviewer.ImageViewerBuilder
+import com.github.iielse.imageviewer.adapter.ItemType
 import com.github.iielse.imageviewer.core.OverlayCustomizer
+import com.github.iielse.imageviewer.core.Photo
+import com.github.iielse.imageviewer.core.VHCustomizer
 import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.utils.inflate
 
@@ -22,7 +25,35 @@ class MyCustomController(private val activity: FragmentActivity) {
     private var currentPosition = -1
 
     fun init(builder: ImageViewerBuilder) {
-        builder.setVHCustomizer(MyCustomViewHolderUI())
+        builder.setVHCustomizer(object : VHCustomizer {
+            override fun initialize(type: Int, viewHolder: RecyclerView.ViewHolder) {
+                (viewHolder.itemView as? ViewGroup?)?.let {
+                    it.addView(it.inflate(R.layout.item_photo_custom_layout))
+
+                    when (type){
+                        ItemType.SUBSAMPLING -> {
+                            val imageView = it.findViewById<View>(R.id.subsamplingView)
+                            imageView.setOnClickListener {
+                                viewerActions.dismiss()
+                            }
+                        }
+                        ItemType.PHOTO -> {
+                            val imageView = it.findViewById<View>(R.id.photoView)
+                            imageView.setOnClickListener {
+                                viewerActions.dismiss()
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun bind(type: Int, data: Photo, viewHolder: RecyclerView.ViewHolder) {
+                (viewHolder.itemView as? ViewGroup?)?.let {
+                    val x = data as MyData
+                    it.findViewById<TextView>(R.id.exText).text = x.desc
+                }
+            }
+        })
         builder.setOverlayCustomizer(object : OverlayCustomizer {
             override fun provideView(parent: ViewGroup): View? {
                 return parent.inflate(R.layout.layout_indicator).also {
