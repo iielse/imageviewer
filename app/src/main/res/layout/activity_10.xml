@@ -16,4 +16,12 @@
         android:text="HORIZONTAL"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/fullScreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FullScreen(off)"
+        app:layout_constraintStart_toEndOf="@id/orientation"
+        app:layout_constraintBottom_toBottomOf="@id/orientation"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

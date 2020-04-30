@@ -13,6 +13,7 @@ class ImageViewerBuilder(private val context: Context?,
     private var vhCustomizer: VHCustomizer? = null
     private var viewerCallback: ViewerCallback? = null
     private var overlayCustomizer: OverlayCustomizer? = null
+    private var factory: ImageViewerDialogFragment.Factory? = null
 
     fun setVHCustomizer(vhCustomizer: VHCustomizer): ImageViewerBuilder {
         this.vhCustomizer = vhCustomizer
@@ -29,8 +30,13 @@ class ImageViewerBuilder(private val context: Context?,
         return this
     }
 
+    fun setViewerFactory(factory: ImageViewerDialogFragment.Factory?): ImageViewerBuilder {
+        this.factory = factory
+        return this
+    }
+
     private fun create(): ImageViewerDialogFragment {
-        return ImageViewerDialogFragment()
+        return (factory ?: ImageViewerDialogFragment.Factory()).build()
     }
 
     fun show() {

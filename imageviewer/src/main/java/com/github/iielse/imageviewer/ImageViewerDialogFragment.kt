@@ -20,7 +20,7 @@ import com.github.iielse.imageviewer.utils.Config.OFFSCREEN_PAGE_LIMIT
 import kotlinx.android.synthetic.main.fragment_image_viewer_dialog.*
 import kotlin.math.max
 
-class ImageViewerDialogFragment : BaseDialogFragment() {
+open class ImageViewerDialogFragment : BaseDialogFragment() {
     private val events by lazy { ViewModelProvider(requireActivity()).get(ImageViewerActionViewModel::class.java) }
     private val viewModel by lazy { ViewModelProvider(this).get(ImageViewerViewModel::class.java) }
     private val userCallback by lazy { requireViewerCallback() }
@@ -130,5 +130,9 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
                 userCallback.onRelease(it, endView)
             }
         }
+    }
+
+    open class Factory {
+        open fun build(): ImageViewerDialogFragment = ImageViewerDialogFragment()
     }
 }

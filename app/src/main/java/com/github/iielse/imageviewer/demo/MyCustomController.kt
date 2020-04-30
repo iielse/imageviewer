@@ -1,5 +1,7 @@
 package com.github.iielse.imageviewer.demo
 
+import android.graphics.Color
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView

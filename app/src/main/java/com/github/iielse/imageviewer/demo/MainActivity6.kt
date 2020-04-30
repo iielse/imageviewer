@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.github.iielse.imageviewer.ImageViewerBuilder
+import com.github.iielse.imageviewer.ImageViewerDialogFragment
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.utils.log
@@ -42,9 +43,16 @@ class MainActivity6 : AppCompatActivity() {
         orientation.setOnClickListener {
             var orientationH = it.tag as? Boolean? ?: true
             orientationH = !orientationH
-            orientation.text = if (orientationH) " HORIZONTAL" else "VERTICAL"
+            orientation.text = if (orientationH) "HORIZONTAL" else "VERTICAL"
             Config.VIEWER_ORIENTATION = if (orientationH) ViewPager2.ORIENTATION_HORIZONTAL else ViewPager2.ORIENTATION_VERTICAL
             it.tag = orientationH
+        }
+        fullScreen.setOnClickListener {
+            var isFullScreen = it.tag as? Boolean? ?: false
+            isFullScreen = !isFullScreen
+            fullScreen.text = if (isFullScreen) "FullScreen(on)" else "FullScreen(off)"
+            Config.TRANSITION_OFFSET_Y = if (isFullScreen)0 else statusBarHeight()
+            it.tag = isFullScreen
         }
 
         recyclerView.layoutManager = GridLayoutManager(this, 3)
@@ -60,7 +68,16 @@ class MainActivity6 : AppCompatActivity() {
                 dataProvider = MyTestDataProvider(clickedData),
                 imageLoader = MySimpleLoader(),
                 transformer = MyTransformer()
-        ).also { myCustomController.init(it) }
+        ).also {
+            myCustomController.init(it)
+            if (fullScreen.tag as? Boolean? == true) {
+                it.setViewerFactory(object : ImageViewerDialogFragment.Factory() {
+                    override fun build(): ImageViewerDialogFragment {
+                        return FullScreenImageViewerDialogFragment()
+                    }
+                })
+            }
+        }
     }
 
     fun showViewer(item: MyData) {
