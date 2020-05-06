@@ -109,6 +109,11 @@ class ImageViewerDialogFragment : BaseDialogFragment() {
         }
     }
 
+    override fun showFailure(message: String?) {
+        super.showFailure(message)
+        Components.release()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         adapter.setListener(null)

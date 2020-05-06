@@ -51,10 +51,14 @@ open class BaseDialogFragment : DialogFragment() {
 
     fun show(fragmentManager: FragmentManager?) {
         when {
-            fragmentManager == null -> log { "fragmentManager is detach after parent destroy" }
-            fragmentManager.isStateSaved -> log { "dialog fragment show when fragmentManager isStateSaved" }
+            fragmentManager == null -> showFailure("fragmentManager is detach after parent destroy")
+            fragmentManager.isStateSaved -> showFailure("dialog fragment show when fragmentManager isStateSaved")
             else -> show(fragmentManager, javaClass.simpleName)
         }
+    }
+
+    open fun showFailure(message: String? = null) {
+        log { "show failure $message" }
     }
 
     open fun onBackPressed() {
