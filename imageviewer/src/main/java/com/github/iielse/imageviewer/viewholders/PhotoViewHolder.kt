@@ -24,6 +24,7 @@ class PhotoViewHolder(override val containerView: View, callback: ImageViewerAda
 
     fun bind(item: Photo) {
         photoView.setTag(R.id.viewer_adapter_item_key, item.id())
+        photoView.setTag(R.id.viewer_adapter_item_data, item)
         photoView.setTag(R.id.viewer_adapter_item_holder, this)
         requireVHCustomizer().bind(ItemType.PHOTO, item, this)
         requireImageLoader().load(photoView, item, this)

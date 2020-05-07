@@ -9,6 +9,9 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
+import com.github.iielse.imageviewer.R
+import com.github.iielse.imageviewer.core.Components.requireImageLoader
+import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
@@ -28,6 +31,7 @@ object TransitionStartHelper {
 
                     override fun onTransitionEnd(transition: Transition) {
                         animating = false
+                        afterTransition(holder)
                     }
                 })
             })
@@ -45,7 +49,6 @@ object TransitionStartHelper {
             is PhotoViewHolder -> {
                 holder.photoView.scaleType = (startView as? ImageView?)?.scaleType
                         ?: ImageView.ScaleType.FIT_CENTER
-
                 holder.photoView.layoutParams = holder.photoView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
@@ -112,6 +115,15 @@ object TransitionStartHelper {
         startView?.getLocationOnScreen(location)
         if (startView?.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL) {
             location[0] = startView.context.resources.displayMetrics.widthPixels - location[0] - startView.width
+        }
+    }
+
+    private fun afterTransition(holder: RecyclerView.ViewHolder) {
+        when (holder) {
+            is PhotoViewHolder -> {
+                val photo = holder.photoView.getTag(R.id.viewer_adapter_item_data) as Photo
+                requireImageLoader().load(holder.photoView, photo, holder)
+            }
         }
     }
 }
