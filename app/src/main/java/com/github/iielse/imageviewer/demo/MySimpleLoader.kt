@@ -14,7 +14,10 @@ import java.io.File
 class MySimpleLoader : ImageLoader {
     override fun load(view: ImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val it = (data as? MyData?)?.url!!
-        Glide.with(view).load(it).into(view)
+        Glide.with(view).load(it)
+                .override(view.width, view.height)
+                .placeholder(view.drawable)
+                .into(view)
     }
 
     override fun load(subsamplingView: SubsamplingScaleImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
