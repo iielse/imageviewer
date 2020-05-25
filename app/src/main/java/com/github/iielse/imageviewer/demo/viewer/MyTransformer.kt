@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer.demo
+package com.github.iielse.imageviewer.demo.viewer
 
 import android.util.LongSparseArray
 import android.widget.ImageView
@@ -10,5 +10,4 @@ class MyTransformer : Transformer {
 
 object Trans {
      val mapping = LongSparseArray<ImageView>()
-
 }

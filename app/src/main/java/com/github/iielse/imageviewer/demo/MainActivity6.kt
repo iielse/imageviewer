@@ -1,5 +1,6 @@
 package com.github.iielse.imageviewer.demo
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.ImageViewerDialogFragment
+import com.github.iielse.imageviewer.demo.data.MyData
+import com.github.iielse.imageviewer.demo.data.dataSourceFactory
+import com.github.iielse.imageviewer.demo.data.myData
+import com.github.iielse.imageviewer.demo.utils.X
+import com.github.iielse.imageviewer.demo.utils.statusBarHeight
+import com.github.iielse.imageviewer.demo.viewer.*
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.utils.log
@@ -33,6 +40,7 @@ class MainActivity6 : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Trans.mapping.clear()
+        adapter.setListener(null)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,14 +59,30 @@ class MainActivity6 : AppCompatActivity() {
             var isFullScreen = it.tag as? Boolean? ?: false
             isFullScreen = !isFullScreen
             fullScreen.text = if (isFullScreen) "FullScreen(on)" else "FullScreen(off)"
-            Config.TRANSITION_OFFSET_Y = if (isFullScreen)0 else statusBarHeight()
+            Config.TRANSITION_OFFSET_Y = if (isFullScreen) 0 else statusBarHeight()
             it.tag = isFullScreen
         }
 
         recyclerView.layoutManager = GridLayoutManager(this, 3)
         recyclerView.adapter = adapter
 
+        adapter.setListener(::handleAdapterListener)
         viewModel.dataList.observe(this, androidx.lifecycle.Observer(adapter::submitList))
+    }
+
+    private fun handleAdapterListener(action: String, item: Any?) {
+        when (action) {
+            ITEM_CLICKED -> (item as? MyData?)?.let(::showViewer)
+        }
+    }
+
+    private fun showViewer(item: MyData) {
+        if (item.id == 30L) {
+            startActivity(Intent(this, MainJavaActivity7::class.java))
+            return
+        }
+
+        builder(item).show()
     }
 
     private fun builder(clickedData: MyData): ImageViewerBuilder {
@@ -79,16 +103,25 @@ class MainActivity6 : AppCompatActivity() {
             }
         }
     }
-
-    fun showViewer(item: MyData) {
-        builder(item).show()
-    }
 }
 
+typealias AdapterCallback = (action: String, item: Any?) -> Unit
 
 class DataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(diff1) {
+    private var callback: AdapterCallback? = null
+
+    fun setListener(callback: AdapterCallback? = null) {
+        this.callback = callback
+    }
+
+    private val listener = object : AdapterCallback {
+        override fun invoke(action: String, item: Any?) {
+            callback?.invoke(action, item)
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return DataViewHolder(parent.inflate(R.layout.item_image))
+        return DataViewHolder(parent.inflate(R.layout.item_image), listener)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -120,15 +153,12 @@ class DataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(diff1) {
     }
 }
 
+const val ITEM_CLICKED = "item_clicked"
 
-class DataViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+class DataViewHolder(override val containerView: View, private val listener: AdapterCallback) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     init {
         itemView.setOnClickListener {
-            (it.context as? MainActivity6?)?.let { activity ->
-                (itemView.tag as? MyData?)?.let {
-                    activity.showViewer(it)
-                }
-            }
+            (it.tag as? MyData?)?.let { listener.invoke(ITEM_CLICKED, it) }
         }
     }
 

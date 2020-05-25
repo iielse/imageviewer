@@ -1,7 +1,5 @@
-package com.github.iielse.imageviewer.demo
+package com.github.iielse.imageviewer.demo.viewer
 
-import android.graphics.Color
-import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -15,6 +13,8 @@ import com.github.iielse.imageviewer.core.OverlayCustomizer
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.core.VHCustomizer
 import com.github.iielse.imageviewer.core.ViewerCallback
+import com.github.iielse.imageviewer.demo.data.MyData
+import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.utils.inflate
 
 class MyCustomController(private val activity: FragmentActivity) {

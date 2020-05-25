@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer.demo
+package com.github.iielse.imageviewer.demo.data
 
 import android.os.Handler
 import android.os.Looper
@@ -55,14 +55,12 @@ val image = arrayOf(
 
 private fun desc(id: Long): String {
     return  "[$id] Caption or other information for this picture [$id]"
-
 }
 
 data class MyData(val id: Long, val url: String, val subsampling: Boolean = false, val desc: String = desc(id)) : Photo {
     override fun id(): Long = id
     override fun subsampling() = subsampling
 }
-
 
 val mainHandler = Handler(Looper.getMainLooper())
 var id = 0L

@@ -1,7 +1,9 @@
-package com.github.iielse.imageviewer.demo
+package com.github.iielse.imageviewer.demo.viewer
 
 import com.github.iielse.imageviewer.core.DataProvider
 import com.github.iielse.imageviewer.core.Photo
+import com.github.iielse.imageviewer.demo.data.queryAfter
+import com.github.iielse.imageviewer.demo.data.queryBefore
 
 class MyTestDataProvider(private val initPhoto: Photo) : DataProvider {
     override fun loadInitial(): List<Photo> {

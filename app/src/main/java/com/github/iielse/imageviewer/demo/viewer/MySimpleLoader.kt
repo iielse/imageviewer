@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer.demo
+package com.github.iielse.imageviewer.demo.viewer
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -9,6 +9,8 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.iielse.imageviewer.core.ImageLoader
 import com.github.iielse.imageviewer.core.Photo
+import com.github.iielse.imageviewer.demo.data.MyData
+import com.github.iielse.imageviewer.demo.utils.*
 import java.io.File
 
 class MySimpleLoader : ImageLoader {

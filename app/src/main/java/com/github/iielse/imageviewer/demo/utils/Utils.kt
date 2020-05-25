@@ -1,9 +1,10 @@
-package com.github.iielse.imageviewer.demo
+package com.github.iielse.imageviewer.demo.utils
 
 import android.content.Context
 import android.graphics.*
 import android.os.Looper
 import android.widget.Toast
+import com.github.iielse.imageviewer.demo.data.mainHandler
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
