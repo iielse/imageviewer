@@ -21,5 +21,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainJavaActivity7" />
+        <activity android:name=".LoadAllAtOnceActivity" />
     </application>
 </manifest>

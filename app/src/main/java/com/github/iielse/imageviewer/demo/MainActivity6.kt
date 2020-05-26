@@ -21,6 +21,7 @@ import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.data.dataSourceFactory
 import com.github.iielse.imageviewer.demo.utils.X
 import com.github.iielse.imageviewer.demo.utils.statusBarHeight
+import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.demo.viewer.*
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.utils.inflate
@@ -31,9 +32,9 @@ import kotlinx.android.synthetic.main.item_image.*
 import kotlinx.android.synthetic.main.item_image.view.*
 import java.util.*
 
-class MainActivity6 : AppCompatActivity() {
+open class MainActivity6 : AppCompatActivity() {
     private val viewModel by lazy { ViewModelProvider(this).get(DataViewModel::class.java) }
-    private val myCustomController by lazy { MyCustomController(this) }
+    protected val myCustomController by lazy { MyCustomController(this) }
     private val adapter by lazy { DataAdapter() }
 
     override fun onDestroy() {
@@ -77,14 +78,18 @@ class MainActivity6 : AppCompatActivity() {
 
     private fun showViewer(item: MyData) {
         if (item.id == 30L) {
+            toast("Java版本的的imageViewer初始化使用语法")
             startActivity(Intent(this, MainJavaActivity7::class.java))
             return
+        } else if (item.id == 31L) {
+            toast("一次性加载全部图片")
+            startActivity(Intent(this, LoadAllAtOnceActivity::class.java))
+            return
         }
-
         builder(item).show()
     }
 
-    private fun builder(clickedData: MyData): ImageViewerBuilder {
+    open fun builder(clickedData: MyData): ImageViewerBuilder {
         return ImageViewerBuilder(
                 context = this,
                 initKey = clickedData.id,
