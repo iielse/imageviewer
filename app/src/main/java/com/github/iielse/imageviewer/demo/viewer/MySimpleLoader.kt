@@ -13,9 +13,11 @@ import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.*
 import java.io.File
 
+
 class MySimpleLoader : ImageLoader {
     override fun load(view: ImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val it = (data as? MyData?)?.url!!
+
         Glide.with(view).load(it)
                 .override(view.width, view.height)
                 .placeholder(view.drawable)

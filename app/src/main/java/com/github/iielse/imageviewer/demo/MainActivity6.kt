@@ -19,7 +19,6 @@ import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.ImageViewerDialogFragment
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.data.dataSourceFactory
-import com.github.iielse.imageviewer.demo.data.myData
 import com.github.iielse.imageviewer.demo.utils.X
 import com.github.iielse.imageviewer.demo.utils.statusBarHeight
 import com.github.iielse.imageviewer.demo.viewer.*
@@ -164,7 +163,11 @@ class DataViewHolder(override val containerView: View, private val listener: Ada
 
     fun bind(item: MyData, pos: Int) {
         itemView.tag = item
-        posTxt.text = "$pos ${if (item.subsampling) "subsampling" else ""}"
+        posTxt.text = when {
+            item.subsampling -> "$pos subsampling"
+            item.url.endsWith(".mp4") -> "$pos video"
+            else -> pos.toString()
+        }
         if (pos == 19) {
             itemView.imageView.scaleType = ImageView.ScaleType.FIT_XY
         } else {

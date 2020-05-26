@@ -1,27 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/customizeDecor"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+        android:id="@+id/videoView"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <Button
+        android:id="@+id/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="play"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/exText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start|top"
         android:layout_gravity="bottom"
         android:background="#33000000"
+        android:gravity="start|top"
         android:minHeight="50dp"
         android:textColor="#fff"
         tools:text="qwertyuioasdfghjklzxcvbnm" />
 
     <ProgressBar
         android:id="@+id/loading"
-        android:visibility="gone"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
 </FrameLayout>
