@@ -7,10 +7,10 @@
 
     <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
         android:id="@+id/videoView"
-        android:visibility="gone"
-        tools:visibility="visible"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/play"
@@ -33,10 +33,10 @@
         tools:text="qwertyuioasdfghjklzxcvbnm" />
 
     <ProgressBar
-        android:id="@+id/loading"
+        android:id="@+id/loadingView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone" />
-
+        android:visibility="gone"
+        tools:visibility="visible" />
 </FrameLayout>

@@ -6,21 +6,19 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup">
 
-        <activity android:name=".MainActivity6">
+        <activity android:name=".business.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainJavaActivity7" />
-        <activity android:name=".LoadAllAtOnceActivity" />
     </application>
 </manifest>

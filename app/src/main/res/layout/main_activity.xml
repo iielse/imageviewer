@@ -9,11 +9,14 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
     <Button
         android:id="@+id/orientation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="HORIZONTAL"
+        android:text="Horizontal"
+        android:textAllCaps="false"
+        android:textSize="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -22,6 +25,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="FullScreen(off)"
-        app:layout_constraintStart_toEndOf="@id/orientation"
-        app:layout_constraintBottom_toBottomOf="@id/orientation"/>
+        android:textAllCaps="false"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/orientation"
+        app:layout_constraintStart_toEndOf="@id/orientation" />
+
+    <Button
+        android:id="@+id/loadAllAtOnce"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LoadAllAtOnce(off)"
+        android:textAllCaps="false"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/orientation"
+        app:layout_constraintStart_toEndOf="@id/fullScreen" />
 </androidx.constraintlayout.widget.ConstraintLayout>

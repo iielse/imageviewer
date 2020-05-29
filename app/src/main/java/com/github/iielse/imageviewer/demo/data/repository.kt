@@ -1,19 +1,26 @@
 package com.github.iielse.imageviewer.demo.data
 
-import android.os.Handler
-import android.os.Looper
-import androidx.paging.DataSource
-import androidx.paging.ItemKeyedDataSource
-import com.github.iielse.imageviewer.core.Photo
-import kotlin.math.max
-import kotlin.math.min
+const val PAGE_SIZE = 5 // 分页size
 
-val image = arrayOf(
+// 用于测试的图片数据源
+private var id = 0L
+val myData: List<MyData> by lazy {
+    mutableListOf(
+            // long horizontal
+            MyData(subsampling = true, id = id++, url = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29.jpg/1920px-Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29.jpg"),
+            // long vertical
+            MyData(subsampling = true, id = id++, url = "https://image.shutterstock.com/z/stock-vector-humerus-of-the-right-side-from-its-front-face-vintage-engraved-illustration-usual-medicine-90201004.jpg"),
+            // video
+            MyData(id = id++, url = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4")
+    ).let {
+        it.apply { addAll(image.map { MyData(id = id++, url = it) }) }
+    }.toList()
+}
+
+// 图片源数据 源自网络随缘摘取
+private val image = arrayOf(
         // gif
-        "https://b-ssl.duitang.com/uploads/item/201206/29/20120629140234_QWAsX.thumb.700_0.gif",
         "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168118542&di=437ba348dfe4bd91afa5e5761f318cee&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fblog%2F201410%2F17%2F20141017094107_VdNJu.gif",
-        "https://f12.baidu.com/it/u=3294379970,949120920&fm=72",
-        "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168265734&di=6dbf0daade2a0126fa6118ec3a185205&imgtype=0&src=http%3A%2F%2Fimg.mp.itc.cn%2Fupload%2F20160917%2Fb8b605c1f286482b8e748f37528ccfd5.jpg",
         "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168279697&di=dcd2b62878ad6c2c92e5bd7facfe6c3c&imgtype=0&src=http%3A%2F%2Fphotocdn.sohu.com%2F20151126%2Fmp44425938_1448498418499_2.gif",
         "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168389150&di=2fd5c826af5394b62777fd132dff7d8f&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201701%2F17%2F20170117112406_zixk5.thumb.700_0.gif",
         "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168437965&di=f91b9c858eecf75799af00df525eab9a&imgtype=0&src=http%3A%2F%2Fs9.rr.itc.cn%2Fr%2FwapChange%2F201510_31_11%2Fa6cjhv9612585370352.gif",
@@ -49,89 +56,5 @@ val image = arrayOf(
         "https://images.unsplash.com/photo-1574260288371-7b63f7e3f186?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
         "https://images.unsplash.com/photo-1550684863-a70a48d476d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
         "https://images.unsplash.com/photo-1496963729609-7d408fa580b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1531959870249-9f9b729efcf4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-        "https://images.unsplash.com/photo-1490260400179-d656f04de422?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+        "https://images.unsplash.com/photo-1531959870249-9f9b729efcf4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
 )
-
-private fun desc(id: Long): String {
-    return  "[$id] Caption or other information for this picture [$id]"
-}
-
-data class MyData(val id: Long, val url: String, val subsampling: Boolean = false, val desc: String = desc(id)) : Photo {
-    override fun id(): Long = id
-    override fun subsampling() = subsampling
-}
-
-val mainHandler = Handler(Looper.getMainLooper())
-var id = 0L
-val myData: List<MyData> by lazy {
-    mutableListOf(
-            // long horizontal
-            MyData(subsampling = true, id = id++, url = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29.jpg/1920px-Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29.jpg"),
-            // long vertical
-            MyData(subsampling = true, id = id++, url = "https://image.shutterstock.com/z/stock-vector-humerus-of-the-right-side-from-its-front-face-vintage-engraved-illustration-usual-medicine-90201004.jpg"),
-            // video
-            MyData(id = id++, url = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4")
-    ).let {
-        it.apply { addAll(image.map { MyData(id = id++, url = it) }) }
-    }.toList()
-}
-
-val pageSize = 5
-
-fun queryBefore(id: Long, callback: (List<MyData>) -> Unit) {
-    val idx = myData.indexOfFirst { it.id == id }
-    mainHandler.postDelayed({
-        if (idx < 0) {
-            callback(emptyList())
-            return@postDelayed
-        }
-        val result = myData.subList(max(idx - pageSize, 0), idx)
-        callback(result)
-    }, 100)
-}
-
-fun queryAfter(id: Long, callback: (List<MyData>) -> Unit) {
-    val idx = myData.indexOfFirst { it.id == id }
-    mainHandler.postDelayed({
-        if (idx < 0) {
-            callback(emptyList())
-            return@postDelayed
-        }
-
-        val result = myData.subList(idx + 1, min(idx + pageSize, myData.size - 1))
-        callback(result)
-    }, 100)
-}
-
-
-fun dataSourceFactory(): DataSource.Factory<Long, MyData> {
-    return object : DataSource.Factory<Long, MyData>() {
-        override fun create(): DataSource<Long, MyData> {
-            return dataSource()
-        }
-    }
-}
-
-private fun dataSource() = object : ItemKeyedDataSource<Long, MyData>() {
-    override fun loadInitial(params: LoadInitialParams<Long>, callback: LoadInitialCallback<MyData>) {
-        val result = myData.subList(0, pageSize)
-        callback.onResult(result, 0, result.size)
-    }
-
-    override fun loadAfter(params: LoadParams<Long>, callback: LoadCallback<MyData>) {
-        queryAfter(params.key) {
-            callback.onResult(it)
-        }
-    }
-
-    override fun loadBefore(params: LoadParams<Long>, callback: LoadCallback<MyData>) {
-        queryBefore(params.key) {
-            callback.onResult(it)
-        }
-    }
-
-    override fun getKey(item: MyData): Long {
-        return item.id
-    }
-}
