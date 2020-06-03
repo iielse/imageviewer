@@ -74,10 +74,12 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
         events.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
     }
 
+
     private fun handle(action: Pair<String, Any?>?) {
         when (action?.first) {
             ViewerActions.SET_CURRENT_ITEM -> binding.viewer.currentItem = max(action.second as Int, 0)
             ViewerActions.DISMISS -> onBackPressed()
+            ViewerActions.REMOVE_ITEMS -> viewModel.remove(action.second)
         }
     }
 

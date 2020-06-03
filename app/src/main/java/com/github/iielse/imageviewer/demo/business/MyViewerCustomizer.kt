@@ -89,6 +89,11 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
     override fun bind(type: Int, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val myData = data as MyData
         viewHolder.itemView.findViewById<TextView>(R.id.exText).text = myData.desc
+        viewHolder.itemView.findViewById<View>(R.id.remove).setOnClickListener {
+            (viewHolder.itemView.tag as? MyData?)?.let {
+                viewerActions?.remove(listOf(it))
+            }
+        }
     }
 
     override fun provideView(parent: ViewGroup): View {
