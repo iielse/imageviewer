@@ -5,4 +5,5 @@ object ItemType {
     const val UNKNOWN = -1
     val PHOTO = itemTypeProvider++
     val SUBSAMPLING = itemTypeProvider++
+    val VIDEO = itemTypeProvider++
 }

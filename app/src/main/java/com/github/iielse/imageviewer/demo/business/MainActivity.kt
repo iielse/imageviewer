@@ -1,5 +1,6 @@
 package com.github.iielse.imageviewer.demo.business
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -46,6 +47,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showViewer(item: MyData) {
+        if (item.id == 10L) {
+            startActivity(Intent(this, TestActivity::class.java))
+            return
+        }
+
         viewerHelper.provideImageViewerBuilder(this, item)
                 .show()
     }
