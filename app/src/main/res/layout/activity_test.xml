@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.github.iielse.imageviewer.demo.core.viewer.video.ExoVideoView2
+    <com.github.iielse.imageviewer.widgets.video.ExoVideoView2
         android:id="@+id/exoVideoView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

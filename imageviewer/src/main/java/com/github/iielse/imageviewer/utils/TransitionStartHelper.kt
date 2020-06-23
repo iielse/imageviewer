@@ -14,8 +14,10 @@ import com.github.iielse.imageviewer.core.Components.requireImageLoader
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
+import com.github.iielse.imageviewer.viewholders.VideoViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
 import kotlinx.android.synthetic.main.item_imageviewer_subsampling.*
+import kotlinx.android.synthetic.main.item_imageviewer_video.*
 
 object TransitionStartHelper {
     var animating = false
@@ -72,6 +74,18 @@ object TransitionStartHelper {
                     }
                 }
             }
+            is VideoViewHolder -> {
+                holder.imageView.layoutParams = holder.imageView.layoutParams.apply {
+                    width = startView?.width ?: width
+                    height = startView?.height ?: height
+                    val location = IntArray(2)
+                    getLocationOnScreen(startView, location)
+                    if (this is ViewGroup.MarginLayoutParams) {
+                        marginStart = location[0]
+                        topMargin = location[1] - Config.TRANSITION_OFFSET_Y
+                    }
+                }
+            }
         }
     }
 
@@ -90,6 +104,16 @@ object TransitionStartHelper {
             }
             is SubsamplingViewHolder -> {
                 holder.subsamplingView.layoutParams = holder.subsamplingView.layoutParams.apply {
+                    width = MATCH_PARENT
+                    height = MATCH_PARENT
+                    if (this is ViewGroup.MarginLayoutParams) {
+                        marginStart = 0
+                        topMargin = 0
+                    }
+                }
+            }
+            is VideoViewHolder -> {
+                holder.imageView.layoutParams = holder.imageView.layoutParams.apply {
                     width = MATCH_PARENT
                     height = MATCH_PARENT
                     if (this is ViewGroup.MarginLayoutParams) {

@@ -1,5 +1,5 @@
 <resources>
-   <item name="viewer_adapter_item_key" type="id" />
-   <item name="viewer_adapter_item_data" type="id" />
-   <item name="viewer_adapter_item_holder" type="id" />
+    <item name="viewer_adapter_item_key" type="id" />
+    <item name="viewer_adapter_item_data" type="id" />
+    <item name="viewer_adapter_item_holder" type="id" />
 </resources>

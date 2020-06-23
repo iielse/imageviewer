@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer.demo.core.viewer.video
+package com.github.iielse.imageviewer.widgets.video
 
 import android.content.Context
 import android.util.AttributeSet
@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewConfiguration
 import androidx.viewpager2.widget.ViewPager2
 import com.github.iielse.imageviewer.utils.Config
-import com.github.iielse.imageviewer.utils.log
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -56,12 +55,8 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
                         .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
                         .setDuration(200).start()
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                log { "handleDispatchTouchEvent MotionEvent ACTION_UP" }
-                up()
-            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> up()
             MotionEvent.ACTION_MOVE -> {
-                log { "handleDispatchTouchEvent MotionEvent ACTION_MOVE $singleTouch" }
                 if (singleTouch) {
                     if (lastX == 0f) lastX = event.rawX
                     if (lastY == 0f) lastY = event.rawY

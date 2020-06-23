@@ -1,6 +1,8 @@
 package com.github.iielse.imageviewer.core
 
+import com.github.iielse.imageviewer.adapter.ItemType
+
 interface Photo {
     fun id(): Long
-    fun subsampling(): Boolean = false
+    fun itemType(): @ItemType.Type Int
 }

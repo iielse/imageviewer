@@ -8,25 +8,26 @@ import com.github.iielse.imageviewer.adapter.ItemType
 import com.github.iielse.imageviewer.core.Components.requireImageLoader
 import com.github.iielse.imageviewer.core.Components.requireVHCustomizer
 import com.github.iielse.imageviewer.core.Photo
-import com.github.iielse.imageviewer.widgets.PhotoView2
+import com.github.iielse.imageviewer.widgets.video.ExoVideoView2
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_imageviewer_photo.*
+import kotlinx.android.synthetic.main.item_imageviewer_video.*
+import kotlinx.android.synthetic.main.item_imageviewer_video.view.*
 
 class VideoViewHolder(override val containerView: View, callback: ImageViewerAdapterListener) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     init {
-        photoView.setListener(object : PhotoView2.Listener {
-            override fun onDrag(view: PhotoView2, fraction: Float) = callback.onDrag(this@VideoViewHolder, view, fraction)
-            override fun onRestore(view: PhotoView2, fraction: Float) = callback.onRestore(this@VideoViewHolder, view, fraction)
-            override fun onRelease(view: PhotoView2) = callback.onRelease(this@VideoViewHolder, view)
+        videoView.videoView.setListener(object : ExoVideoView2.Listener {
+            override fun onDrag(view: ExoVideoView2, fraction: Float) = callback.onDrag(this@VideoViewHolder, view, fraction)
+            override fun onRestore(view: ExoVideoView2, fraction: Float) = callback.onRestore(this@VideoViewHolder, view, fraction)
+            override fun onRelease(view: ExoVideoView2) = callback.onRelease(this@VideoViewHolder, view)
         })
-        requireVHCustomizer().initialize(ItemType.PHOTO, this)
+        requireVHCustomizer().initialize(ItemType.VIDEO, this)
     }
 
     fun bind(item: Photo) {
-        photoView.setTag(R.id.viewer_adapter_item_key, item.id())
-        photoView.setTag(R.id.viewer_adapter_item_data, item)
-        photoView.setTag(R.id.viewer_adapter_item_holder, this)
-        requireVHCustomizer().bind(ItemType.PHOTO, item, this)
-        requireImageLoader().load(photoView, item, this)
+        videoView.setTag(R.id.viewer_adapter_item_key, item.id())
+        videoView.setTag(R.id.viewer_adapter_item_data, item)
+        videoView.setTag(R.id.viewer_adapter_item_holder, this)
+        requireVHCustomizer().bind(ItemType.VIDEO, item, this)
+        requireImageLoader().load(videoView, item, this)
     }
 }

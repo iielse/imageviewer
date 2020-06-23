@@ -3,7 +3,7 @@ package com.github.iielse.imageviewer.adapter
 import com.github.iielse.imageviewer.core.Photo
 
 data class Item(
-        val type: Int,
+        val type: @ItemType.Type Int,
         val id: Long,
         val extra: Any? = null
 ) {
@@ -14,7 +14,7 @@ data class Item(
     companion object {
         fun from(data: Photo): Item {
             return Item(
-                    type = if (data.subsampling()) ItemType.SUBSAMPLING else ItemType.PHOTO,
+                    type = data.itemType(),
                     id = data.id(),
                     extra = data
             )

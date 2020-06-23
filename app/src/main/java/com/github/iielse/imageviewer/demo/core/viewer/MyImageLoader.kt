@@ -15,6 +15,7 @@ import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.appContext
 import com.github.iielse.imageviewer.demo.utils.bindLifecycle
 import com.github.iielse.imageviewer.demo.utils.toast
+import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -30,6 +31,23 @@ class MyImageLoader : ImageLoader {
                 .override(view.width, view.height)
                 .placeholder(view.drawable)
                 .into(view)
+    }
+
+    override fun load(exoVideoView: ExoVideoView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
+        val it = (data as? MyData?)?.url ?: return
+        val cover = viewHolder.itemView.findViewById<ImageView>(R.id.imageView)
+        cover.visibility = View.VISIBLE
+        findLoadingView(viewHolder)?.visibility = View.VISIBLE
+        Glide.with(exoVideoView).load(it)
+                .placeholder(cover.drawable)
+                .into(cover)
+        exoVideoView.setVideoRenderedCallback(object : ExoVideoView.VideoRenderedListener {
+            override fun onRendered(view: ExoVideoView) {
+                cover.visibility = View.GONE
+                findLoadingView(viewHolder)?.visibility = View.GONE
+            }
+        })
+        exoVideoView.prepare(it)
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.github.iielse.imageviewer.demo.core.viewer.video;
+package com.github.iielse.imageviewer.widgets.video;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -7,8 +7,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ext.rtmp.RtmpDataSourceFactory;
+import com.google.android.exoplayer2.*;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.LoopingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -22,6 +21,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.google.android.exoplayer2.upstream.cache.Cache;
@@ -37,10 +37,6 @@ import com.google.android.exoplayer2.util.Util;
 import java.io.File;
 import java.util.Map;
 import java.util.NavigableSet;
-
-import tv.danmaku.ijk.media.exo2.ExoMediaSourceInterceptListener;
-import tv.danmaku.ijk.media.exo2.source.GSYDefaultHttpDataSource;
-import tv.danmaku.ijk.media.exo2.source.GSYExoHttpDataSourceFactory;
 
 // https://github.com/CarGuo/GSYVideoPlayer/blob/master/gsyVideoPlayer-exo_player2/src/main/java/tv/danmaku/ijk/media/exo2/ExoSourceManager.java
 public class ExoSourceManager {
@@ -61,7 +57,6 @@ public class ExoSourceManager {
 
     private static int sHttpConnectTimeout = -1;
 
-
     private static boolean s = false;
 
     private Context mAppContext;
@@ -69,8 +64,6 @@ public class ExoSourceManager {
     private Map<String, String> mMapHeadData;
 
     private String mDataSource;
-
-    private static ExoMediaSourceInterceptListener sExoMediaSourceInterceptListener;
 
     private boolean isCached = false;
 
@@ -92,12 +85,7 @@ public class ExoSourceManager {
      */
     public MediaSource getMediaSource(String dataSource, boolean preview, boolean cacheEnable, boolean isLooping, File cacheDir, @Nullable String overrideExtension) {
         MediaSource mediaSource = null;
-        if (sExoMediaSourceInterceptListener != null) {
-            mediaSource = sExoMediaSourceInterceptListener.getMediaSource(dataSource, preview, cacheEnable, isLooping, cacheDir);
-        }
-        if (mediaSource != null) {
-            return mediaSource;
-        }
+
         mDataSource = dataSource;
         Uri contentUri = Uri.parse(dataSource);
         int contentType = inferContentType(dataSource, overrideExtension);
@@ -140,12 +128,6 @@ public class ExoSourceManager {
             case C.TYPE_HLS:
                 mediaSource = new HlsMediaSource.Factory(getDataSourceFactoryCache(mAppContext, cacheEnable, preview, cacheDir, uerAgent)).createMediaSource(contentUri);
                 break;
-            case TYPE_RTMP:
-                RtmpDataSourceFactory rtmpDataSourceFactory = new RtmpDataSourceFactory(null);
-                mediaSource = new ProgressiveMediaSource.Factory(rtmpDataSourceFactory,
-                        new DefaultExtractorsFactory())
-                        .createMediaSource(contentUri);
-                break;
             case C.TYPE_OTHER:
             default:
                 mediaSource = new ProgressiveMediaSource.Factory(getDataSourceFactoryCache(mAppContext, cacheEnable,
@@ -158,23 +140,6 @@ public class ExoSourceManager {
         }
         return mediaSource;
     }
-
-
-    /**
-     * 设置ExoPlayer 的 MediaSource 创建拦截
-     */
-    public static void setExoMediaSourceInterceptListener(ExoMediaSourceInterceptListener exoMediaSourceInterceptListener) {
-        sExoMediaSourceInterceptListener = exoMediaSourceInterceptListener;
-    }
-
-    public static void resetExoMediaSourceInterceptListener() {
-        sExoMediaSourceInterceptListener = null;
-    }
-
-    public static ExoMediaSourceInterceptListener getExoMediaSourceInterceptListener() {
-        return sExoMediaSourceInterceptListener;
-    }
-
 
     @SuppressLint("WrongConstant")
     @C.ContentType
@@ -319,8 +284,8 @@ public class ExoSourceManager {
         if (uerAgent == null) {
             uerAgent = Util.getUserAgent(context, TAG);
         }
-        int connectTimeout = GSYDefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS;
-        int readTimeout = GSYDefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS;
+        int connectTimeout = DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS;
+        int readTimeout = DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS;
         if (sHttpConnectTimeout > 0) {
             connectTimeout = sHttpConnectTimeout;
         }
@@ -332,7 +297,7 @@ public class ExoSourceManager {
             allowCrossProtocolRedirects = "true".equals(mMapHeadData.get("allowCrossProtocolRedirects"));
         }
         if (sSkipSSLChain) {
-            GSYExoHttpDataSourceFactory dataSourceFactory = new GSYExoHttpDataSourceFactory(uerAgent, preview ? null : new DefaultBandwidthMeter.Builder(mAppContext).build(),
+            DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory(uerAgent, preview ? null : new DefaultBandwidthMeter.Builder(mAppContext).build(),
                     connectTimeout,
                     readTimeout, allowCrossProtocolRedirects);
             if (mMapHeadData != null && mMapHeadData.size() > 0) {

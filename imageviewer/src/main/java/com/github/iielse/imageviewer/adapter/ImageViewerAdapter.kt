@@ -14,6 +14,7 @@ import com.github.iielse.imageviewer.utils.log
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.UnknownViewHolder
+import com.github.iielse.imageviewer.viewholders.VideoViewHolder
 import java.util.*
 
 class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.ViewHolder>(diff) {
@@ -28,6 +29,7 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
         return when (viewType) {
             ItemType.PHOTO -> PhotoViewHolder(parent.inflate(R.layout.item_imageviewer_photo), callback)
             ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent.inflate(R.layout.item_imageviewer_subsampling), callback)
+            ItemType.VIDEO -> VideoViewHolder(parent.inflate(R.layout.item_imageviewer_video), callback)
             else -> UnknownViewHolder(View(parent.context))
         }
     }
@@ -38,6 +40,7 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
         when (holder) {
             is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
             is SubsamplingViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
+            is VideoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
         }
 
         if (item?.id == key) {

@@ -17,10 +17,6 @@ import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.setOnClickCallback
 import com.github.iielse.imageviewer.utils.inflate
-import com.github.iielse.imageviewer.utils.onDestroy
-import com.github.iielse.imageviewer.widgets.PhotoView2
-import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack
-import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 
 /**
  * viewer 自定义业务&UI
@@ -32,10 +28,8 @@ class MyViewerEx(activity: FragmentActivity) {
     private var pre: TextView? = null
     private var next: TextView? = null
     private var currentPosition = -1
-    private var playingVH: RecyclerView.ViewHolder? = null
 
     init {
-        activity.onDestroy { releaseVideo() }
     }
 
     /**
@@ -53,8 +47,6 @@ class MyViewerEx(activity: FragmentActivity) {
             override fun bind(type: Int, data: Photo, viewHolder: RecyclerView.ViewHolder) {
                 val myData = data as MyData
                 viewHolder.itemView.findViewById<TextView>(R.id.exText).text = myData.desc
-
-                bindVideo(type, myData, viewHolder)
             }
         })
         builder.setOverlayCustomizer(object : OverlayCustomizer {
@@ -76,28 +68,14 @@ class MyViewerEx(activity: FragmentActivity) {
                 viewHolder.itemView.findViewById<View>(R.id.customizeDecor)
                         .animate().setDuration(200).alpha(0f).start()
                 indicatorDecor?.animate()?.setDuration(200)?.alpha(0f)?.start()
-                releaseVideo()
             }
 
             override fun onPageSelected(position: Int) {
                 currentPosition = position
                 indicator?.text = position.toString()
-                releaseVideo()
             }
         })
     }
-
-    private fun releaseVideo() {
-        val it = playingVH?.itemView ?: return
-        val photoView = it.findViewById<View>(R.id.photoView)
-        val videoView = it.findViewById<StandardGSYVideoPlayer>(R.id.videoView)
-        val play = it.findViewById<View>(R.id.play)
-        play.visibility = View.VISIBLE
-        photoView.visibility = View.VISIBLE
-        videoView.visibility = View.GONE
-        videoView.release()
-    }
-
 
     /**
      *  给大图添加点击关闭事件
@@ -116,47 +94,10 @@ class MyViewerEx(activity: FragmentActivity) {
                     viewerActions.dismiss()
                 }
             }
-        }
-    }
-
-    /**
-     *  绑定video类型的事件
-     */
-    private fun bindVideo(type: Int, data: MyData, viewHolder: RecyclerView.ViewHolder) {
-        when (type) {
-            ItemType.PHOTO -> {
-                val photoView = viewHolder.itemView.findViewById<PhotoView2>(R.id.photoView)
-                val videoView = viewHolder.itemView.findViewById<StandardGSYVideoPlayer>(R.id.videoView)
-                val play = viewHolder.itemView.findViewById<View>(R.id.play)
-                if (data.url.endsWith(".mp4")) {
-                    photoView.visibility = View.VISIBLE
-                    photoView.isEnabled = false
-                    videoView.visibility = View.GONE
-                    play.visibility = View.VISIBLE
-
-                    videoView.setUp(data.url, true, "")
-                    videoView.titleTextView.visibility = View.GONE
-                    videoView.backButton.visibility = View.GONE
-                    videoView.setIsTouchWiget(true)
-                    videoView.setVideoAllCallBack(object : GSYSampleCallBack() {
-                        override fun onAutoComplete(url: String?, vararg objects: Any?) {
-                            play.visibility = View.VISIBLE
-                            photoView.visibility = View.VISIBLE
-                            videoView.visibility = View.GONE
-                        }
-                    })
-
-                    play.setOnClickCallback {
-                        videoView.startPlayLogic()
-                        playingVH = viewHolder
-                        videoView.visibility = View.VISIBLE
-                        play.visibility = View.GONE
-                    }
-                } else {
-                    photoView.visibility = View.VISIBLE
-                    photoView.isEnabled = true
-                    videoView.visibility = View.GONE
-                    play.visibility = View.GONE
+            ItemType.VIDEO -> {
+                val view = viewHolder.itemView.findViewById<View>(R.id.videoView)
+                view.setOnClickCallback {
+                    viewerActions.dismiss()
                 }
             }
         }

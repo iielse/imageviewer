@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
+import com.github.iielse.imageviewer.viewholders.VideoViewHolder
 import kotlinx.android.synthetic.main.item_imageviewer_photo.*
 import kotlinx.android.synthetic.main.item_imageviewer_subsampling.*
+import kotlinx.android.synthetic.main.item_imageviewer_video.*
 import kotlin.math.max
 
 object TransitionEndHelper {
@@ -80,6 +82,25 @@ object TransitionEndHelper {
                     }
                 }
             }
+            is VideoViewHolder -> {
+                holder.videoView.translationX = 0f
+                holder.videoView.translationY = 0f
+                holder.videoView.scaleX = if (startView != null) 1f else 2f
+                holder.videoView.scaleY = if (startView != null) 1f else 2f
+                // holder.photoView.alpha = startView?.alpha ?: 0f
+                fade(holder, startView)
+                holder.videoView.pause()
+                holder.videoView.layoutParams = holder.videoView.layoutParams.apply {
+                    width = startView?.width ?: width
+                    height = startView?.height ?: height
+                    val location = IntArray(2)
+                    getLocationOnScreen(startView, location)
+                    if (this is ViewGroup.MarginLayoutParams) {
+                        marginStart = location[0]
+                        topMargin = location[1] - Config.TRANSITION_OFFSET_Y
+                    }
+                }
+            }
         }
     }
 
@@ -111,13 +132,24 @@ object TransitionEndHelper {
                 holder.subsamplingView.animate().setDuration(Config.DURATION_TRANSITION)
                         .alpha(0f).start()
             }
+            is VideoViewHolder -> {
+                if (startView != null) {
+                    holder.videoView.animate()
+                            .setDuration(0)
+                            .setStartDelay(max(Config.DURATION_TRANSITION - 20, 0))
+                            .alpha(0f).start()
+                } else {
+                    holder.videoView.animate().setDuration(Config.DURATION_TRANSITION)
+                            .alpha(0f).start()
+                }
+            }
         }
     }
 
     private fun getLocationOnScreen(startView: View?, location: IntArray) {
         startView?.getLocationOnScreen(location)
         if (startView?.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL) {
-            location[0] = startView.context.resources.displayMetrics.widthPixels - location[0]- startView.width
+            location[0] = startView.context.resources.displayMetrics.widthPixels - location[0] - startView.width
         }
     }
 }
