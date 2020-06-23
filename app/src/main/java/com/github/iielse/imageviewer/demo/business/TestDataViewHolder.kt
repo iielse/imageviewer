@@ -34,7 +34,6 @@ class TestDataViewHolder(override val containerView: View, private val listener:
         itemView.imageView.scaleType = if (pos == 19) ImageView.ScaleType.FIT_XY else ImageView.ScaleType.CENTER_CROP
 
         Glide.with(imageView).load(item.url).into(imageView)
-        log { "DataViewHolder bind ${item.id}" }
     }
 }
 

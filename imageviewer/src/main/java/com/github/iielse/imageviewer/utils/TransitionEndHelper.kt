@@ -20,6 +20,7 @@ object TransitionEndHelper {
     var animating = false
 
     fun end(fragment: DialogFragment, startView: View?, holder: RecyclerView.ViewHolder) {
+        beforeTransition(startView, holder)
         val doTransition = {
             TransitionManager.beginDelayedTransition(holder.itemView as ViewGroup, transitionSet().also {
                 it.addListener(object : TransitionListenerAdapter() {
@@ -39,6 +40,19 @@ object TransitionEndHelper {
         fragment.onDestroy {
             holder.itemView.removeCallbacks(doTransition)
             TransitionManager.endTransitions(holder.itemView as ViewGroup)
+        }
+    }
+
+    private fun beforeTransition(startView: View?, holder: RecyclerView.ViewHolder) {
+        when (holder) {
+            is VideoViewHolder -> {
+                holder.imageView.translationX = holder.videoView.translationX
+                holder.imageView.translationY = holder.videoView.translationY
+                holder.imageView.scaleX = holder.videoView.scaleX
+                holder.imageView.scaleY = holder.videoView.scaleY
+                holder.imageView.visibility = View.VISIBLE
+                holder.videoView.visibility = View.GONE
+            }
         }
     }
 
@@ -83,14 +97,14 @@ object TransitionEndHelper {
                 }
             }
             is VideoViewHolder -> {
-                holder.videoView.translationX = 0f
-                holder.videoView.translationY = 0f
-                holder.videoView.scaleX = if (startView != null) 1f else 2f
-                holder.videoView.scaleY = if (startView != null) 1f else 2f
+                holder.imageView.translationX = 0f
+                holder.imageView.translationY = 0f
+                holder.imageView.scaleX = if (startView != null) 1f else 2f
+                holder.imageView.scaleY = if (startView != null) 1f else 2f
                 // holder.photoView.alpha = startView?.alpha ?: 0f
                 fade(holder, startView)
                 holder.videoView.pause()
-                holder.videoView.layoutParams = holder.videoView.layoutParams.apply {
+                holder.imageView.layoutParams = holder.imageView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
@@ -134,12 +148,12 @@ object TransitionEndHelper {
             }
             is VideoViewHolder -> {
                 if (startView != null) {
-                    holder.videoView.animate()
+                    holder.imageView.animate()
                             .setDuration(0)
                             .setStartDelay(max(Config.DURATION_TRANSITION - 20, 0))
                             .alpha(0f).start()
                 } else {
-                    holder.videoView.animate().setDuration(Config.DURATION_TRANSITION)
+                    holder.imageView.animate().setDuration(Config.DURATION_TRANSITION)
                             .alpha(0f).start()
                 }
             }

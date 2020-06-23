@@ -36,7 +36,6 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
-        log { "onBindViewHolder $key $position $item" }
         when (holder) {
             is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
             is SubsamplingViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }

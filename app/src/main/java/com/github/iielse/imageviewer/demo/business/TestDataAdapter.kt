@@ -42,7 +42,6 @@ class TestDataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(provid
         super.onViewAttachedToWindow(holder)
         if (holder is TestDataViewHolder) {
             (holder.itemView.tag as? MyData?)?.let {
-                log { "DataViewHolder onViewAttachedToWindow ${it.id}" }
                 TransitionViewsRef.provideTransitionViewsRef(KEY_MAIN).put(it.id, holder.imageView)
             }
         }
@@ -52,7 +51,6 @@ class TestDataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(provid
         super.onViewDetachedFromWindow(holder)
         if (holder is TestDataViewHolder) {
             (holder.itemView.tag as? MyData?)?.let {
-                log { "DataViewHolder onViewDetachedFromWindow ${it.id}" }
                 TransitionViewsRef.provideTransitionViewsRef(KEY_MAIN).remove(it.id)
             }
         }
