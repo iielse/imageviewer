@@ -10,7 +10,6 @@ import com.github.iielse.imageviewer.ImageViewerAdapterListener
 import com.github.iielse.imageviewer.R
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.utils.inflate
-import com.github.iielse.imageviewer.utils.log
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.UnknownViewHolder

@@ -14,6 +14,7 @@ import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.appContext
 import com.github.iielse.imageviewer.demo.utils.bindLifecycle
+import com.github.iielse.imageviewer.demo.utils.log
 import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
@@ -39,7 +40,7 @@ class MyImageLoader : ImageLoader {
         val cover = viewHolder.itemView.findViewById<ImageView>(R.id.imageView)
         cover.visibility = View.VISIBLE
         val task = Runnable { findLoadingView(viewHolder)?.visibility = View.VISIBLE }
-        cover.postDelayed(task, Config.DURATION_TRANSITION)
+        cover.postDelayed(task, Config.DURATION_TRANSITION + 300)
         Glide.with(exoVideoView).load(it)
                 .placeholder(cover.drawable)
                 .into(cover)
@@ -50,6 +51,7 @@ class MyImageLoader : ImageLoader {
                 findLoadingView(viewHolder)?.visibility = View.GONE
             }
         })
+        log { "load prepare video ${data.id}" }
         exoVideoView.prepare(it)
     }
 

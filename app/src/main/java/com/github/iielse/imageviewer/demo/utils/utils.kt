@@ -3,7 +3,9 @@ package com.github.iielse.imageviewer.demo.utils
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
+import com.github.iielse.imageviewer.utils.Config
 
 fun appContext() = App.context!!
 fun toast(message: String?) {
@@ -23,6 +25,10 @@ fun statusBarHeight(): Int {
         height = appContext().resources.getDimensionPixelSize(resourceId)
     }
     return height
+}
+
+fun log(tag: String = "test", block: () -> String) {
+    if (Config.DEBUG) Log.i(tag, block())
 }
 
 object App {

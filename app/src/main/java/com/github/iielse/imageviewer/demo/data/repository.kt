@@ -11,7 +11,9 @@ val myData: List<MyData> by lazy {
             // long vertical
             MyData(subsampling = true, id = id++, url = "https://image.shutterstock.com/z/stock-vector-humerus-of-the-right-side-from-its-front-face-vintage-engraved-illustration-usual-medicine-90201004.jpg"),
             // video
-            MyData(id = id++, url = "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4")
+            MyData(id = id++, url = "https://media.w3.org/2010/05/sintel/trailer.mp4"),
+            MyData(id = id++, url = "https://www.w3schools.com/html/movie.mp4"),
+            MyData(id = id++, url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
     ).let {
         it.apply { addAll(image.map { MyData(id = id++, url = it) }) }
     }.toList()

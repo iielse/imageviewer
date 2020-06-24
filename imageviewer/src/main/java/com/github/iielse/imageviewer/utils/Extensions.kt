@@ -1,6 +1,5 @@
 package com.github.iielse.imageviewer.utils
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +31,18 @@ fun LifecycleOwner.onDestroy(callback: () -> Unit) {
     })
 }
 
-fun Any.log(tag: String = "test", block: () -> String) {
-    if (Config.DEBUG) Log.i(tag, block())
+fun LifecycleOwner.onResume(callback: () -> Unit) {
+    lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        fun onResume() = callback()
+    })
 }
+
+fun LifecycleOwner.onPause(callback: () -> Unit) {
+    lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        fun onPause() = callback()
+    })
+}
+
 

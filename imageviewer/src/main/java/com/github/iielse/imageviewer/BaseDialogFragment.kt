@@ -2,11 +2,12 @@ package com.github.iielse.imageviewer
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.annotation.CallSuper
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import com.github.iielse.imageviewer.utils.log
+import com.github.iielse.imageviewer.utils.Config
 
 open class BaseDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -22,7 +23,7 @@ open class BaseDialogFragment : DialogFragment() {
         view.isFocusableInTouchMode = true
         view.setOnKeyListener { _, keyCode, event ->
             val backPressed = event.action == MotionEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK
-            log { "keyCode $keyCode  event $event backPressed $backPressed" }
+            if (Config.DEBUG) Log.i("viewer", "keyCode $keyCode  event $event backPressed $backPressed")
             if (backPressed) onBackPressed()
             backPressed
         }
@@ -58,7 +59,7 @@ open class BaseDialogFragment : DialogFragment() {
     }
 
     open fun showFailure(message: String? = null) {
-        log { "show failure $message" }
+        if (Config.DEBUG) Log.i("viewer", "show failure $message")
     }
 
     open fun onBackPressed() {

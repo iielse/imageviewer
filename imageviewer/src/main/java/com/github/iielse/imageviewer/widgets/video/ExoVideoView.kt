@@ -3,7 +3,6 @@ package com.github.iielse.imageviewer.widgets.video
 import android.content.Context
 import android.util.AttributeSet
 import android.view.TextureView
-import com.github.iielse.imageviewer.utils.log
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.LoopingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
@@ -19,20 +18,32 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
     private val exoSourceManager by lazy { ExoSourceManager.newInstance(context, null) }
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var videoRenderedCallback: VideoRenderedListener? = null
+    private var playUrl: String? = null
 
     fun prepare(url: String) {
-        alpha = 0f
-        newSimpleExoPlayer()
-        val videoSource: MediaSource = exoSourceManager.getMediaSource(url, true, true, false, context.cacheDir, null)
-        simpleExoPlayer?.prepare(LoopingMediaSource(videoSource))
+        playUrl = url
+        if (simpleExoPlayer == null) {
+            alpha = 0f
+            newSimpleExoPlayer()
+            val videoSource: MediaSource = exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
+            simpleExoPlayer?.prepare(LoopingMediaSource(videoSource))
+        }
+    }
+
+    fun resume() {
+        if (simpleExoPlayer == null) {
+            playUrl?.let(::prepare)
+        }
+        simpleExoPlayer?.playWhenReady = true
     }
 
     fun pause() {
         simpleExoPlayer?.playWhenReady = false
     }
 
-    fun resume() {
-        simpleExoPlayer?.playWhenReady = true
+    fun reset() {
+        simpleExoPlayer?.seekTo(0)
+        simpleExoPlayer?.playWhenReady = false
     }
 
     fun release() {
@@ -45,6 +56,8 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
     fun setVideoRenderedCallback(listener: VideoRenderedListener?) {
         videoRenderedCallback = listener
     }
+
+    fun player() = simpleExoPlayer
 
     private fun newSimpleExoPlayer(): SimpleExoPlayer {
         release()
@@ -61,13 +74,7 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
         }
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        release()
-    }
-
     private fun updateTextureViewSize(videoWidth: Int, videoHeight: Int) {
-        log { "updateTextureViewSize width $width height $height videoWidth $videoWidth videoHeight $videoHeight" }
         val sx = width * 1f / videoWidth
         val sy = height * 1f / videoHeight
         val matrix = android.graphics.Matrix()
@@ -81,13 +88,8 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
         videoRenderedCallback?.onRendered(this)
     }
 
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-        log { "onLayout changed $changed left $left top $top right $right bottom $bottom" }
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        log { "onMeasure widthMeasureSpec $widthMeasureSpec heightMeasureSpec $heightMeasureSpec" }
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        release()
     }
 }

@@ -15,14 +15,18 @@ import com.github.iielse.imageviewer.core.VHCustomizer
 import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.data.MyData
+import com.github.iielse.imageviewer.demo.utils.log
 import com.github.iielse.imageviewer.demo.utils.setOnClickCallback
-import com.github.iielse.imageviewer.utils.inflate
+import com.github.iielse.imageviewer.utils.*
+import com.github.iielse.imageviewer.viewholders.VideoViewHolder
+import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 
 /**
  * viewer 自定义业务&UI
  */
 class MyViewerEx(activity: FragmentActivity) {
     private val viewerActions by lazy { ViewModelProvider(activity).get(ImageViewerActionViewModel::class.java) }
+    private var lastVideoViewHolder: RecyclerView.ViewHolder? = null
     private var indicatorDecor: View? = null
     private var indicator: TextView? = null
     private var pre: TextView? = null
@@ -30,6 +34,9 @@ class MyViewerEx(activity: FragmentActivity) {
     private var currentPosition = -1
 
     init {
+        activity.onResume { lastVideoViewHolder?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.resume() }
+        activity.onPause { lastVideoViewHolder?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.pause() }
+        activity.onDestroy { lastVideoViewHolder?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.release() }
     }
 
     /**
@@ -70,9 +77,12 @@ class MyViewerEx(activity: FragmentActivity) {
                 indicatorDecor?.animate()?.setDuration(200)?.alpha(0f)?.start()
             }
 
-            override fun onPageSelected(position: Int) {
+            override fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {
+                log { "MyViewerEx onPageSelected position: $position" }
                 currentPosition = position
                 indicator?.text = position.toString()
+
+                autoPlayVideo(position, viewHolder)
             }
         })
     }
@@ -99,6 +109,17 @@ class MyViewerEx(activity: FragmentActivity) {
                 view.setOnClickCallback {
                     viewerActions.dismiss()
                 }
+            }
+        }
+    }
+
+    private fun autoPlayVideo(pos: Int, viewHolder: RecyclerView.ViewHolder) {
+        lastVideoViewHolder?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.reset()
+        when (viewHolder) {
+            is VideoViewHolder -> {
+                log { "autoPlayVideo resume video pos $pos" }
+                viewHolder.itemView.findViewById<ExoVideoView>(R.id.videoView)?.resume()
+                lastVideoViewHolder = viewHolder
             }
         }
     }

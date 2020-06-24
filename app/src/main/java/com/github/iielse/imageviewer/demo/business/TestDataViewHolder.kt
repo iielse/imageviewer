@@ -7,7 +7,6 @@ import com.bumptech.glide.Glide
 import com.github.iielse.imageviewer.demo.core.AdapterCallback
 import com.github.iielse.imageviewer.demo.core.ITEM_CLICKED
 import com.github.iielse.imageviewer.demo.data.MyData
-import com.github.iielse.imageviewer.utils.log
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_image.*
 import kotlinx.android.synthetic.main.item_image.view.*

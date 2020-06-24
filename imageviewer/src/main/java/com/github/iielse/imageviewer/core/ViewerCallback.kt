@@ -11,5 +11,5 @@ interface ViewerCallback : ImageViewerAdapterListener {
     override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {}
     fun onPageScrollStateChanged(state: Int) {}
     fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
-    fun onPageSelected(position: Int) {}
+    fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {}
 }
