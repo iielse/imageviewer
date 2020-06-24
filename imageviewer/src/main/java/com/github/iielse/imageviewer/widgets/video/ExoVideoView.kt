@@ -19,10 +19,12 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
     private var simpleExoPlayer: SimpleExoPlayer? = null
     private var videoRenderedCallback: VideoRenderedListener? = null
     private var playUrl: String? = null
+    protected var prepared = false
 
     fun prepare(url: String) {
         playUrl = url
         if (simpleExoPlayer == null) {
+            prepared = false
             alpha = 0f
             newSimpleExoPlayer()
             val videoSource: MediaSource = exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
@@ -86,6 +88,7 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
         invalidate()
         alpha = 1f
         videoRenderedCallback?.onRendered(this)
+        prepared = true
     }
 
     override fun onDetachedFromWindow() {

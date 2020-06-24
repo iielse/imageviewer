@@ -18,9 +18,9 @@ fun View.setOnClickCallback(callback: (View) -> Unit) {
             .subscribe().bindLifecycle(this)
 }
 
-fun Disposable.bindLifecycle(view: View) =
+fun Disposable.bindLifecycle(view: View?) =
         this.apply {
-            (view.activity as? AppCompatActivity)?.lifecycle?.addObserver(LifecycleDisposable(this))
+            (view?.activity as? AppCompatActivity)?.lifecycle?.addObserver(LifecycleDisposable(this))
         }
 
 val View.activity: Activity?

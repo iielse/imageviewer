@@ -2,6 +2,7 @@ package com.github.iielse.imageviewer.widgets.video
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -27,6 +28,8 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
     private var lastX = 0f
     private var lastY = 0f
     private var listener: Listener? = null
+    private var clickListener: OnClickListener? = null
+    private var longClickListener: OnLongClickListener? = null
 
     init {
         setOnTouchListener(this)
@@ -34,6 +37,14 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
 
     fun setListener(listener: Listener?) {
         this.listener = listener
+    }
+
+    override fun setOnClickListener(listener: OnClickListener?) {
+        clickListener = listener
+    }
+
+    override fun setOnLongClickListener(listener: OnLongClickListener?) {
+        longClickListener = listener
     }
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
@@ -44,10 +55,13 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        gestureDetector.onTouchEvent(event)
         return true
     }
 
     private fun handleDispatchTouchEvent(event: MotionEvent?) {
+        if (!prepared) return
+
         when (event?.actionMasked) {
             MotionEvent.ACTION_POINTER_DOWN -> {
                 singleTouch = false
@@ -109,5 +123,22 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         animate().cancel()
+    }
+
+    private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+        // forward long click listener
+        override fun onLongPress(e: MotionEvent) {
+            longClickListener?.onLongClick(this@ExoVideoView2)
+        }
+    }).apply {
+        setOnDoubleTapListener(object : GestureDetector.OnDoubleTapListener {
+            override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+                clickListener?.onClick(this@ExoVideoView2)
+                return true
+            }
+
+            override fun onDoubleTapEvent(e: MotionEvent?) = false
+            override fun onDoubleTap(e: MotionEvent?): Boolean = true
+        })
     }
 }
