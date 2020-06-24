@@ -15,7 +15,6 @@ import com.github.iielse.imageviewer.core.VHCustomizer
 import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.data.MyData
-import com.github.iielse.imageviewer.demo.utils.log
 import com.github.iielse.imageviewer.demo.utils.setOnClickCallback
 import com.github.iielse.imageviewer.utils.*
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
@@ -36,7 +35,7 @@ class MyViewerEx(activity: FragmentActivity) {
     init {
         activity.onResume { lastVideoViewHolder?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.resume() }
         activity.onPause { lastVideoViewHolder?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.pause() }
-        activity.onDestroy { lastVideoViewHolder?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.release() }
+        activity.onDestroy {  lastVideoViewHolder?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.release() }
     }
 
     /**
@@ -78,7 +77,6 @@ class MyViewerEx(activity: FragmentActivity) {
             }
 
             override fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {
-                log { "MyViewerEx onPageSelected position: $position" }
                 currentPosition = position
                 indicator?.text = position.toString()
 
@@ -117,7 +115,6 @@ class MyViewerEx(activity: FragmentActivity) {
         lastVideoViewHolder?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.reset()
         when (viewHolder) {
             is VideoViewHolder -> {
-                log { "autoPlayVideo resume video pos $pos" }
                 viewHolder.itemView.findViewById<ExoVideoView>(R.id.videoView)?.resume()
                 lastVideoViewHolder = viewHolder
             }

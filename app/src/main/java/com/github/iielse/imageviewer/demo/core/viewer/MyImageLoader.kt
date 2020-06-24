@@ -14,7 +14,6 @@ import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.appContext
 import com.github.iielse.imageviewer.demo.utils.bindLifecycle
-import com.github.iielse.imageviewer.demo.utils.log
 import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
@@ -51,7 +50,6 @@ class MyImageLoader : ImageLoader {
                 findLoadingView(viewHolder)?.visibility = View.GONE
             }
         })
-        log { "load prepare video ${data.id}" }
         exoVideoView.prepare(it)
     }
 
