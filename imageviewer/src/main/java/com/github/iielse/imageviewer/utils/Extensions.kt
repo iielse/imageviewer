@@ -1,13 +1,13 @@
 package com.github.iielse.imageviewer.utils
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.forEach
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.*
 
 fun ViewGroup.inflate(resId: Int): View {
     return LayoutInflater.from(context).inflate(resId, this, false)
@@ -21,6 +21,21 @@ fun ViewGroup.findViewWithKeyTag(key: Int, tag: Any): View? {
             if (result != null) return result
         }
     }
+    return null
+}
+
+fun <T : ViewModel> View.provideViewModel(modelClass: Class<T>): T? {
+    return (activity as? ViewModelStoreOwner?)?.let { ViewModelProvider(it).get(modelClass) }
+}
+
+val View.activity: Activity?
+    get() = getActivity(context)
+
+// https://stackoverflow.com/questions/9273218/is-it-always-safe-to-cast-context-to-activity-within-view/45364110
+private fun getActivity(context: Context?): Activity? {
+    if (context == null) return null
+    if (context is Activity) return context
+    if (context is ContextWrapper) return getActivity(context.baseContext)
     return null
 }
 

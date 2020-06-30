@@ -6,7 +6,9 @@ import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.viewpager2.widget.ViewPager2
 import com.github.chrisbanes.photoview.PhotoView
+import com.github.iielse.imageviewer.ImageViewerViewModel
 import com.github.iielse.imageviewer.utils.Config
+import com.github.iielse.imageviewer.utils.provideViewModel
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -18,6 +20,8 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         fun onRestore(view: PhotoView2, fraction: Float)
         fun onRelease(view: PhotoView2)
     }
+
+    private val viewModel by lazy { provideViewModel(ImageViewerViewModel::class.java) }
 
     private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop * Config.SWIPE_TOUCH_SLOP }
     private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
@@ -41,7 +45,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
     private fun handleDispatchTouchEvent(event: MotionEvent?) {
         when (event?.actionMasked) {
             MotionEvent.ACTION_POINTER_DOWN -> {
-                singleTouch = false
+                setSingleTouch(false)
                 animate().translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
                         .setDuration(200).start()
             }
@@ -78,7 +82,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     private fun up() {
         setAllowParentInterceptOnEdge(true)
-        singleTouch = true
+        setSingleTouch(true)
         fakeDragOffset = 0f
         lastX = 0f
         lastY = 0f
@@ -93,6 +97,11 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
             animate().translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
                     .setDuration(200).start()
         }
+    }
+
+    private fun setSingleTouch(value: Boolean) {
+        singleTouch = value
+        viewModel?.setMultiFingerTouching(!value)
     }
 
     override fun onDetachedFromWindow() {

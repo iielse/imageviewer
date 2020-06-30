@@ -6,7 +6,9 @@ import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.viewpager2.widget.ViewPager2
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+import com.github.iielse.imageviewer.ImageViewerViewModel
 import com.github.iielse.imageviewer.utils.Config
+import com.github.iielse.imageviewer.utils.provideViewModel
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -18,6 +20,8 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
         fun onRestore(view: SubsamplingScaleImageView2, fraction: Float)
         fun onRelease(view: SubsamplingScaleImageView2)
     }
+
+    private val viewModel by lazy { provideViewModel(ImageViewerViewModel::class.java) }
 
     private var initScale: Float? = null
     private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop * Config.SWIPE_TOUCH_SLOP }
@@ -50,7 +54,7 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
     private fun handleDispatchTouchEvent(event: MotionEvent?) {
         when (event?.actionMasked) {
             MotionEvent.ACTION_POINTER_DOWN -> {
-                singleTouch = false
+                setSingleTouch(false)
                 animate()
                         .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
                         .setDuration(200).start()
@@ -89,7 +93,7 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
 
     private fun up() {
         parent?.requestDisallowInterceptTouchEvent(false)
-        singleTouch = true
+        setSingleTouch(true)
         fakeDragOffset = 0f
         lastX = 0f
         lastY = 0f
@@ -105,6 +109,11 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
                     .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
                     .setDuration(200).start()
         }
+    }
+
+    private fun setSingleTouch(value: Boolean) {
+        singleTouch = value
+        viewModel?.setMultiFingerTouching(!value)
     }
 
     override fun onDetachedFromWindow() {

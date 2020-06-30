@@ -26,7 +26,7 @@ import kotlin.math.max
 
 open class ImageViewerDialogFragment : BaseDialogFragment() {
     private val events by lazy { ViewModelProvider(requireActivity()).get(ImageViewerActionViewModel::class.java) }
-    private val viewModel by lazy { ViewModelProvider(this).get(ImageViewerViewModel::class.java) }
+    private val viewModel by lazy { ViewModelProvider(requireActivity()).get(ImageViewerViewModel::class.java) }
     private val userCallback by lazy { requireViewerCallback() }
     private val initKey by lazy { requireInitKey() }
     private val transformer by lazy { requireTransformer() }
@@ -59,6 +59,10 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
             if (Config.DEBUG) Log.i(tag, "submitList ${it.size}")
             adapter.submitList(it)
             viewer.setCurrentItem(it.indexOfFirst { it.id == initKey }, false)
+        })
+
+        viewModel.multiFingerTouching.observe(viewLifecycleOwner, Observer {
+            viewer.isUserInputEnabled = !(it ?: false)
         })
 
         events.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
