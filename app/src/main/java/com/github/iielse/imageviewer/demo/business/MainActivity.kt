@@ -57,10 +57,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun initialViews() {
         orientation.setOnClickListener {
-            var orientationH = it.tag as? Boolean? ?: true
-            orientationH = !orientationH
-            orientation.text = if (orientationH) "Horizontal" else "Vertical"
-            Config.VIEWER_ORIENTATION = if (orientationH) ViewPager2.ORIENTATION_HORIZONTAL else ViewPager2.ORIENTATION_VERTICAL
+            val orientationH = ViewerHelper.orientationH
+            ViewerHelper.orientationH = !orientationH
+            orientation.text = if (!orientationH) "Horizontal" else "Vertical"
+            Config.VIEWER_ORIENTATION = if (!orientationH) ViewPager2.ORIENTATION_HORIZONTAL else ViewPager2.ORIENTATION_VERTICAL
         }
         fullScreen.setOnClickListener {
             val isFullScreen = ViewerHelper.fullScreen

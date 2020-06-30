@@ -13,6 +13,7 @@ import com.github.iielse.imageviewer.demo.data.myData
  * viewer的自定义初始化方案
  */
 object ViewerHelper {
+    var orientationH: Boolean = true
     var loadAllAtOnce: Boolean = false
     var fullScreen: Boolean = false
     var simplePlayVideo: Boolean = true

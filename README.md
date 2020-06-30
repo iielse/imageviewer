@@ -6,6 +6,7 @@
 - **过渡动画** 缩略图到大图或大图到缩略图时提供无缝衔接动画
 - **浏览手势** 浏览大图时可使用常势操用手.如缩放图片等.（[PhotoView](https://github.com/chrisbanes/PhotoView)）
 - **超大图** 图片区块加载.避免OOM（[SubsamplingScaleImageView](https://github.com/davemorrissey/subsampling-scale-image-view)）
+- **Video** 支持Video加载 ([SimpleExoPlayer](https://github.com/google/ExoPlayer))
 - **拖拽关闭** 对大图进行上/下滑操作退出浏览.
 - **数据分页加载** 在浏览大图的情况下异步加载更多数据.
 - **自定义UI** 对预览页的UI元素自定义追加
@@ -14,7 +15,7 @@
 
 #### 使用
 ```
-implementation 'com.github.iielse:imageviewer:2.0.13'
+implementation 'com.github.iielse:imageviewer:2.1.0'
 ```
 ```
 val builder = ImageViewerBuilder(
@@ -34,7 +35,7 @@ builder.show()
 ```
 interface Photo {
     fun id(): Long // 每条图片数据的唯一标示. 主要用于分页数据加载. 定位过渡动画的对应关系
-    fun subsampling(): Boolean = false // 是否启用SubsamplingScaleImageView实现图片区块加载
+    fun itemType(): @ItemType.Type Int // 是否启用SubsamplingScaleImageView实现图片区块加载或ExoVideoView实现Video加载
 }
 ```
 

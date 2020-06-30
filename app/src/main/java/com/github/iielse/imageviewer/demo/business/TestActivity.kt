@@ -19,11 +19,8 @@ class TestActivity : AppCompatActivity() {
             toast("video long clicked")
             true
         }
-//        exoVideoView.setOnTouchListener { v, event ->
-//            print("video onTouch $event")
-//            true
-//        }
         exoVideoView.prepare("https://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4")
+        exoVideoView.resume()
     }
 
     override fun onDestroy() {
