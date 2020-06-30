@@ -8,7 +8,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.github.chrisbanes.photoview.PhotoView
 import com.github.iielse.imageviewer.ImageViewerViewModel
 import com.github.iielse.imageviewer.utils.Config
-import com.github.iielse.imageviewer.utils.provideViewModel
+import com.github.iielse.imageviewer.utils.ViewModelUtils.provideViewModel
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -21,7 +21,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
         fun onRelease(view: PhotoView2)
     }
 
-    private val viewModel by lazy { provideViewModel(ImageViewerViewModel::class.java) }
+    private val viewModel by lazy { provideViewModel(this, ImageViewerViewModel::class.java) }
 
     private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop * Config.SWIPE_TOUCH_SLOP }
     private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }

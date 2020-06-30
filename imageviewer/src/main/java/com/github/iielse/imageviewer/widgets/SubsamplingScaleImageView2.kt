@@ -8,7 +8,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.iielse.imageviewer.ImageViewerViewModel
 import com.github.iielse.imageviewer.utils.Config
-import com.github.iielse.imageviewer.utils.provideViewModel
+import com.github.iielse.imageviewer.utils.ViewModelUtils.provideViewModel
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -21,7 +21,7 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
         fun onRelease(view: SubsamplingScaleImageView2)
     }
 
-    private val viewModel by lazy { provideViewModel(ImageViewerViewModel::class.java) }
+    private val viewModel by lazy { provideViewModel(this, ImageViewerViewModel::class.java) }
 
     private var initScale: Float? = null
     private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop * Config.SWIPE_TOUCH_SLOP }

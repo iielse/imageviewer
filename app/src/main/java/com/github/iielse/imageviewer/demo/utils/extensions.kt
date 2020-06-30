@@ -3,8 +3,14 @@ package com.github.iielse.imageviewer.demo.utils
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.github.iielse.imageviewer.demo.core.LifecycleDisposable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -32,4 +38,30 @@ private fun getActivity(context: Context?): Activity? {
     if (context is Activity) return context
     if (context is ContextWrapper) return getActivity(context.baseContext)
     return null
+}
+
+
+fun ViewGroup.inflate(resId: Int): View {
+    return LayoutInflater.from(context).inflate(resId, this, false)
+}
+
+fun LifecycleOwner.onDestroy(callback: () -> Unit) {
+    lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        fun onDestroy() = callback()
+    })
+}
+
+fun LifecycleOwner.onResume(callback: () -> Unit) {
+    lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        fun onResume() = callback()
+    })
+}
+
+fun LifecycleOwner.onPause(callback: () -> Unit) {
+    lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        fun onPause() = callback()
+    })
 }

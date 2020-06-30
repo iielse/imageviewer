@@ -12,9 +12,10 @@ import com.github.iielse.imageviewer.demo.data.myData
 /**
  * viewer的自定义初始化方案
  */
-class ViewerHelper {
+object ViewerHelper {
     var loadAllAtOnce: Boolean = false
     var fullScreen: Boolean = false
+    var simplePlayVideo: Boolean = true
 
     fun provideImageViewerBuilder(context: FragmentActivity, clickedData: MyData): ImageViewerBuilder {
         val builder = ImageViewerBuilder(

@@ -27,7 +27,7 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
     private var fakeDragOffset = 0f
     private var lastX = 0f
     private var lastY = 0f
-    private var listener: Listener? = null
+    private val listeners = mutableListOf<Listener>()
     private var clickListener: OnClickListener? = null
     private var longClickListener: OnLongClickListener? = null
 
@@ -35,8 +35,10 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
         setOnTouchListener(this)
     }
 
-    fun setListener(listener: Listener?) {
-        this.listener = listener
+    fun addListener(listener: Listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener)
+        }
     }
 
     override fun setOnClickListener(listener: OnClickListener?) {
@@ -96,7 +98,7 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
             scaleY = fakeScale
             translationY = fixedOffsetY
             translationX = offsetX / 2
-            listener?.onDrag(this, fraction)
+            listeners.toList().forEach { it.onDrag(this, fraction) }
         }
     }
 
@@ -108,11 +110,11 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
         lastY = 0f
 
         if (abs(translationY) > dismissEdge) {
-            listener?.onRelease(this)
+            listeners.toList().forEach { it.onRelease(this) }
         } else {
             val offsetY = translationY
             val fraction = min(1f, offsetY / height)
-            listener?.onRestore(this, fraction)
+            listeners.toList().forEach { it.onRestore(this, fraction) }
 
             animate()
                     .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)

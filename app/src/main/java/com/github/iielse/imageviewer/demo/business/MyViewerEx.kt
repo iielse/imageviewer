@@ -16,12 +16,11 @@ import com.github.iielse.imageviewer.core.VHCustomizer
 import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.data.MyData
-import com.github.iielse.imageviewer.demo.utils.bindLifecycle
-import com.github.iielse.imageviewer.demo.utils.setOnClickCallback
-import com.github.iielse.imageviewer.demo.utils.toast
-import com.github.iielse.imageviewer.utils.*
+import com.github.iielse.imageviewer.demo.utils.*
+import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
+import com.google.android.exoplayer2.ui.PlayerControlView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -33,7 +32,7 @@ import java.util.concurrent.TimeUnit
  */
 class MyViewerEx(activity: FragmentActivity) {
     private val viewerActions by lazy { ViewModelProvider(activity).get(ImageViewerActionViewModel::class.java) }
-    private var videoAutoPlayTask: Disposable? = null
+    private var videoTask: Disposable? = null
     private var lastVideoViewHolder: RecyclerView.ViewHolder? = null
     private var indicatorDecor: View? = null
     private var indicator: TextView? = null
@@ -46,7 +45,7 @@ class MyViewerEx(activity: FragmentActivity) {
         activity.onPause { lastVideoViewHolder?.find<ExoVideoView>(R.id.videoView)?.pause() }
         activity.onDestroy {
             lastVideoViewHolder?.find<ExoVideoView>(R.id.videoView)?.release()
-            videoAutoPlayTask?.dispose()
+            videoTask?.dispose()
         }
     }
 
@@ -63,10 +62,18 @@ class MyViewerEx(activity: FragmentActivity) {
 
                 when (viewHolder) {
                     is VideoViewHolder -> {
-                        viewHolder.find<View>(R.id.videoView)?.setOnClickCallback { toast("video clicked") }
-                        viewHolder.find<View>(R.id.videoView)?.setOnLongClickListener {
-                            toast("video long clicked")
-                            true
+                        (viewHolder.itemView as? ViewGroup?)?.let {
+                            it.addView(it.inflate(R.layout.item_video_custom_layout))
+                        }
+                        val playerControlView = viewHolder.find<PlayerControlView>(R.id.playerControlView)
+                        playerControlView?.visibility = if (ViewerHelper.simplePlayVideo) View.GONE else View.VISIBLE
+
+                        viewHolder.find<ExoVideoView>(R.id.videoView)?.let {
+                            it.setOnClickCallback { toast("video clicked") }
+                            it.setOnLongClickListener {
+                                toast("video long clicked")
+                                true
+                            }
                         }
                     }
                 }
@@ -102,7 +109,7 @@ class MyViewerEx(activity: FragmentActivity) {
                 currentPosition = position
                 indicator?.text = position.toString()
 
-                autoPlayVideo(position, viewHolder)
+                processSelectVideo(position, viewHolder)
             }
         })
     }
@@ -117,18 +124,26 @@ class MyViewerEx(activity: FragmentActivity) {
         }
     }
 
-    private fun autoPlayVideo(pos: Int, viewHolder: RecyclerView.ViewHolder) {
-        videoAutoPlayTask?.dispose()
+    private fun processSelectVideo(pos: Int, viewHolder: RecyclerView.ViewHolder) {
+        videoTask?.dispose()
         lastVideoViewHolder?.find<ExoVideoView>(R.id.videoView)?.reset()
+
         when (viewHolder) {
             is VideoViewHolder -> {
-                videoAutoPlayTask = Observable.timer(Config.DURATION_TRANSITION + 200, TimeUnit.MILLISECONDS)
+                val videoView = viewHolder.find<ExoVideoView>(R.id.videoView)
+
+                videoTask = Observable.timer(Config.DURATION_TRANSITION + 300, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .doOnNext {
-                            viewHolder.find<ExoVideoView>(R.id.videoView)?.resume()
+                            if (ViewerHelper.simplePlayVideo) {
+                                videoView?.resume()
+                            } else {
+                                val playerControlView = viewHolder.find<PlayerControlView>(R.id.playerControlView)
+                                playerControlView?.player = videoView?.player()
+                            }
                         }
-                        .subscribe().bindLifecycle(viewHolder.find<ExoVideoView>(R.id.videoView))
+                        .subscribe().bindLifecycle(videoView)
                 lastVideoViewHolder = viewHolder
             }
         }

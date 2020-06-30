@@ -4,6 +4,7 @@ import android.net.Uri
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.davemorrissey.labs.subscaleview.ImageSource
@@ -11,16 +12,23 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.iielse.imageviewer.core.ImageLoader
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.demo.R
+import com.github.iielse.imageviewer.demo.business.ViewerHelper
+import com.github.iielse.imageviewer.demo.business.find
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.appContext
 import com.github.iielse.imageviewer.demo.utils.bindLifecycle
 import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
+import com.github.iielse.imageviewer.widgets.video.ExoVideoView2
+import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.source.MediaSourceEventListener
+import com.google.android.exoplayer2.ui.PlayerControlView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.io.File
+import java.io.IOException
 
 class MyImageLoader : ImageLoader {
     /**
@@ -34,15 +42,24 @@ class MyImageLoader : ImageLoader {
                 .into(view)
     }
 
-    override fun load(exoVideoView: ExoVideoView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
+    override fun load(exoVideoView: ExoVideoView2, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val it = (data as? MyData?)?.url ?: return
         val cover = viewHolder.itemView.findViewById<ImageView>(R.id.imageView)
         cover.visibility = View.VISIBLE
-        val task = Runnable { findLoadingView(viewHolder)?.visibility = View.VISIBLE }
-        cover.postDelayed(task, Config.DURATION_TRANSITION + 300)
+        val task = Runnable {
+            findLoadingView(viewHolder)?.visibility = View.VISIBLE
+        }
+        cover.postDelayed(task, Config.DURATION_TRANSITION + 1300)
         Glide.with(exoVideoView).load(it)
                 .placeholder(cover.drawable)
                 .into(cover)
+
+        exoVideoView.addAnalyticsListener(object : AnalyticsListener {
+            override fun onLoadError(eventTime: AnalyticsListener.EventTime, loadEventInfo: MediaSourceEventListener.LoadEventInfo, mediaLoadData: MediaSourceEventListener.MediaLoadData, error: IOException, wasCanceled: Boolean) {
+                findLoadingView(viewHolder)?.visibility = View.GONE
+                viewHolder.find<TextView>(R.id.errorPlaceHolder)?.text = error.message
+            }
+        })
         exoVideoView.setVideoRenderedCallback(object : ExoVideoView.VideoRenderedListener {
             override fun onRendered(view: ExoVideoView) {
                 cover.visibility = View.GONE
@@ -50,6 +67,25 @@ class MyImageLoader : ImageLoader {
                 findLoadingView(viewHolder)?.visibility = View.GONE
             }
         })
+
+        val playerControlView = viewHolder.find<PlayerControlView>(R.id.playerControlView)
+        exoVideoView.addListener(object : ExoVideoView2.Listener {
+            override fun onDrag(view: ExoVideoView2, fraction: Float) {
+                if (!ViewerHelper.simplePlayVideo) {
+                    playerControlView?.visibility = View.GONE
+                }
+            }
+
+            override fun onRestore(view: ExoVideoView2, fraction: Float) {
+                if (!ViewerHelper.simplePlayVideo) {
+                    playerControlView?.visibility = View.VISIBLE
+                }
+            }
+
+            override fun onRelease(view: ExoVideoView2) {
+            }
+        })
+
         exoVideoView.prepare(it)
     }
 

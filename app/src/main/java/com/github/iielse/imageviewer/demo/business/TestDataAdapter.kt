@@ -9,7 +9,7 @@ import com.github.iielse.imageviewer.demo.core.AdapterCallback
 import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef
 import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef.KEY_MAIN
 import com.github.iielse.imageviewer.demo.data.MyData
-import com.github.iielse.imageviewer.utils.inflate
+import com.github.iielse.imageviewer.demo.utils.inflate
 import kotlinx.android.synthetic.main.item_image.*
 import java.util.*
 

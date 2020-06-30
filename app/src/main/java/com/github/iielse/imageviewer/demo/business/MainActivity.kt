@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.main_activity.*
 
 class MainActivity : AppCompatActivity() {
     private val viewModel by lazy { ViewModelProvider(this).get(TestDataViewModel::class.java) }
-    private val viewerHelper by lazy { ViewerHelper() }
     private val adapter by lazy { TestDataAdapter() }
 
     override fun onDestroy() {
@@ -52,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        viewerHelper.provideImageViewerBuilder(this, item)
+        ViewerHelper.provideImageViewerBuilder(this, item)
                 .show()
     }
 
@@ -62,20 +61,22 @@ class MainActivity : AppCompatActivity() {
             orientationH = !orientationH
             orientation.text = if (orientationH) "Horizontal" else "Vertical"
             Config.VIEWER_ORIENTATION = if (orientationH) ViewPager2.ORIENTATION_HORIZONTAL else ViewPager2.ORIENTATION_VERTICAL
-            it.tag = orientationH
         }
         fullScreen.setOnClickListener {
-            val isFullScreen = viewerHelper.fullScreen
-            viewerHelper.fullScreen = !isFullScreen
+            val isFullScreen = ViewerHelper.fullScreen
+            ViewerHelper.fullScreen = !isFullScreen
             fullScreen.text = if (!isFullScreen) "FullScreen(on)" else "FullScreen(off)"
             Config.TRANSITION_OFFSET_Y = if (!isFullScreen) 0 else statusBarHeight()
-            it.tag = !isFullScreen
         }
         loadAllAtOnce.setOnClickListener {
-            val isLoadAllAtOnce = viewerHelper.loadAllAtOnce
-            viewerHelper.loadAllAtOnce = !isLoadAllAtOnce
+            val isLoadAllAtOnce = ViewerHelper.loadAllAtOnce
+            ViewerHelper.loadAllAtOnce = !isLoadAllAtOnce
             loadAllAtOnce.text = if (!isLoadAllAtOnce) "LoadAllAtOnce(on)" else "LoadAllAtOnce(off)"
-            it.tag = !isLoadAllAtOnce
+        }
+        simplePlayVideo.setOnClickListener {
+            val isSimplePlayVideo = ViewerHelper.simplePlayVideo
+            ViewerHelper.simplePlayVideo = !isSimplePlayVideo
+            simplePlayVideo.text = if (!isSimplePlayVideo) "Video(simple)" else "Video(controlView)"
         }
 
         recyclerView.layoutManager = GridLayoutManager(this, 3)

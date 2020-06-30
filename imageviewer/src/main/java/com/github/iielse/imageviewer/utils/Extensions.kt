@@ -7,13 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.forEach
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 
-fun ViewGroup.inflate(resId: Int): View {
+internal fun ViewGroup.inflate(resId: Int): View {
     return LayoutInflater.from(context).inflate(resId, this, false)
 }
 
-fun ViewGroup.findViewWithKeyTag(key: Int, tag: Any): View? {
+internal fun ViewGroup.findViewWithKeyTag(key: Int, tag: Any): View? {
     forEach {
         if (it.getTag(key) == tag) return it
         if (it is ViewGroup) {
@@ -24,11 +27,7 @@ fun ViewGroup.findViewWithKeyTag(key: Int, tag: Any): View? {
     return null
 }
 
-fun <T : ViewModel> View.provideViewModel(modelClass: Class<T>): T? {
-    return (activity as? ViewModelStoreOwner?)?.let { ViewModelProvider(it).get(modelClass) }
-}
-
-val View.activity: Activity?
+internal val View.activity: Activity?
     get() = getActivity(context)
 
 // https://stackoverflow.com/questions/9273218/is-it-always-safe-to-cast-context-to-activity-within-view/45364110
@@ -39,21 +38,21 @@ private fun getActivity(context: Context?): Activity? {
     return null
 }
 
-fun LifecycleOwner.onDestroy(callback: () -> Unit) {
+internal fun LifecycleOwner.onDestroy(callback: () -> Unit) {
     lifecycle.addObserver(object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         fun onDestroy() = callback()
     })
 }
 
-fun LifecycleOwner.onResume(callback: () -> Unit) {
+internal fun LifecycleOwner.onResume(callback: () -> Unit) {
     lifecycle.addObserver(object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
         fun onResume() = callback()
     })
 }
 
-fun LifecycleOwner.onPause(callback: () -> Unit) {
+internal fun LifecycleOwner.onPause(callback: () -> Unit) {
     lifecycle.addObserver(object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         fun onPause() = callback()

@@ -38,4 +38,14 @@
         android:textSize="10dp"
         app:layout_constraintBottom_toBottomOf="@id/orientation"
         app:layout_constraintStart_toEndOf="@id/fullScreen" />
+
+    <Button
+        android:id="@+id/simplePlayVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Video(simple)"
+        android:textAllCaps="false"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toTopOf="@id/orientation"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

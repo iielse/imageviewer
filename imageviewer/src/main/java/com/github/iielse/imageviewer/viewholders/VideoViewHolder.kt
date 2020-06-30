@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.item_imageviewer_video.view.*
 
 class VideoViewHolder(override val containerView: View, callback: ImageViewerAdapterListener) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     init {
-        videoView.videoView.setListener(object : ExoVideoView2.Listener {
+        videoView.videoView.addListener(object : ExoVideoView2.Listener {
             override fun onDrag(view: ExoVideoView2, fraction: Float) = callback.onDrag(this@VideoViewHolder, view, fraction)
             override fun onRestore(view: ExoVideoView2, fraction: Float) = callback.onRestore(this@VideoViewHolder, view, fraction)
             override fun onRelease(view: ExoVideoView2) = callback.onRelease(this@VideoViewHolder, view)
