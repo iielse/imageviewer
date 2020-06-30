@@ -30,6 +30,11 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
     fun prepare(url: String) {
         if (Config.DEBUG) Log.i("viewer", "video prepare $url $simpleExoPlayer")
         playUrl = url
+    }
+
+    fun resume() {
+        val url = playUrl ?: return
+        if (Config.DEBUG) Log.i("viewer", "video resume $url $simpleExoPlayer")
         if (simpleExoPlayer == null) {
             prepared = false
             alpha = 0f
@@ -37,10 +42,6 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
             val videoSource: MediaSource = exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
             simpleExoPlayer?.prepare(LoopingMediaSource(videoSource))
         }
-    }
-
-    fun resume() {
-        if (Config.DEBUG) Log.i("viewer", "video resume $playUrl $simpleExoPlayer")
         simpleExoPlayer?.playWhenReady = true
     }
 
@@ -77,7 +78,17 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
         }
     }
 
-    fun player() = simpleExoPlayer
+    fun player(): SimpleExoPlayer? {
+        val url = playUrl ?: return null
+        if (simpleExoPlayer == null) {
+            prepared = false
+            alpha = 0f
+            newSimpleExoPlayer()
+            val videoSource: MediaSource = exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
+            simpleExoPlayer?.prepare(LoopingMediaSource(videoSource))
+        }
+        return simpleExoPlayer
+    }
 
     private fun newSimpleExoPlayer(): SimpleExoPlayer {
         release()

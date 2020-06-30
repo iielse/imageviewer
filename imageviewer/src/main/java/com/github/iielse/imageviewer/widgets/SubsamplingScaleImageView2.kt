@@ -113,7 +113,7 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
 
     private fun setSingleTouch(value: Boolean) {
         singleTouch = value
-        viewModel?.setMultiFingerTouching(!value)
+        viewModel?.setViewerUserInputEnabled(value)
     }
 
     override fun onDetachedFromWindow() {

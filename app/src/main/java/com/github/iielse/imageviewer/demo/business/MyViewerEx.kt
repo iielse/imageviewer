@@ -132,7 +132,7 @@ class MyViewerEx(activity: FragmentActivity) {
             is VideoViewHolder -> {
                 val videoView = viewHolder.find<ExoVideoView>(R.id.videoView)
 
-                videoTask = Observable.timer(Config.DURATION_TRANSITION + 300, TimeUnit.MILLISECONDS)
+                videoTask = Observable.timer(Config.DURATION_TRANSITION + 50, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .doOnNext {

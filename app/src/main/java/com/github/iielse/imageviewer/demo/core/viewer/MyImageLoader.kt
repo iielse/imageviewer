@@ -46,10 +46,10 @@ class MyImageLoader : ImageLoader {
         val it = (data as? MyData?)?.url ?: return
         val cover = viewHolder.itemView.findViewById<ImageView>(R.id.imageView)
         cover.visibility = View.VISIBLE
-        val task = Runnable {
+        val loadingTask = Runnable {
             findLoadingView(viewHolder)?.visibility = View.VISIBLE
         }
-        cover.postDelayed(task, Config.DURATION_TRANSITION + 1300)
+        cover.postDelayed(loadingTask, Config.DURATION_TRANSITION + 1500)
         Glide.with(exoVideoView).load(it)
                 .placeholder(cover.drawable)
                 .into(cover)
@@ -63,7 +63,7 @@ class MyImageLoader : ImageLoader {
         exoVideoView.setVideoRenderedCallback(object : ExoVideoView.VideoRenderedListener {
             override fun onRendered(view: ExoVideoView) {
                 cover.visibility = View.GONE
-                cover.removeCallbacks(task)
+                cover.removeCallbacks(loadingTask)
                 findLoadingView(viewHolder)?.visibility = View.GONE
             }
         })

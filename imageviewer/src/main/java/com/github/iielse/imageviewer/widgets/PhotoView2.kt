@@ -101,7 +101,7 @@ class PhotoView2 @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     private fun setSingleTouch(value: Boolean) {
         singleTouch = value
-        viewModel?.setMultiFingerTouching(!value)
+        viewModel?.setViewerUserInputEnabled(value)
     }
 
     override fun onDetachedFromWindow() {

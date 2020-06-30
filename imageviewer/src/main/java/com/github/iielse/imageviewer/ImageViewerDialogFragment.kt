@@ -61,8 +61,8 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
             viewer.setCurrentItem(it.indexOfFirst { it.id == initKey }, false)
         })
 
-        viewModel.multiFingerTouching.observe(viewLifecycleOwner, Observer {
-            viewer.isUserInputEnabled = !(it ?: false)
+        viewModel.viewerUserInputEnabled.observe(viewLifecycleOwner, Observer {
+            viewer.isUserInputEnabled = it ?: true
         })
 
         events.actionEvent.observe(viewLifecycleOwner, Observer(::handle))

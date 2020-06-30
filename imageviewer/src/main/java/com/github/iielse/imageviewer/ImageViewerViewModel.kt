@@ -8,9 +8,9 @@ import com.github.iielse.imageviewer.adapter.Repository
 
 class ImageViewerViewModel : ViewModel() {
     val dataList = Repository().dataSourceFactory().toLiveData(PagedList.Config.Builder().setPageSize(1).build())
-    val multiFingerTouching = MutableLiveData<Boolean>()
+    val viewerUserInputEnabled = MutableLiveData<Boolean>()
 
-    fun setMultiFingerTouching(touching: Boolean) {
-        if (multiFingerTouching.value != touching) multiFingerTouching.value = touching
+    fun setViewerUserInputEnabled(touching: Boolean) {
+        if (viewerUserInputEnabled.value != touching) viewerUserInputEnabled.value = touching
     }
 }
