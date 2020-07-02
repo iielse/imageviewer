@@ -4,7 +4,11 @@ import androidx.fragment.app.FragmentActivity
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.ImageViewerDialogFragment
 import com.github.iielse.imageviewer.core.DataProvider
-import com.github.iielse.imageviewer.demo.core.viewer.*
+import com.github.iielse.imageviewer.core.Transformer
+import com.github.iielse.imageviewer.demo.core.viewer.FullScreenImageViewerDialogFragment
+import com.github.iielse.imageviewer.demo.core.viewer.MyImageLoader
+import com.github.iielse.imageviewer.demo.core.viewer.MyTransformer
+import com.github.iielse.imageviewer.demo.core.viewer.provideViewerDataProvider
 import com.github.iielse.imageviewer.demo.data.Api
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.data.myData

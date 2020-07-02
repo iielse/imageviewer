@@ -48,4 +48,14 @@
         android:textSize="10dp"
         app:layout_constraintBottom_toTopOf="@id/orientation"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/customTransition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="customTransition"
+        android:textAllCaps="false"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/simplePlayVideo"
+        app:layout_constraintStart_toEndOf="@id/simplePlayVideo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

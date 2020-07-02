@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         orientation.setOnClickListener(null)
         fullScreen.setOnClickListener(null)
         loadAllAtOnce.setOnClickListener(null)
+        customTransition.setOnClickListener(null)
         recyclerView.adapter = null
         adapter.setListener(null)
         TransitionViewsRef.releaseTransitionViewRef(KEY_MAIN)
@@ -77,6 +78,9 @@ class MainActivity : AppCompatActivity() {
             val isSimplePlayVideo = ViewerHelper.simplePlayVideo
             ViewerHelper.simplePlayVideo = !isSimplePlayVideo
             simplePlayVideo.text = if (!isSimplePlayVideo) "Video(simple)" else "Video(controlView)"
+        }
+        customTransition.setOnClickListener {
+            CustomTransitionHelper.show(it)
         }
 
         recyclerView.layoutManager = GridLayoutManager(this, 3)

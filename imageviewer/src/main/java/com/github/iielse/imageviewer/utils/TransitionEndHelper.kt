@@ -8,6 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
+import com.github.iielse.imageviewer.R
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
@@ -162,6 +163,14 @@ object TransitionEndHelper {
 
     private fun getLocationOnScreen(startView: View?, location: IntArray) {
         startView?.getLocationOnScreen(location)
+
+        if (location[0] == 0) {
+            location[0] = (startView?.getTag(R.id.viewer_start_view_location_0) as? Int) ?: 0
+        }
+        if (location[1] == 0) {
+            location[1] = (startView?.getTag(R.id.viewer_start_view_location_1) as? Int) ?: 0
+        }
+
         if (startView?.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL) {
             location[0] = startView.context.resources.displayMetrics.widthPixels - location[0] - startView.width
         }

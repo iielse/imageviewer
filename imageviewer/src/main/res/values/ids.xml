@@ -2,4 +2,6 @@
     <item name="viewer_adapter_item_key" type="id" />
     <item name="viewer_adapter_item_data" type="id" />
     <item name="viewer_adapter_item_holder" type="id" />
+    <item name="viewer_start_view_location_0" type="id" />
+    <item name="viewer_start_view_location_1" type="id" />
 </resources>
