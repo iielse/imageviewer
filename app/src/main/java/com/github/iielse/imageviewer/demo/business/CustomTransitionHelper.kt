@@ -12,7 +12,7 @@ import com.github.iielse.imageviewer.demo.data.myData
 // 自定义Transition startView 尺寸/位置/加载模式
 object CustomTransitionHelper {
     fun show(view: View) {
-        val clickedData = myData[myData.size - 1]
+        val clickedData = myData[myData.size - 1 - (System.currentTimeMillis() % 10).toInt()]
         val builder = ImageViewerBuilder(
                 context = view.context,
                 initKey = clickedData.id,
