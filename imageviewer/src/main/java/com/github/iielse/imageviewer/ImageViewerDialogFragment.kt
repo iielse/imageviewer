@@ -56,7 +56,7 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
         requireOverlayCustomizer().provideView(overlayView)?.let(overlayView::addView)
 
         viewModel.dataList.observe(viewLifecycleOwner, Observer {
-            if (Config.DEBUG) Log.i(tag, "submitList ${it.size}")
+            if (Config.DEBUG) Log.i("viewer", "submitList ${it.size}")
             adapter.submitList(it)
             viewer.setCurrentItem(it.indexOfFirst { it.id == initKey }, false)
         })
@@ -131,6 +131,7 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
         super.onDestroyView()
         adapter.setListener(null)
         viewer.unregisterOnPageChangeCallback(pagerCallback)
+        viewer.adapter = null
         Components.release()
     }
 

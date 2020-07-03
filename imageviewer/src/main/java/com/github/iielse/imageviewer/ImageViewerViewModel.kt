@@ -10,7 +10,7 @@ class ImageViewerViewModel : ViewModel() {
     val dataList = Repository().dataSourceFactory().toLiveData(PagedList.Config.Builder().setPageSize(1).build())
     val viewerUserInputEnabled = MutableLiveData<Boolean>()
 
-    fun setViewerUserInputEnabled(touching: Boolean) {
-        if (viewerUserInputEnabled.value != touching) viewerUserInputEnabled.value = touching
+    fun setViewerUserInputEnabled(enable: Boolean) {
+        if (viewerUserInputEnabled.value != enable) viewerUserInputEnabled.value = enable
     }
 }
