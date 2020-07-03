@@ -8,14 +8,14 @@
 - **超大图** 图片区块加载.避免OOM（[SubsamplingScaleImageView](https://github.com/davemorrissey/subsampling-scale-image-view)）
 - **Video** 支持Video加载 ([SimpleExoPlayer](https://github.com/google/ExoPlayer))
 - **拖拽关闭** 对大图进行上/下滑操作退出浏览.
-- **数据分页加载** 在浏览大图的情况下异步加载更多数据.
+- **数据分页加载** 在浏览大图的情况下异步加载百万数据.
 - **自定义UI** 对预览页的UI元素自定义追加
 
 ![](https://github.com/iielse/res/blob/master/imageviewer/1.gif)
 
 #### 使用
 ```
-implementation 'com.github.iielse:imageviewer:2.1.0'
+implementation 'com.github.iielse:imageviewer:2.1.1'
 ```
 ```
 val builder = ImageViewerBuilder(
@@ -112,6 +112,7 @@ class MyTransformer : Transformer {
 
 /**
  * 维护Transition过渡动画的缩略图和大图之间的映射关系. 需要在Activity/Fragment释放时刻.清空此界面的View引用
+ * (这里是比较随便的一种写法.没有说必须这样写.大家可以用更好的写法.谢谢)
  */
 object TransitionViewsRef {
     private val map = mutableMapOf<String, LongSparseArray<ImageView>?>() // 可能有多级页面
@@ -143,7 +144,7 @@ interface ViewerCallback : ImageViewerAdapterListener {
     // 翻页中
     fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
     // 当某大图页面被选中
-    fun onPageSelected(position: Int) {}
+    fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {}
 }
 ```
 #### 参数配置
