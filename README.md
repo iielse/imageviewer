@@ -15,7 +15,7 @@
 
 #### 使用
 ```
-implementation 'com.github.iielse:imageviewer:2.1.1'
+implementation 'com.github.iielse:imageviewer:2.1.2'
 ```
 ```
 val builder = ImageViewerBuilder(
@@ -54,7 +54,7 @@ class MyDataProvider() : DataProvider {
 
     override fun loadBefore(key: Long, callback: (List<Photo>) -> Unit) {
         // 根据最初一条图片数据id. 可进行(服务器/本地db)请求访问之前数据内容集合
-        Api.asyncQueryBefore(key) { result -> {
+        Api.asyncQueryBefore(key) { result ->
             callback(result)
         }
     }
