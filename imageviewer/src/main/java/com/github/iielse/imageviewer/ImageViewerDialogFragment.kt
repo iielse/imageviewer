@@ -31,6 +31,7 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
     private val initKey by lazy { requireInitKey() }
     private val transformer by lazy { requireTransformer() }
     private val adapter by lazy { ImageViewerAdapter(initKey) }
+    private var initPosition = RecyclerView.NO_POSITION
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +59,8 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
         viewModel.dataList.observe(viewLifecycleOwner, Observer {
             if (Config.DEBUG) Log.i("viewer", "submitList ${it.size}")
             adapter.submitList(it)
-            viewer.setCurrentItem(it.indexOfFirst { it.id == initKey }, false)
+            initPosition = it.indexOfFirst { it.id == initKey }
+            viewer.setCurrentItem(initPosition, false)
         })
 
         viewModel.viewerUserInputEnabled.observe(viewLifecycleOwner, Observer {
@@ -81,6 +83,8 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
                 TransitionStartHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), viewHolder)
                 background.changeToBackgroundColor(Config.VIEWER_BACKGROUND_COLOR)
                 userCallback.onInit(viewHolder)
+
+                if (initPosition > 0) userCallback.onPageSelected(initPosition, viewHolder)
             }
 
             override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {

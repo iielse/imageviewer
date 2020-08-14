@@ -3,12 +3,19 @@ package com.github.iielse.imageviewer.demo.utils
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
+import com.github.iielse.imageviewer.demo.BuildConfig
 
 fun appContext() = App.context!!
 fun toast(message: String?) {
     if (message.isNullOrEmpty()) return
     runOnUIThread { Toast.makeText(appContext(), message, Toast.LENGTH_SHORT).show() }
+}
+
+fun log(message: String?) {
+    if (message.isNullOrEmpty()) return
+    if (BuildConfig.DEBUG) Log.i("viewer_demo", message)
 }
 
 fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()

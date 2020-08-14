@@ -106,6 +106,7 @@ class MyViewerEx(activity: FragmentActivity) {
             }
 
             override fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {
+                log("onPageSelected $position")
                 currentPosition = position
                 indicator?.text = position.toString()
 
