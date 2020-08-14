@@ -22,6 +22,7 @@ object ViewerHelper {
     var simplePlayVideo: Boolean = true
 
     fun provideImageViewerBuilder(context: FragmentActivity, clickedData: MyData): ImageViewerBuilder {
+        // viewer 构造的基本元素
         val builder = ImageViewerBuilder(
                 context = context,
                 initKey = clickedData.id,
@@ -30,7 +31,7 @@ object ViewerHelper {
                 transformer = MyTransformer()
         )
 
-        MyViewerEx(context).attach(builder)
+        MyViewerCustomizer().process(context, builder) // 添加自定义业务逻辑和UI处理
 
         if (fullScreen) {
             builder.setViewerFactory(object : ImageViewerDialogFragment.Factory() {
@@ -40,6 +41,7 @@ object ViewerHelper {
         return builder
     }
 
+    // 数据提供者 一次加载 or 分页
     private fun myDataProvider(clickedData: MyData): DataProvider {
         return if (loadAllAtOnce) {
             provideViewerDataProvider { myData }
