@@ -44,19 +44,3 @@ internal fun LifecycleOwner.onDestroy(callback: () -> Unit) {
         fun onDestroy() = callback()
     })
 }
-
-internal fun LifecycleOwner.onResume(callback: () -> Unit) {
-    lifecycle.addObserver(object : LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-        fun onResume() = callback()
-    })
-}
-
-internal fun LifecycleOwner.onPause(callback: () -> Unit) {
-    lifecycle.addObserver(object : LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-        fun onPause() = callback()
-    })
-}
-
-
