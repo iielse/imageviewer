@@ -8,10 +8,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_ID
 import com.github.iielse.imageviewer.ImageViewerAdapterListener
-import com.github.iielse.imageviewer.R
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.utils.Config
-import com.github.iielse.imageviewer.utils.inflate
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.UnknownViewHolder
@@ -28,9 +26,9 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            ItemType.PHOTO -> PhotoViewHolder(parent.inflate(R.layout.item_imageviewer_photo), callback)
-            ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent.inflate(R.layout.item_imageviewer_subsampling), callback)
-            ItemType.VIDEO -> VideoViewHolder(parent.inflate(R.layout.item_imageviewer_video), callback)
+            ItemType.PHOTO -> PhotoViewHolder(parent, callback)
+            ItemType.SUBSAMPLING -> SubsamplingViewHolder(parent, callback)
+            ItemType.VIDEO -> VideoViewHolder(parent, callback)
             else -> UnknownViewHolder(View(parent.context))
         }
     }

@@ -1,10 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-
-androidExtensions {
-    experimental = true
-}
 
 android {
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -16,6 +11,8 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
     }
+
+    buildFeatures.viewBinding = true
 
     kotlinOptions {
         jvmTarget = "1.8"

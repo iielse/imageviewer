@@ -15,9 +15,6 @@ import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
-import kotlinx.android.synthetic.main.item_imageviewer_photo.*
-import kotlinx.android.synthetic.main.item_imageviewer_subsampling.*
-import kotlinx.android.synthetic.main.item_imageviewer_video.*
 
 object TransitionStartHelper {
     var animating = false
@@ -49,9 +46,9 @@ object TransitionStartHelper {
     private fun beforeTransition(startView: View?, holder: RecyclerView.ViewHolder) {
         when (holder) {
             is PhotoViewHolder -> {
-                holder.photoView.scaleType = (startView as? ImageView?)?.scaleType
+                holder.binding.photoView.scaleType = (startView as? ImageView?)?.scaleType
                         ?: ImageView.ScaleType.FIT_CENTER
-                holder.photoView.layoutParams = holder.photoView.layoutParams.apply {
+                holder.binding.photoView.layoutParams = holder.binding.photoView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
@@ -63,7 +60,7 @@ object TransitionStartHelper {
                 }
             }
             is SubsamplingViewHolder -> {
-                holder.subsamplingView.layoutParams = holder.subsamplingView.layoutParams.apply {
+                holder.binding.subsamplingView.layoutParams = holder.binding.subsamplingView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
@@ -75,7 +72,7 @@ object TransitionStartHelper {
                 }
             }
             is VideoViewHolder -> {
-                holder.imageView.layoutParams = holder.imageView.layoutParams.apply {
+                holder.binding.imageView.layoutParams = holder.binding.imageView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
@@ -92,8 +89,8 @@ object TransitionStartHelper {
     private fun transition(holder: RecyclerView.ViewHolder) {
         when (holder) {
             is PhotoViewHolder -> {
-                holder.photoView.scaleType = ImageView.ScaleType.FIT_CENTER
-                holder.photoView.layoutParams = holder.photoView.layoutParams.apply {
+                holder.binding.photoView.scaleType = ImageView.ScaleType.FIT_CENTER
+                holder.binding.photoView.layoutParams = holder.binding.photoView.layoutParams.apply {
                     width = MATCH_PARENT
                     height = MATCH_PARENT
                     if (this is ViewGroup.MarginLayoutParams) {
@@ -103,7 +100,7 @@ object TransitionStartHelper {
                 }
             }
             is SubsamplingViewHolder -> {
-                holder.subsamplingView.layoutParams = holder.subsamplingView.layoutParams.apply {
+                holder.binding.subsamplingView.layoutParams = holder.binding.subsamplingView.layoutParams.apply {
                     width = MATCH_PARENT
                     height = MATCH_PARENT
                     if (this is ViewGroup.MarginLayoutParams) {
@@ -113,7 +110,7 @@ object TransitionStartHelper {
                 }
             }
             is VideoViewHolder -> {
-                holder.imageView.layoutParams = holder.imageView.layoutParams.apply {
+                holder.binding.imageView.layoutParams = holder.binding.imageView.layoutParams.apply {
                     width = MATCH_PARENT
                     height = MATCH_PARENT
                     if (this is ViewGroup.MarginLayoutParams) {
@@ -153,8 +150,8 @@ object TransitionStartHelper {
     private fun afterTransition(holder: RecyclerView.ViewHolder) {
         when (holder) {
             is PhotoViewHolder -> {
-                val photo = holder.photoView.getTag(R.id.viewer_adapter_item_data) as Photo
-                requireImageLoader().load(holder.photoView, photo, holder)
+                val photo = holder.binding.photoView.getTag(R.id.viewer_adapter_item_data) as Photo
+                requireImageLoader().load(holder.binding.photoView, photo, holder)
             }
         }
     }

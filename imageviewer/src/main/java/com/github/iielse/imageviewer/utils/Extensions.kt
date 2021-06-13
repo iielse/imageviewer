@@ -3,7 +3,6 @@ package com.github.iielse.imageviewer.utils
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.forEach
@@ -11,10 +10,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
-
-internal fun ViewGroup.inflate(resId: Int): View {
-    return LayoutInflater.from(context).inflate(resId, this, false)
-}
 
 internal fun ViewGroup.findViewWithKeyTag(key: Int, tag: Any): View? {
     forEach {

@@ -9,8 +9,8 @@ object Config {
     var OFFSCREEN_PAGE_LIMIT: Int = 1
     var VIEWER_ORIENTATION: Int = ViewPager2.ORIENTATION_HORIZONTAL
     var VIEWER_BACKGROUND_COLOR: Int = Color.BLACK
-    var DURATION_TRANSITION: Long = 300L
-    var DURATION_BG: Long = 200L
+    var DURATION_TRANSITION: Long = 250L
+    var DURATION_BG: Long = 150L
     var SUBSAMPLING_SCALE_TYPE = SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE
     var SWIPE_DISMISS: Boolean = true
     var SWIPE_TOUCH_SLOP = 4f

@@ -1,11 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
-
-androidExtensions {
-    experimental = true
-}
 
 kapt {
     generateStubs = true
@@ -23,6 +18,7 @@ android {
         versionName rootProject.ext.versionName
         applicationId "com.github.iielse.imageviewer.demo"
     }
+    buildFeatures.viewBinding = true
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

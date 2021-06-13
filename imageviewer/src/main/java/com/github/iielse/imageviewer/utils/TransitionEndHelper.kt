@@ -12,9 +12,6 @@ import com.github.iielse.imageviewer.R
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
-import kotlinx.android.synthetic.main.item_imageviewer_photo.*
-import kotlinx.android.synthetic.main.item_imageviewer_subsampling.*
-import kotlinx.android.synthetic.main.item_imageviewer_video.*
 import kotlin.math.max
 
 object TransitionEndHelper {
@@ -47,12 +44,12 @@ object TransitionEndHelper {
     private fun beforeTransition(startView: View?, holder: RecyclerView.ViewHolder) {
         when (holder) {
             is VideoViewHolder -> {
-                holder.imageView.translationX = holder.videoView.translationX
-                holder.imageView.translationY = holder.videoView.translationY
-                holder.imageView.scaleX = holder.videoView.scaleX
-                holder.imageView.scaleY = holder.videoView.scaleY
-                holder.imageView.visibility = View.VISIBLE
-                holder.videoView.visibility = View.GONE
+                holder.binding.imageView.translationX = holder.binding.videoView.translationX
+                holder.binding.imageView.translationY = holder.binding.videoView.translationY
+                holder.binding.imageView.scaleX = holder.binding.videoView.scaleX
+                holder.binding.imageView.scaleY = holder.binding.videoView.scaleY
+                holder.binding.imageView.visibility = View.VISIBLE
+                holder.binding.videoView.visibility = View.GONE
             }
         }
     }
@@ -60,15 +57,15 @@ object TransitionEndHelper {
     private fun transition(startView: View?, holder: RecyclerView.ViewHolder) {
         when (holder) {
             is PhotoViewHolder -> {
-                holder.photoView.scaleType = (startView as? ImageView?)?.scaleType
+                holder.binding.photoView.scaleType = (startView as? ImageView?)?.scaleType
                         ?: ImageView.ScaleType.FIT_CENTER
-                holder.photoView.translationX = 0f
-                holder.photoView.translationY = 0f
-                holder.photoView.scaleX = if (startView != null) 1f else 2f
-                holder.photoView.scaleY = if (startView != null) 1f else 2f
+                holder.binding.photoView.translationX = 0f
+                holder.binding.photoView.translationY = 0f
+                holder.binding.photoView.scaleX = if (startView != null) 1f else 2f
+                holder.binding.photoView.scaleY = if (startView != null) 1f else 2f
                 // holder.photoView.alpha = startView?.alpha ?: 0f
                 fade(holder, startView)
-                holder.photoView.layoutParams = holder.photoView.layoutParams.apply {
+                holder.binding.photoView.layoutParams = holder.binding.photoView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
@@ -80,13 +77,13 @@ object TransitionEndHelper {
                 }
             }
             is SubsamplingViewHolder -> {
-                holder.subsamplingView.translationX = 0f
-                holder.subsamplingView.translationY = 0f
-                holder.subsamplingView.scaleX = 2f
-                holder.subsamplingView.scaleY = 2f
+                holder.binding.subsamplingView.translationX = 0f
+                holder.binding.subsamplingView.translationY = 0f
+                holder.binding.subsamplingView.scaleX = 2f
+                holder.binding.subsamplingView.scaleY = 2f
                 // holder.photoView.alpha = startView?.alpha ?: 0f
                 fade(holder) // https://github.com/davemorrissey/subsampling-scale-image-view/issues/313
-                holder.subsamplingView.layoutParams = holder.subsamplingView.layoutParams.apply {
+                holder.binding.subsamplingView.layoutParams = holder.binding.subsamplingView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
@@ -98,14 +95,14 @@ object TransitionEndHelper {
                 }
             }
             is VideoViewHolder -> {
-                holder.imageView.translationX = 0f
-                holder.imageView.translationY = 0f
-                holder.imageView.scaleX = if (startView != null) 1f else 2f
-                holder.imageView.scaleY = if (startView != null) 1f else 2f
+                holder.binding.imageView.translationX = 0f
+                holder.binding.imageView.translationY = 0f
+                holder.binding.imageView.scaleX = if (startView != null) 1f else 2f
+                holder.binding.imageView.scaleY = if (startView != null) 1f else 2f
                 // holder.photoView.alpha = startView?.alpha ?: 0f
                 fade(holder, startView)
-                holder.videoView.pause()
-                holder.imageView.layoutParams = holder.imageView.layoutParams.apply {
+                holder.binding.videoView.pause()
+                holder.binding.imageView.layoutParams = holder.binding.imageView.layoutParams.apply {
                     width = startView?.width ?: width
                     height = startView?.height ?: height
                     val location = IntArray(2)
@@ -134,27 +131,27 @@ object TransitionEndHelper {
         when (holder) {
             is PhotoViewHolder -> {
                 if (startView != null) {
-                    holder.photoView.animate()
+                    holder.binding.photoView.animate()
                             .setDuration(0)
                             .setStartDelay(max(Config.DURATION_TRANSITION - 20, 0))
                             .alpha(0f).start()
                 } else {
-                    holder.photoView.animate().setDuration(Config.DURATION_TRANSITION)
+                    holder.binding.photoView.animate().setDuration(Config.DURATION_TRANSITION)
                             .alpha(0f).start()
                 }
             }
             is SubsamplingViewHolder -> {
-                holder.subsamplingView.animate().setDuration(Config.DURATION_TRANSITION)
+                holder.binding.subsamplingView.animate().setDuration(Config.DURATION_TRANSITION)
                         .alpha(0f).start()
             }
             is VideoViewHolder -> {
                 if (startView != null) {
-                    holder.imageView.animate()
+                    holder.binding.imageView.animate()
                             .setDuration(0)
                             .setStartDelay(max(Config.DURATION_TRANSITION - 20, 0))
                             .alpha(0f).start()
                 } else {
-                    holder.imageView.animate().setDuration(Config.DURATION_TRANSITION)
+                    holder.binding.imageView.animate().setDuration(Config.DURATION_TRANSITION)
                             .alpha(0f).start()
                 }
             }

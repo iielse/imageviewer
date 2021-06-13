@@ -4,13 +4,10 @@ import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.core.AdapterCallback
 import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef
 import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef.KEY_MAIN
 import com.github.iielse.imageviewer.demo.data.MyData
-import com.github.iielse.imageviewer.demo.utils.inflate
-import kotlinx.android.synthetic.main.item_image.*
 import java.util.*
 
 class TestDataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(provideDiffer()) {
@@ -27,7 +24,7 @@ class TestDataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(provid
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return TestDataViewHolder(parent.inflate(R.layout.item_image), listener)
+        return TestDataViewHolder(parent, listener)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -41,7 +38,7 @@ class TestDataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(provid
         super.onViewAttachedToWindow(holder)
         if (holder is TestDataViewHolder) {
             (holder.itemView.tag as? MyData?)?.let {
-                TransitionViewsRef.provideTransitionViewsRef(KEY_MAIN).put(it.id, holder.imageView)
+                TransitionViewsRef.provideTransitionViewsRef(KEY_MAIN).put(it.id, holder.binding.imageView)
             }
         }
     }
