@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        ViewerHelper.provideImageViewerBuilder(this, item)
+        ViewerHelper.provideImageViewerBuilder(this, item, KEY_MAIN)
                 .show()
     }
 

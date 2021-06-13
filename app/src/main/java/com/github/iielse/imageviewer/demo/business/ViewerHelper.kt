@@ -21,14 +21,14 @@ object ViewerHelper {
     var fullScreen: Boolean = false
     var simplePlayVideo: Boolean = true
 
-    fun provideImageViewerBuilder(context: FragmentActivity, clickedData: MyData): ImageViewerBuilder {
+    fun provideImageViewerBuilder(context: FragmentActivity, clickedData: MyData, pageKey: String): ImageViewerBuilder {
         // viewer 构造的基本元素
         val builder = ImageViewerBuilder(
                 context = context,
                 initKey = clickedData.id,
                 dataProvider = myDataProvider(clickedData),
                 imageLoader = MyImageLoader(),
-                transformer = MyTransformer()
+                transformer = MyTransformer(pageKey)
         )
 
         MyViewerCustomizer().process(context, builder) // 添加自定义业务逻辑和UI处理

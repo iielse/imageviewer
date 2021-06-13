@@ -22,7 +22,8 @@ import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView2
 import com.google.android.exoplayer2.analytics.AnalyticsListener
-import com.google.android.exoplayer2.source.MediaSourceEventListener
+import com.google.android.exoplayer2.source.LoadEventInfo
+import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.ui.PlayerControlView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -55,7 +56,7 @@ class MyImageLoader : ImageLoader {
                 .into(cover)
 
         exoVideoView.addAnalyticsListener(object : AnalyticsListener {
-            override fun onLoadError(eventTime: AnalyticsListener.EventTime, loadEventInfo: MediaSourceEventListener.LoadEventInfo, mediaLoadData: MediaSourceEventListener.MediaLoadData, error: IOException, wasCanceled: Boolean) {
+            override fun onLoadError(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData, error: IOException, wasCanceled: Boolean) {
                 findLoadingView(viewHolder)?.visibility = View.GONE
                 viewHolder.find<TextView>(R.id.errorPlaceHolder)?.text = error.message
             }

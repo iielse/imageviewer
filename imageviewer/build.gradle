@@ -7,14 +7,14 @@ androidExtensions {
 }
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 29
-        versionCode 18
-        versionName "0.1.2"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
 
     kotlinOptions {
@@ -32,14 +32,14 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.core:core-ktx:1.3.0'
-    implementation 'androidx.transition:transition:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.core:core-ktx:1.5.0'
+    implementation 'androidx.transition:transition:1.4.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.paging:paging-runtime-ktx:2.1.2'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.exoplayer:exoplayer:2.11.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.google.android.exoplayer:exoplayer:2.14.0'
     implementation 'com.github.chrisbanes:PhotoView:2.2.0'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
 }
