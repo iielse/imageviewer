@@ -6,7 +6,10 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.github.iielse.imageviewer.R
@@ -37,10 +40,15 @@ object TransitionStartHelper {
             transition(holder)
         }
         holder.itemView.postDelayed(doTransition, 50)
-        owner.onDestroy {
-            holder.itemView.removeCallbacks(doTransition)
-            TransitionManager.endTransitions(holder.itemView as ViewGroup)
-        }
+
+        owner.lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onDestroy() {
+                owner.lifecycle.removeObserver(this)
+                holder.itemView.removeCallbacks(doTransition)
+                TransitionManager.endTransitions(holder.itemView as ViewGroup)
+            }
+        })
     }
 
     private fun beforeTransition(startView: View?, holder: RecyclerView.ViewHolder) {

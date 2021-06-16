@@ -108,7 +108,7 @@ class MyImageLoader : ImageLoader {
     private fun subsamplingDownloadRequest(url: String): Observable<File> {
         return Observable.create {
             try {
-                it.onNext(Glide.with(appContext()).downloadOnly().load(url).submit().get())
+                it.onNext(Glide.with(appContext).downloadOnly().load(url).submit().get())
                 it.onComplete()
             } catch (e: java.lang.Exception) {
                 if (!it.isDisposed) it.onError(e)

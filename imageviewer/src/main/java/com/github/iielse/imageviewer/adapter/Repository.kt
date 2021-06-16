@@ -16,20 +16,23 @@ class Repository {
     }
 
     private fun dataSource() = object : ItemKeyedDataSource<Long, Item>() {
-        override fun loadInitial(params: LoadInitialParams<Long>, callback: LoadInitialCallback<Item>) {
+        override fun loadInitial(
+            params: LoadInitialParams<Long>,
+            callback: LoadInitialCallback<Item>
+        ) {
             val result = dataProvider.loadInitial()
-            callback.onResult(result.map { Item.from(it) }, 0, result.size)
+            callback.onResult(result.map { photo -> Item.from(photo) }, 0, result.size)
         }
 
         override fun loadAfter(params: LoadParams<Long>, callback: LoadCallback<Item>) {
             dataProvider.loadAfter(params.key) {
-                callback.onResult(it.map { Item.from(it) })
+                callback.onResult(it.map { photo -> Item.from(photo) })
             }
         }
 
         override fun loadBefore(params: LoadParams<Long>, callback: LoadCallback<Item>) {
             dataProvider.loadBefore(params.key) {
-                callback.onResult(it.map { Item.from(it) })
+                callback.onResult(it.map { photo -> Item.from(photo) })
             }
         }
 

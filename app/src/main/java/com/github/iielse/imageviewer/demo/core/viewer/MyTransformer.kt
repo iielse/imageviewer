@@ -3,7 +3,6 @@ package com.github.iielse.imageviewer.demo.core.viewer
 import android.util.LongSparseArray
 import android.widget.ImageView
 import com.github.iielse.imageviewer.core.Transformer
-import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef.KEY_MAIN
 
 class MyTransformer(private val pageKey: String) : Transformer {
     override fun getView(key: Long): ImageView? = TransitionViewsRef.provideTransitionViewsRef(pageKey)[key]

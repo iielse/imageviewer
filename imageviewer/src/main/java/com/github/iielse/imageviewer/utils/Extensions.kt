@@ -6,10 +6,6 @@ import android.content.ContextWrapper
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.forEach
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 
 internal fun ViewGroup.findViewWithKeyTag(key: Int, tag: Any): View? {
     forEach {
@@ -31,11 +27,4 @@ private fun getActivity(context: Context?): Activity? {
     if (context is Activity) return context
     if (context is ContextWrapper) return getActivity(context.baseContext)
     return null
-}
-
-internal fun LifecycleOwner.onDestroy(callback: () -> Unit) {
-    lifecycle.addObserver(object : LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        fun onDestroy() = callback()
-    })
 }

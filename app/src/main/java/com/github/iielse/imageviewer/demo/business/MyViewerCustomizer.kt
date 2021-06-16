@@ -90,7 +90,7 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
         viewHolder.itemView.findViewById<TextView>(R.id.exText).text = myData.desc
     }
 
-    override fun provideView(parent: ViewGroup): View? {
+    override fun provideView(parent: ViewGroup): View {
         return parent.inflate(R.layout.layout_indicator).also {
             indicatorDecor = it.findViewById(R.id.indicatorDecor)
             indicator = it.findViewById(R.id.indicator)

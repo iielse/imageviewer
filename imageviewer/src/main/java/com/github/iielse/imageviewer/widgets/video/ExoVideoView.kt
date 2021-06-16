@@ -5,16 +5,18 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.TextureView
 import com.github.iielse.imageviewer.utils.Config
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener
-import com.google.android.exoplayer2.source.LoopingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.util.EventLogger
-import com.google.android.exoplayer2.video.VideoListener
 import kotlin.math.min
 
-open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
-    : TextureView(context, attrs, defStyleAttr) {
+open class ExoVideoView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : TextureView(context, attrs, defStyleAttr) {
     interface VideoRenderedListener {
         fun onRendered(view: ExoVideoView)
     }
@@ -39,8 +41,10 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
             prepared = false
             alpha = 0f
             newSimpleExoPlayer()
-            val videoSource: MediaSource = exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
-            simpleExoPlayer?.prepare(LoopingMediaSource(videoSource))
+            val videoSource: MediaSource =
+                exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
+            simpleExoPlayer?.setMediaSources(listOf(videoSource), true)
+            simpleExoPlayer?.prepare()
         }
         simpleExoPlayer?.playWhenReady = true
     }
@@ -61,7 +65,7 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
         if (Config.DEBUG) Log.i("viewer", "video release $playUrl $player")
         player.playWhenReady = false
         player.setVideoTextureView(null)
-        player.removeVideoListener(videoListener)
+        player.removeListener(videoListener)
         player.removeAnalyticsListener(logger)
         listeners.toList().forEach { player.removeAnalyticsListener(it) }
         player.release()
@@ -84,8 +88,10 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
             prepared = false
             alpha = 0f
             newSimpleExoPlayer()
-            val videoSource: MediaSource = exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
-            simpleExoPlayer?.prepare(LoopingMediaSource(videoSource))
+            val videoSource: MediaSource =
+                exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
+            simpleExoPlayer?.setMediaSources(listOf(videoSource), true)
+            simpleExoPlayer?.prepare()
         }
         return simpleExoPlayer
     }
@@ -95,15 +101,20 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
         if (Config.DEBUG) Log.i("viewer", "video newSimpleExoPlayer $playUrl")
         return SimpleExoPlayer.Builder(context).build().also {
             it.setVideoTextureView(this)
-            it.addVideoListener(videoListener)
+            it.addListener(videoListener)
             if (Config.DEBUG) it.addAnalyticsListener(logger)
             listeners.toList().forEach { userListener -> it.addAnalyticsListener(userListener) }
             simpleExoPlayer = it
         }
     }
 
-    private val videoListener = object : VideoListener {
-        override fun onVideoSizeChanged(width: Int, height: Int, unappliedRotationDegrees: Int, pixelWidthHeightRatio: Float) {
+    private val videoListener = object : Player.Listener {
+        override fun onVideoSizeChanged(
+            width: Int,
+            height: Int,
+            unappliedRotationDegrees: Int,
+            pixelWidthHeightRatio: Float
+        ) {
             updateTextureViewSize(width, height)
         }
     }
@@ -114,8 +125,10 @@ open class ExoVideoView @JvmOverloads constructor(context: Context, attrs: Attri
         val matrix = android.graphics.Matrix()
         matrix.postScale(videoWidth * 1f / width, videoHeight * 1f / height)
         matrix.postScale(min(sx, sy), min(sx, sy))
-        matrix.postTranslate(if (sx > sy) (width - videoWidth * sy) / 2 else 0f,
-                if (sx > sy) 0f else (height - videoHeight * sx) / 2)
+        matrix.postTranslate(
+            if (sx > sy) (width - videoWidth * sy) / 2 else 0f,
+            if (sx > sy) 0f else (height - videoHeight * sx) / 2
+        )
         setTransform(matrix)
         invalidate()
         alpha = 1f

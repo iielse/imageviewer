@@ -6,6 +6,9 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.github.iielse.imageviewer.R
@@ -35,10 +38,15 @@ object TransitionEndHelper {
             transition(startView, holder)
         }
         holder.itemView.post(doTransition)
-        fragment.onDestroy {
-            holder.itemView.removeCallbacks(doTransition)
-            TransitionManager.endTransitions(holder.itemView as ViewGroup)
-        }
+
+        fragment.lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onDestroy() {
+                fragment.lifecycle.removeObserver(this)
+                holder.itemView.removeCallbacks(doTransition)
+                TransitionManager.endTransitions(holder.itemView as ViewGroup)
+            }
+        })
     }
 
     private fun beforeTransition(startView: View?, holder: RecyclerView.ViewHolder) {

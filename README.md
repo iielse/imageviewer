@@ -15,7 +15,7 @@
 
 #### 使用
 ```
-implementation 'com.github.iielse:imageviewer:2.1.2'
+implementation 'com.github.iielse:imageviewer:x.y.z'
 ```
 ```
 val builder = ImageViewerBuilder(
@@ -92,7 +92,7 @@ class MyImageLoader : ImageLoader {
     private fun subsamplingDownloadRequest(url: String): Observable<File> {
         return Observable.create {
             try {
-                it.onNext(Glide.with(appContext()).downloadOnly().load(url).submit().get())
+                it.onNext(Glide.with(appContext).downloadOnly().load(url).submit().get())
                 it.onComplete()
             } catch (e: java.lang.Exception) {
                 if (!it.isDisposed) it.onError(e)
@@ -106,8 +106,8 @@ class MyImageLoader : ImageLoader {
 }
 ```
 ```
-class MyTransformer : Transformer {
-    override fun getView(key: Long): ImageView? = TransitionViewsRef.provideTransitionViewsRef(KEY_MAIN)[key]
+class MyTransformer(private val pageKey: String) : Transformer {
+    override fun getView(key: Long): ImageView? = TransitionViewsRef.provideTransitionViewsRef(pageKey)[key]
 }
 
 /**

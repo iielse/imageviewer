@@ -34,7 +34,6 @@ open class BaseDialogFragment : DialogFragment() {
         view?.requestFocus()
     }
 
-    @CallSuper
     override fun onDestroyView() {
         super.onDestroyView()
         view?.setOnKeyListener(null)
