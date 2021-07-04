@@ -21,6 +21,10 @@ open class ExoVideoView @JvmOverloads constructor(
         fun onRendered(view: ExoVideoView)
     }
 
+    interface MediaSourceProvider {
+        fun provide(playUrl: String): List<MediaSource>?
+    }
+
     private val exoSourceManager by lazy { ExoSourceManager.newInstance(context, null) }
     private val logger by lazy { EventLogger(null) }
     private var simpleExoPlayer: SimpleExoPlayer? = null
@@ -34,16 +38,21 @@ open class ExoVideoView @JvmOverloads constructor(
         playUrl = url
     }
 
-    fun resume() {
+    fun resume(
+        provider: MediaSourceProvider? = null
+    ) {
         val url = playUrl ?: return
         if (Config.DEBUG) Log.i("viewer", "video resume $url $simpleExoPlayer")
         if (simpleExoPlayer == null) {
             prepared = false
             alpha = 0f
             newSimpleExoPlayer()
-            val videoSource: MediaSource =
-                exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
-            simpleExoPlayer?.setMediaSources(listOf(videoSource), true)
+            val videoSources = provider?.provide(url) ?: listOf(
+                exoSourceManager.getMediaSource(
+                    url, true, true, true, context.cacheDir, null
+                )
+            )
+            simpleExoPlayer?.setMediaSources(videoSources, true)
             simpleExoPlayer?.prepare()
         }
         simpleExoPlayer?.playWhenReady = true
@@ -82,15 +91,20 @@ open class ExoVideoView @JvmOverloads constructor(
         }
     }
 
-    fun player(): SimpleExoPlayer? {
+    fun player(
+        provider: MediaSourceProvider? = null
+    ): SimpleExoPlayer? {
         val url = playUrl ?: return null
         if (simpleExoPlayer == null) {
             prepared = false
             alpha = 0f
             newSimpleExoPlayer()
-            val videoSource: MediaSource =
-                exoSourceManager.getMediaSource(url, true, true, true, context.cacheDir, null)
-            simpleExoPlayer?.setMediaSources(listOf(videoSource), true)
+            val videoSources = provider?.provide(url) ?: listOf(
+                exoSourceManager.getMediaSource(
+                    url, true, true, true, context.cacheDir, null
+                )
+            )
+            simpleExoPlayer?.setMediaSources(videoSources, true)
             simpleExoPlayer?.prepare()
         }
         return simpleExoPlayer
