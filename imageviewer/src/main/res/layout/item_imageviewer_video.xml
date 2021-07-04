@@ -5,6 +5,7 @@
 
     <com.github.iielse.imageviewer.widgets.video.ExoVideoView2
         android:id="@+id/videoView"
+        android:background="@null"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
