@@ -145,7 +145,7 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
     }
 
     override fun onBackPressed() {
-        if (TransitionStartHelper.animating || TransitionEndHelper.animating) return
+        if (TransitionStartHelper.transitionAnimating || TransitionEndHelper.transitionAnimating) return
         if (Config.DEBUG) Log.i("viewer", "onBackPressed ${binding.viewer.currentItem}")
 
         val currentKey = adapter.getItemId(binding.viewer.currentItem)

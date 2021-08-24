@@ -20,7 +20,8 @@ import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
 
 object TransitionStartHelper {
-    var animating = false
+    val transitionAnimating get() = animating
+    private var animating = false
 
     fun start(owner: LifecycleOwner, startView: View?, holder: RecyclerView.ViewHolder) {
         beforeTransition(startView, holder)
@@ -32,6 +33,7 @@ object TransitionStartHelper {
                     }
 
                     override fun onTransitionEnd(transition: Transition) {
+                        if (!animating) return
                         animating = false
                         afterTransition(holder)
                     }
@@ -45,6 +47,7 @@ object TransitionStartHelper {
             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun onDestroy() {
                 owner.lifecycle.removeObserver(this)
+                animating = false
                 holder.itemView.removeCallbacks(doTransition)
                 TransitionManager.endTransitions(holder.itemView as ViewGroup)
             }

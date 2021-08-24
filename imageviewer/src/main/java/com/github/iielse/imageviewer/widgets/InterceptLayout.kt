@@ -9,5 +9,5 @@ import com.github.iielse.imageviewer.utils.TransitionStartHelper
 
 class InterceptLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
     : FrameLayout(context, attrs, defStyleAttr) {
-    override fun onInterceptTouchEvent(ev: MotionEvent?) = TransitionStartHelper.animating || TransitionEndHelper.animating
+    override fun onInterceptTouchEvent(ev: MotionEvent?) = TransitionStartHelper.transitionAnimating || TransitionEndHelper.transitionAnimating
 }

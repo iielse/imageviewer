@@ -1,5 +1,6 @@
 package com.github.iielse.imageviewer.utils
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
@@ -18,7 +19,8 @@ import com.github.iielse.imageviewer.viewholders.VideoViewHolder
 import kotlin.math.max
 
 object TransitionEndHelper {
-    var animating = false
+    val transitionAnimating get() = animating
+    private var animating = false
 
     fun end(fragment: DialogFragment, startView: View?, holder: RecyclerView.ViewHolder) {
         beforeTransition(startView, holder)
@@ -30,6 +32,7 @@ object TransitionEndHelper {
                     }
 
                     override fun onTransitionEnd(transition: Transition) {
+                        if (!animating) return
                         animating = false
                         fragment.dismissAllowingStateLoss()
                     }
@@ -43,6 +46,7 @@ object TransitionEndHelper {
             @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
             fun onDestroy() {
                 fragment.lifecycle.removeObserver(this)
+                animating = false
                 holder.itemView.removeCallbacks(doTransition)
                 TransitionManager.endTransitions(holder.itemView as ViewGroup)
             }
