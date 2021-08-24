@@ -5,14 +5,12 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
         mavenCentral()
-        jcenter() { url 'http://jcenter.bintray.com/' }
         maven { url "https://jitpack.io" }
         maven { url 'https://maven.google.com' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:7.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -23,9 +21,6 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url 'https://maven.google.com' }
-        jcenter()
-        jcenter() { url 'http://jcenter.bintray.com/' }
-
     }
 }
 
@@ -39,6 +34,6 @@ ext {
     buildToolsVersion= "30.0.3"
     minSdkVersion    = 21
     targetSdkVersion = 30
-    versionCode      = 215
-    versionName      = "2.1.5"
+    versionCode      = 217
+    versionName      = "2.1.7"
 }
