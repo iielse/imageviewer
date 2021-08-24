@@ -69,7 +69,6 @@ class MyImageLoader : ImageLoader {
     override fun load(view: ImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val it = (data as? MyData?)?.url ?: return
         Glide.with(view).load(it)
-                .override(view.width, view.height)
                 .placeholder(view.drawable)
                 .into(view)
     }
@@ -102,29 +101,6 @@ class MyImageLoader : ImageLoader {
 
     private fun findLoadingView(viewHolder: RecyclerView.ViewHolder): View? {
         return viewHolder.itemView.findViewById<ProgressBar>(R.id.loadingView)
-    }
-}
-```
-```
-class MyTransformer(private val pageKey: String) : Transformer {
-    override fun getView(key: Long): ImageView? = TransitionViewsRef.provideTransitionViewsRef(pageKey)[key]
-}
-
-/**
- * 维护Transition过渡动画的缩略图和大图之间的映射关系. 需要在Activity/Fragment释放时刻.清空此界面的View引用
- * (这里是比较随便的一种写法.没有说必须这样写.大家可以用更好的写法.谢谢)
- */
-object TransitionViewsRef {
-    private val map = mutableMapOf<String, LongSparseArray<ImageView>?>() // 可能有多级页面
-    const val KEY_MAIN = "page_main"
-
-    fun provideTransitionViewsRef(key: String): LongSparseArray<ImageView> {
-        return map[key] ?: LongSparseArray<ImageView>().also { map[key] = it }
-    }
-
-    // invoke when activity onDestroy or fragment onDestroyView
-    fun releaseTransitionViewRef(key: String) {
-        map[key] = null
     }
 }
 ```
