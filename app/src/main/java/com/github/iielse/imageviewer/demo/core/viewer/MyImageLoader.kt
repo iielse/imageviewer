@@ -38,7 +38,6 @@ class MyImageLoader : ImageLoader {
     override fun load(view: ImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val it = (data as? MyData?)?.url ?: return
         Glide.with(view).load(it)
-                .override(view.width, view.height)
                 .placeholder(view.drawable)
                 .into(view)
     }
