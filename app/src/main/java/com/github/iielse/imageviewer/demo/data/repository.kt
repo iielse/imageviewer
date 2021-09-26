@@ -7,13 +7,13 @@ private var id = 0L
 val myData: List<MyData> by lazy {
     mutableListOf(
             // long horizontal
-            MyData(subsampling = true, id = id++, url = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29.jpg/1920px-Along_the_River_During_the_Qingming_Festival_%28Qing_Court_Version%29.jpg"),
+            // MyData(subsampling = true, id = id++, url = "http://www.hwjyw.com/36/2011-04-07/U120P26T36D65F170DT20110426092326.jpg"),
             // long vertical
-            MyData(subsampling = true, id = id++, url = "https://image.shutterstock.com/z/stock-vector-humerus-of-the-right-side-from-its-front-face-vintage-engraved-illustration-usual-medicine-90201004.jpg"),
+            MyData(subsampling = true, id = id++, url = "https://imgkepu.gmw.cn/attachement/jpg/site2/20200417/94c69122e51c2003c2e220.jpg"),
             // video
-            MyData(id = id++, url = "https://media.w3.org/2010/05/sintel/trailer.mp4"),
-            MyData(id = id++, url = "https://www.w3schools.com/html/movie.mp4"),
-            MyData(id = id++, url = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
+            //MyData(id = id++, url = "https://media.w3.org/2010/05/sintel/trailer.mp4"),
+            MyData(id = id++, url = "https://images.all-free-download.com/footage_preview/mp4/dog_canine_walk_pet_park_estray_804.mp4"),
+            MyData(id = id++, url = "https://images.all-free-download.com/footage_preview/mp4/full_moon_night_darkness_dark_moon_682.mp4")
     ).let {
         it.apply { addAll(image.map { MyData(id = id++, url = it) }) }
     }.toList()
@@ -22,11 +22,7 @@ val myData: List<MyData> by lazy {
 // 图片源数据 源自网络随缘摘取
 private val image = arrayOf(
         // gif
-        "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168118542&di=437ba348dfe4bd91afa5e5761f318cee&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fblog%2F201410%2F17%2F20141017094107_VdNJu.gif",
-        "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168279697&di=dcd2b62878ad6c2c92e5bd7facfe6c3c&imgtype=0&src=http%3A%2F%2Fphotocdn.sohu.com%2F20151126%2Fmp44425938_1448498418499_2.gif",
-        "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168389150&di=2fd5c826af5394b62777fd132dff7d8f&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201701%2F17%2F20170117112406_zixk5.thumb.700_0.gif",
-//        "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168437965&di=f91b9c858eecf75799af00df525eab9a&imgtype=0&src=http%3A%2F%2Fs9.rr.itc.cn%2Fr%2FwapChange%2F201510_31_11%2Fa6cjhv9612585370352.gif",
-//        "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542168451881&di=805580bb76614eba5dcc4668253b9749&imgtype=0&src=http%3A%2F%2Fs8.rr.itc.cn%2Fr%2FwapChange%2F201510_31_11%2Fa979a69612629324352.gif",
+        "https://img.nmgfic.com:90/uploadimg/image/20190305/15517786485c7e43584732a4.11936910.gif",
         // normal
         "https://images.pexels.com/photos/45170/kittens-cat-cat-puppy-rush-45170.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
         "https://images.pexels.com/photos/145939/pexels-photo-145939.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",

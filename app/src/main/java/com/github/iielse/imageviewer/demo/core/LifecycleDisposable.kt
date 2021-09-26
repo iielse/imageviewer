@@ -5,9 +5,12 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import io.reactivex.disposables.Disposable
 
-class LifecycleDisposable(private val disposable: Disposable) : LifecycleObserver {
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onStop() {
+class LifecycleDisposable(
+        private val lifecycle: Lifecycle,
+        private val disposable: Disposable) : LifecycleObserver {
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy() {
         disposable.dispose()
+        lifecycle.removeObserver(this)
     }
 }

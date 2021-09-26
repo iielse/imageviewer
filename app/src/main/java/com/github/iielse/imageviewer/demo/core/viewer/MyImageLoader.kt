@@ -14,9 +14,10 @@ import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.business.ViewerHelper
 import com.github.iielse.imageviewer.demo.business.find
+import com.github.iielse.imageviewer.demo.core.ObserverAdapter
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.appContext
-import com.github.iielse.imageviewer.demo.utils.bindLifecycle
+import com.github.iielse.imageviewer.demo.utils.lifecycleOwner
 import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
@@ -101,7 +102,7 @@ class MyImageLoader : ImageLoader {
                 .doFinally { findLoadingView(viewHolder)?.visibility = View.GONE }
                 .doOnNext { subsamplingView.setImage(ImageSource.uri(Uri.fromFile(it))) }
                 .doOnError { toast(it.message) }
-                .subscribe().bindLifecycle(subsamplingView)
+                .subscribe(ObserverAdapter(subsamplingView.lifecycleOwner?.lifecycle))
     }
 
     private fun subsamplingDownloadRequest(url: String): Observable<File> {
@@ -109,7 +110,7 @@ class MyImageLoader : ImageLoader {
             try {
                 it.onNext(Glide.with(appContext).downloadOnly().load(url).submit().get())
                 it.onComplete()
-            } catch (e: java.lang.Exception) {
+            } catch (e: Throwable) {
                 if (!it.isDisposed) it.onError(e)
             }
         }

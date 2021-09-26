@@ -18,6 +18,7 @@ import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.core.VHCustomizer
 import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.demo.R
+import com.github.iielse.imageviewer.demo.core.ObserverAdapter
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.*
 import com.github.iielse.imageviewer.utils.Config
@@ -125,18 +126,21 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
             is VideoViewHolder -> {
                 val videoView = viewHolder.find<ExoVideoView>(R.id.videoView)
 
-                videoTask = Observable.timer(Config.DURATION_TRANSITION + 50, TimeUnit.MILLISECONDS)
+                val task = object : ObserverAdapter<Long>(videoView?.lifecycleOwner?.lifecycle) {
+                    override fun onNext(t: Long) {
+                        if (ViewerHelper.simplePlayVideo) {
+                            videoView?.resume()
+                        } else {
+                            val playerControlView = viewHolder.find<PlayerControlView>(R.id.playerControlView)
+                            playerControlView?.player = videoView?.player()
+                        }
+                    }
+                }
+                Observable.timer(Config.DURATION_TRANSITION + 50, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
-                        .doOnNext {
-                            if (ViewerHelper.simplePlayVideo) {
-                                videoView?.resume()
-                            } else {
-                                val playerControlView = viewHolder.find<PlayerControlView>(R.id.playerControlView)
-                                playerControlView?.player = videoView?.player()
-                            }
-                        }
-                        .subscribe().bindLifecycle(videoView)
+                        .subscribe(task)
+                videoTask = task
                 lastVideoVH = viewHolder
             }
         }
