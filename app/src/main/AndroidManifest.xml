@@ -13,7 +13,8 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
 
-        <activity android:name=".business.MainActivity">
+        <activity android:name=".business.MainActivity"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,6 +22,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".business.TestActivity" />
+        <activity android:name=".business.TestActivity"
+            android:exported="false"/>
     </application>
 </manifest>

@@ -10,6 +10,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.util.EventLogger
+import com.google.android.exoplayer2.video.VideoSize
 import kotlin.math.min
 
 open class ExoVideoView @JvmOverloads constructor(
@@ -124,12 +125,9 @@ open class ExoVideoView @JvmOverloads constructor(
 
     private val videoListener = object : Player.Listener {
         override fun onVideoSizeChanged(
-            width: Int,
-            height: Int,
-            unappliedRotationDegrees: Int,
-            pixelWidthHeightRatio: Float
+            videoSize: VideoSize
         ) {
-            updateTextureViewSize(width, height)
+            updateTextureViewSize(videoSize.width, videoSize.height)
         }
     }
 
