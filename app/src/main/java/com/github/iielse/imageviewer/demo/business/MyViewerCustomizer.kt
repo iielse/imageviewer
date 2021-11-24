@@ -88,7 +88,7 @@ class MyViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCustomiz
         val myData = data as MyData
         viewHolder.itemView.findViewById<TextView>(R.id.exText).text = myData.desc
         viewHolder.itemView.findViewById<View>(R.id.remove).setOnClickListener {
-            testDataViewModel?.reduceRemoveAll(listOf(data))
+            testDataViewModel?.remove(listOf(data))
             viewerViewModel?.remove(listOf(data))
         }
     }

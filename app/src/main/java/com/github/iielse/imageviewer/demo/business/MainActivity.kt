@@ -2,6 +2,7 @@ package com.github.iielse.imageviewer.demo.business
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,8 +18,7 @@ import com.github.iielse.imageviewer.utils.Config
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { MainActivityBinding.inflate(layoutInflater) }
-
-    private val viewModel by lazy { ViewModelProvider(this).get(TestDataViewModel::class.java) }
+    private val viewModel by viewModels<TestDataViewModel> { TestDataViewModelFactory() }
     private val adapter by lazy { TestDataAdapter() }
 
     override fun onDestroy() {
@@ -39,6 +39,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initialViews()
         viewModel.dataList.observe(this, androidx.lifecycle.Observer(adapter::submitList))
+
+        viewModel.request()
     }
 
     private fun handleAdapterListener(action: String, item: Any?) {

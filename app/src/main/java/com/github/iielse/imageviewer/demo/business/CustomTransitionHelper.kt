@@ -7,16 +7,17 @@ import com.github.iielse.imageviewer.core.Transformer
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.core.viewer.MyImageLoader
 import com.github.iielse.imageviewer.demo.core.viewer.provideViewerDataProvider
-import com.github.iielse.imageviewer.demo.data.myData
+import com.github.iielse.imageviewer.demo.data.TestRepository
 
 // 自定义Transition startView 尺寸/位置/加载模式
 object CustomTransitionHelper {
     fun show(view: View) {
-        val clickedData = myData[myData.size - 1 - (System.currentTimeMillis() % 10).toInt()]
+        val dataList = TestRepository.get().data
+        val clickedData = dataList[dataList.size - 1 - (System.currentTimeMillis() % 10).toInt()]
         val builder = ImageViewerBuilder(
                 context = view.context,
                 initKey = clickedData.id,
-                dataProvider = provideViewerDataProvider { myData },
+                dataProvider = provideViewerDataProvider { dataList },
                 imageLoader = MyImageLoader(),
                 transformer = object : Transformer {
                     override fun getView(key: Long): ImageView? {
@@ -28,7 +29,7 @@ object CustomTransitionHelper {
     }
 
     // 提供原图尺寸/位置/加载模式
-    private fun fakeStartView(view: View): ImageView? {
+    private fun fakeStartView(view: View): ImageView {
         val customWidth = view.width
         val customHeight = view.height
         val customLocation = IntArray(2).also { view.getLocationOnScreen(it) }

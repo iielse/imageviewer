@@ -9,8 +9,7 @@ import com.github.iielse.imageviewer.demo.core.viewer.MyImageLoader
 import com.github.iielse.imageviewer.demo.core.viewer.MyTransformer
 import com.github.iielse.imageviewer.demo.core.viewer.provideViewerDataProvider
 import com.github.iielse.imageviewer.demo.data.MyData
-import com.github.iielse.imageviewer.demo.data.api
-import com.github.iielse.imageviewer.demo.data.myData
+import com.github.iielse.imageviewer.demo.data.TestRepository
 
 /**
  * viewer的自定义初始化方案
@@ -25,12 +24,14 @@ object ViewerHelper {
         // 数据提供者 一次加载 or 分页
         fun myDataProvider(clickedData: MyData): DataProvider {
             return if (loadAllAtOnce) {
-                provideViewerDataProvider { myData }
+                provideViewerDataProvider {
+                    TestRepository.get().data
+                }
             } else {
                 provideViewerDataProvider(
                     loadInitial = { listOf(clickedData) },
-                    loadAfter = { id, callback -> api.asyncQueryAfter(id, callback) },
-                    loadBefore = { id, callback -> api.asyncQueryBefore(id, callback) }
+                    loadAfter = { id, callback -> TestRepository.get().asyncQueryAfter(id, callback) },
+                    loadBefore = { id, callback ->TestRepository.get().asyncQueryBefore(id, callback) }
                 )
             }
         }

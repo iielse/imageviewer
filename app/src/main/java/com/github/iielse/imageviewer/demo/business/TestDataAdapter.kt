@@ -5,32 +5,23 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.demo.core.AdapterCallback
+import com.github.iielse.imageviewer.demo.core.BasePagedAdapter
 import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef
 import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef.KEY_MAIN
 import com.github.iielse.imageviewer.demo.data.MyData
-import java.util.*
 
-class TestDataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(provideDiffer()) {
-    private var callback: AdapterCallback? = null
-
-    fun setListener(callback: AdapterCallback? = null) {
-        this.callback = callback
-    }
-
-    private val listener = object : AdapterCallback {
-        override fun invoke(action: String, item: Any?) {
-            callback?.invoke(action, item)
-        }
-    }
-
+class TestDataAdapter : BasePagedAdapter() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return TestDataViewHolder(parent, listener)
+        return when (viewType) {
+            ItemType.TestData -> TestDataViewHolder(parent, callback)
+            else -> super.onCreateViewHolder(parent, viewType)
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
         when (holder) {
-            is TestDataViewHolder -> item?.let { holder.bind(it, position) }
+            is TestDataViewHolder -> item?.data<MyData>()?.let { holder.bind(it, position) }
         }
     }
 
@@ -50,23 +41,5 @@ class TestDataAdapter : PagedListAdapter<MyData, RecyclerView.ViewHolder>(provid
                 TransitionViewsRef.provideTransitionViewsRef(KEY_MAIN).remove(it.id)
             }
         }
-    }
-}
-
-private fun provideDiffer() = object : DiffUtil.ItemCallback<MyData>() {
-    override fun areItemsTheSame(
-            oldItem: MyData,
-            newItem: MyData
-    ): Boolean {
-        return newItem.id == oldItem.id
-    }
-
-    override fun areContentsTheSame(
-            oldItem: MyData,
-            newItem: MyData
-    ): Boolean {
-        return newItem.id == oldItem.id
-                && Objects.equals(newItem.url, oldItem.url)
-                && Objects.equals(newItem.desc, oldItem.desc)
     }
 }
