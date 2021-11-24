@@ -25,7 +25,7 @@ class Api(
         val idx = result.indexOfFirst { it.id == id }
         Handler(Looper.getMainLooper()).postDelayed({
             if (idx < 0) callback(emptyList())
-            else callback(result.subList(idx + 1, min(idx + PAGE_SIZE, data.size - 1)))
+            else callback(result.subList(idx + 1, max(idx + 1, min(idx + PAGE_SIZE, data.size - 1))))
         }, 100)
     }
 }

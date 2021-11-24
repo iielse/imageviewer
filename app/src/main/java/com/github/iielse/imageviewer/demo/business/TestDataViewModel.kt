@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.DataSource
 import androidx.paging.ItemKeyedDataSource
 import androidx.paging.toLiveData
-import com.github.iielse.imageviewer.adapter.Item
 import com.github.iielse.imageviewer.demo.data.*
 import com.github.iielse.imageviewer.demo.utils.log
-import com.github.iielse.imageviewer.demo.utils.runOnWorkThread
 import kotlin.math.min
 
 class TestDataViewModel : ViewModel() {

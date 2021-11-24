@@ -9,8 +9,7 @@ class Repository {
     private val dataProvider by lazy { Components.requireDataProvider() }
     private var dataSource: DataSource<Long, Item>? = null
     private var snapshot: List<Photo>? = null
-
-    fun dataSourceFactory(): DataSource.Factory<Long, Item> {
+    fun createDataSource(): DataSource.Factory<Long, Item> {
         return object : DataSource.Factory<Long, Item>() {
             override fun create(): DataSource<Long, Item> {
                 return dataSource().also { dataSource = it }
@@ -19,7 +18,10 @@ class Repository {
     }
 
     private fun dataSource() = object : ItemKeyedDataSource<Long, Item>() {
-        override fun loadInitial(params: LoadInitialParams<Long>, callback: LoadInitialCallback<Item>) {
+        override fun loadInitial(
+            params: LoadInitialParams<Long>,
+            callback: LoadInitialCallback<Item>
+        ) {
             val result = snapshot ?: dataProvider.loadInitial()
             snapshot = result
             callback.onResult(result.map { Item.from(it) }, 0, result.size)
@@ -44,9 +46,11 @@ class Repository {
         }
     }
 
-    fun removeAll(item: List<Photo>) {
-        val last = item.maxOf { it.id() }
-        val target = snapshot?.findLast { it.id() < last } ?: return
+    fun redirect(exclude: List<Photo>, emptyCallback: () -> Unit) {
+        val last = exclude.maxOf { it.id() }
+        val target = snapshot?.findLast { it.id() < last }
+            ?: snapshot?.find { it.id() > last }
+            ?: return Unit.also { emptyCallback() }
         snapshot = listOf(target)
         dataSource?.invalidate()
     }

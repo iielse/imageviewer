@@ -27,7 +27,8 @@ import kotlin.math.max
 open class ImageViewerDialogFragment : BaseDialogFragment() {
     private var innerBinding: FragmentImageViewerDialogBinding? = null
     private val binding get() = innerBinding!!
-    private val viewModel by lazy { ViewModelProvider(requireActivity()).get(ImageViewerViewModel::class.java) }
+    private val viewModel by lazy { ViewModelProvider(this).get(ImageViewerViewModel::class.java) }
+    private val actions by lazy { ViewModelProvider(requireActivity()).get(ImageViewerActionViewModel::class.java) }
     private val userCallback by lazy { requireViewerCallback() }
     private val initKey by lazy { requireInitKey() }
     private val transformer by lazy { requireTransformer() }
@@ -70,7 +71,7 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
             binding.viewer.isUserInputEnabled = it ?: true
         }
 
-        viewModel.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
+        actions.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
     }
 
 
@@ -78,7 +79,7 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
         when (action?.first) {
             ViewerActions.SET_CURRENT_ITEM -> binding.viewer.currentItem = max(action.second as Int, 0)
             ViewerActions.DISMISS -> onBackPressed()
-            ViewerActions.REMOVE_ITEMS -> viewModel.remove(action.second)
+            ViewerActions.REMOVE_ITEMS -> viewModel.remove(action.second) { onBackPressed() }
         }
     }
 

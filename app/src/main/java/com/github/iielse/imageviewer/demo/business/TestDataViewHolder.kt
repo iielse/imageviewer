@@ -26,7 +26,7 @@ class TestDataViewHolder(
     fun bind(item: MyData, pos: Int) {
         itemView.tag = item
 
-        binding.posTxt.text = when {
+        binding.pos.text = when {
             item.subsampling -> "$pos subsampling"
             item.url.endsWith(".gif") -> "$pos gif"
             item.url.endsWith(".mp4") -> "$pos video"

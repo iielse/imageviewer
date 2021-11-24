@@ -6,10 +6,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import androidx.core.view.ViewCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.github.iielse.imageviewer.R
@@ -43,13 +40,14 @@ object TransitionStartHelper {
         }
         holder.itemView.postDelayed(doTransition, 50)
 
-        owner.lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun onDestroy() {
-                owner.lifecycle.removeObserver(this)
-                animating = false
-                holder.itemView.removeCallbacks(doTransition)
-                TransitionManager.endTransitions(holder.itemView as ViewGroup)
+        owner.lifecycle.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    owner.lifecycle.removeObserver(this)
+                    animating = false
+                    holder.itemView.removeCallbacks(doTransition)
+                    TransitionManager.endTransitions(holder.itemView as ViewGroup)
+                }
             }
         })
     }

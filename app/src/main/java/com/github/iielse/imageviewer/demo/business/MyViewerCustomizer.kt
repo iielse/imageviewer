@@ -4,13 +4,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
+import com.github.iielse.imageviewer.ImageViewerActionViewModel
 import com.github.iielse.imageviewer.ImageViewerBuilder
-import com.github.iielse.imageviewer.ImageViewerViewModel
 import com.github.iielse.imageviewer.adapter.ItemType
 import com.github.iielse.imageviewer.core.OverlayCustomizer
 import com.github.iielse.imageviewer.core.Photo
@@ -33,10 +30,10 @@ import java.util.concurrent.TimeUnit
 /**
  * viewer 自定义业务&UI
  */
-class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, ViewerCallback {
+class MyViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCustomizer, ViewerCallback {
     private var activity: FragmentActivity? = null
     private var testDataViewModel: TestDataViewModel? = null
-    private var viewerViewModel: ImageViewerViewModel? = null
+    private var viewerViewModel: ImageViewerActionViewModel? = null
     private var videoTask: Disposable? = null
     private var lastVideoVH: RecyclerView.ViewHolder? = null
     private var indicatorDecor: View? = null
@@ -51,7 +48,7 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
     fun process(activity: FragmentActivity, builder: ImageViewerBuilder) {
         this.activity = activity
         testDataViewModel = ViewModelProvider(activity).get(TestDataViewModel::class.java)
-        viewerViewModel = ViewModelProvider(activity).get(ImageViewerViewModel::class.java)
+        viewerViewModel = ViewModelProvider(activity).get(ImageViewerActionViewModel::class.java)
         activity.lifecycle.addObserver(this)
         builder.setVHCustomizer(this)
         builder.setOverlayCustomizer(this)
@@ -151,21 +148,18 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    private fun onResume() {
-        lastVideoVH?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.resume()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    private fun onPause() {
-        lastVideoVH?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.pause()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun onDestroy() {
-        lastVideoVH?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.release()
-        videoTask?.dispose()
-        videoTask = null
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        val videoView = lastVideoVH?.itemView?.findViewById<ExoVideoView>(R.id.videoView)
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> videoView?.resume()
+            Lifecycle.Event.ON_PAUSE -> videoView?.pause()
+            Lifecycle.Event.ON_DESTROY -> {
+                videoView?.release()
+                videoTask?.dispose()
+                videoTask = null
+            }
+            else -> {}
+        }
     }
 
     private fun release() {

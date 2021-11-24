@@ -48,10 +48,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showViewer(item: MyData) {
-        if (item.id == 10L) {
-            startActivity(Intent(this, TestActivity::class.java))
-            return
-        }
+//        if (item.id == 10L) {
+//            startActivity(Intent(this, TestActivity::class.java))
+//            return
+//        }
 
         ViewerHelper.provideImageViewerBuilder(this, item, KEY_MAIN)
                 .show()
