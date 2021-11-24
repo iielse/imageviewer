@@ -61,7 +61,6 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
         requireOverlayCustomizer().provideView(binding.overlayView)?.let(binding.overlayView::addView)
 
         viewModel.dataList.observe(viewLifecycleOwner) { list ->
-            if (Config.DEBUG) Log.i("viewer", "submitList ${list.size}")
             adapter.submitList(list)
             initPosition = list.indexOfFirst { it.id == initKey }
             binding.viewer.setCurrentItem(initPosition, false)
@@ -148,7 +147,6 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
 
     override fun onBackPressed() {
         if (TransitionStartHelper.transitionAnimating || TransitionEndHelper.transitionAnimating) return
-        if (Config.DEBUG) Log.i("viewer", "onBackPressed ${binding.viewer.currentItem}")
 
         val currentKey = adapter.getItemId(binding.viewer.currentItem)
         binding.viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)?.let { endView ->

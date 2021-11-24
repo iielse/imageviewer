@@ -23,7 +23,6 @@ open class BaseDialogFragment : DialogFragment() {
         view.isFocusableInTouchMode = true
         view.setOnKeyListener { _, keyCode, event ->
             val backPressed = event.action == MotionEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK
-            if (Config.DEBUG) Log.i("viewer", "keyCode $keyCode event $event backPressed $backPressed")
             if (backPressed) onBackPressed()
             backPressed
         }
@@ -58,7 +57,6 @@ open class BaseDialogFragment : DialogFragment() {
     }
 
     open fun showFailure(message: String? = null) {
-        if (Config.DEBUG) Log.i("viewer", "show failure $message")
     }
 
     open fun onBackPressed() {

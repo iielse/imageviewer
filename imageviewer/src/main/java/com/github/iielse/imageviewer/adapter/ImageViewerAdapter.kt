@@ -1,6 +1,5 @@
 package com.github.iielse.imageviewer.adapter
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
@@ -9,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_ID
 import com.github.iielse.imageviewer.ImageViewerAdapterListener
 import com.github.iielse.imageviewer.core.Photo
-import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.UnknownViewHolder
@@ -34,7 +32,6 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (Config.DEBUG) Log.i("viewer", "onBindViewHolder $position")
         val item = getItem(position)
         when (holder) {
             is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }

@@ -2,13 +2,16 @@ package com.github.iielse.imageviewer.demo.data
 
 import android.os.Handler
 import android.os.Looper
+import com.github.iielse.imageviewer.demo.core.remove
+import com.github.iielse.imageviewer.demo.core.removeAll
+import com.github.iielse.imageviewer.demo.utils.isMainThread
 import java.lang.IllegalStateException
 import kotlin.math.max
 import kotlin.math.min
 
-// 模拟请求
+// 模拟服务器
 class Api(
-    private val data: List<MyData>
+    private val data: MutableList<MyData>
 ) {
     // 模拟网络请求或者本地db查询 上一页
     fun asyncQueryBefore(id: Long, pageSize: Int, callback: (List<MyData>) -> Unit) {
@@ -32,5 +35,13 @@ class Api(
                 else -> callback(result.subList(idx + 1, max(idx + 1, min(idx + 1 + pageSize, result.size - 1))))
             }
         }, 100)
+    }
+
+    fun asyncDelete(item: List<MyData>, callback: ()->Unit) {
+       require(  isMainThread())
+        data.removeAll(item) // 模拟服务器把数据删掉了
+        Handler(Looper.getMainLooper()).postDelayed({
+            callback()
+        }, 200)
     }
 }

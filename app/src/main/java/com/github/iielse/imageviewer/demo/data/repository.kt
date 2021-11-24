@@ -8,14 +8,13 @@ import com.github.iielse.imageviewer.demo.utils.runOnWorkThread
 
 class TestRepository {
     val data = myData // 模拟准备好一套数据
-    private val api = Api(data)
+    val api = Api(data)
     private var dataSource: XPageKeyedDataSource? = null
-    private val dataSourceFactory: DataSource.Factory<Int, Cell> = object : DataSource.Factory<Int, Cell>() {
-        override fun create(): DataSource<Int, Cell> = object : XPageKeyedDataSource() {
+    private val dataSourceFactory = object : DataSource.Factory<Int, Cell>() {
+        override fun create() = object : XPageKeyedDataSource() {
             override fun totalCount() = state.list.size
             override fun loadRange(start: Int, count: Int): List<Cell?> {
-                val list = state.list
-                return list.mapToCell(start, count) {
+                return state.list.mapToCell(start, count) {
                     Cell(ItemType.TestData, it, state.data[it])
                 }
             }
@@ -37,25 +36,13 @@ class TestRepository {
         }
     }
 
-    fun delete(item: List<MyData>) = runOnWorkThread {
-        data.removeAll(item) // update api request
+    // 清除本地数据
+    fun reduceDelete(item: List<MyData>) = runOnWorkThread {
         state = state.copy(
             list = state.list.removeAll(item.map { it.id.toString() })
         )
         dataSource?.invalidate()
     }
-
-
-
-    fun asyncQueryAfter(id: Long, callback: (List<MyData>) -> Unit) {
-        api.asyncQueryAfter(id, PAGE_SIZE, callback)
-    }
-
-    fun asyncQueryBefore(id: Long, callback: (List<MyData>) -> Unit) {
-        api.asyncQueryBefore(id, PAGE_SIZE,callback)
-    }
-
-
 
     companion object {
         private val inst by lazy { TestRepository() }
@@ -63,6 +50,9 @@ class TestRepository {
     }
 }
 
+
+// 用于测试的图片数据源
+private var id = 1L
 const val PAGE_SIZE = 5 // 分页size
 private val myData by lazy { data.toMutableList() }
 private val data: List<MyData> by lazy {
@@ -85,8 +75,6 @@ private val data: List<MyData> by lazy {
     }.toList()
 }
 
-// 用于测试的图片数据源
-private var id = 0L
 
 // 图片源数据 源自网络随缘摘取
 private val image = arrayOf(

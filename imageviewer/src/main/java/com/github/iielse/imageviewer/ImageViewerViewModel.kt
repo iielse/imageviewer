@@ -2,14 +2,13 @@ package com.github.iielse.imageviewer
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.paging.toLiveData
 import com.github.iielse.imageviewer.adapter.Repository
 import com.github.iielse.imageviewer.core.Photo
 
 @Suppress("UNCHECKED_CAST")
 class ImageViewerViewModel : ViewModel() {
     private val repository = Repository()
-    val dataList = repository.createDataSource().toLiveData(pageSize = 1)
+    val dataList = repository.dataList
     val viewerUserInputEnabled = MutableLiveData<Boolean>()
 
     fun setViewerUserInputEnabled(enable: Boolean) {

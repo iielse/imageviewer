@@ -16,6 +16,7 @@ import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.core.ObserverAdapter
 import com.github.iielse.imageviewer.demo.data.MyData
+import com.github.iielse.imageviewer.demo.data.TestRepository
 import com.github.iielse.imageviewer.demo.utils.*
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
@@ -88,8 +89,11 @@ class MyViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCustomiz
         val myData = data as MyData
         viewHolder.itemView.findViewById<TextView>(R.id.exText).text = myData.desc
         viewHolder.itemView.findViewById<View>(R.id.remove).setOnClickListener {
-            testDataViewModel?.remove(listOf(data))
-            viewerViewModel?.remove(listOf(data))
+            val target = listOf(data)
+            TestRepository.get().api.asyncDelete(target) {
+                viewerViewModel?.remove(listOf(data))
+                testDataViewModel?.remove(listOf(data))
+            }
         }
     }
 
@@ -106,7 +110,6 @@ class MyViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCustomiz
     }
 
     override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {
-        log("onRelease")
         viewHolder.itemView.findViewById<View>(R.id.customizeDecor)
                 ?.animate()?.setDuration(200)?.alpha(0f)?.start()
         indicatorDecor?.animate()?.setDuration(200)?.alpha(0f)?.start()
@@ -114,7 +117,6 @@ class MyViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCustomiz
     }
 
     override fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {
-        log("onPageSelected $position")
         currentPosition = position
         indicator?.text = position.toString()
         processSelectVideo(viewHolder)

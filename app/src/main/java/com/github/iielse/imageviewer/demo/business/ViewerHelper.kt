@@ -4,11 +4,13 @@ import androidx.fragment.app.FragmentActivity
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.ImageViewerDialogFragment
 import com.github.iielse.imageviewer.core.DataProvider
+import com.github.iielse.imageviewer.core.Photo
+import com.github.iielse.imageviewer.core.SimpleDataProvider
 import com.github.iielse.imageviewer.demo.core.viewer.FullScreenImageViewerDialogFragment
 import com.github.iielse.imageviewer.demo.core.viewer.MyImageLoader
 import com.github.iielse.imageviewer.demo.core.viewer.MyTransformer
-import com.github.iielse.imageviewer.demo.core.viewer.provideViewerDataProvider
 import com.github.iielse.imageviewer.demo.data.MyData
+import com.github.iielse.imageviewer.demo.data.PAGE_SIZE
 import com.github.iielse.imageviewer.demo.data.TestRepository
 
 /**
@@ -24,15 +26,15 @@ object ViewerHelper {
         // 数据提供者 一次加载 or 分页
         fun myDataProvider(clickedData: MyData): DataProvider {
             return if (loadAllAtOnce) {
-                provideViewerDataProvider {
-                    TestRepository.get().data
-                }
+                SimpleDataProvider(TestRepository.get().data)
             } else {
-                provideViewerDataProvider(
-                    loadInitial = { listOf(clickedData) },
-                    loadAfter = { id, callback -> TestRepository.get().asyncQueryAfter(id, callback) },
-                    loadBefore = { id, callback ->TestRepository.get().asyncQueryBefore(id, callback) }
-                )
+                 object : DataProvider {
+                    override fun loadInitial(): List<Photo> = listOf(clickedData)
+                    override fun loadAfter(key: Long, callback: (List<Photo>) -> Unit)
+                        = TestRepository.get().api.asyncQueryAfter(key, PAGE_SIZE, callback)
+                    override fun loadBefore(key: Long, callback: (List<Photo>) -> Unit)
+                        = TestRepository.get().api.asyncQueryBefore(key, PAGE_SIZE, callback)
+                }
             }
         }
 

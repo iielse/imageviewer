@@ -22,6 +22,6 @@ class TestDataViewModel(
     private val repository: TestRepository
 ) : ViewModel() {
     val dataList: LiveData<PagedList<Cell>> = repository.dataList
-    fun remove(item: List<MyData>) = repository.delete(item)
+    fun remove(item: List<MyData>) = repository.reduceDelete(item)
     fun request() = repository.request(true)
 }

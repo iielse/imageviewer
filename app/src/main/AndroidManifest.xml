@@ -14,7 +14,7 @@
         tools:replace="android:allowBackup">
 
         <activity android:name=".business.MainActivity"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

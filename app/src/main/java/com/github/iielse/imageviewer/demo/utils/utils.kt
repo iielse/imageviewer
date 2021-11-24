@@ -14,10 +14,6 @@ fun toast(message: String?) {
     runOnUIThread { Toast.makeText(appContext, message, Toast.LENGTH_SHORT).show() }
 }
 
-fun log(message: String?) {
-    if (message.isNullOrEmpty()) return
-    if (BuildConfig.DEBUG) Log.i("viewer_demo", message)
-}
 
 fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 fun runOnUIThread(block: () -> Unit) {

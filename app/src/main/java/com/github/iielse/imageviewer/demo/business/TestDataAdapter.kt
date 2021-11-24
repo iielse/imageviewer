@@ -1,10 +1,7 @@
 package com.github.iielse.imageviewer.demo.business
 
 import android.view.ViewGroup
-import androidx.paging.PagedListAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.github.iielse.imageviewer.demo.core.AdapterCallback
 import com.github.iielse.imageviewer.demo.core.BasePagedAdapter
 import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef
 import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef.KEY_MAIN

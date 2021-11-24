@@ -3,10 +3,10 @@ package com.github.iielse.imageviewer.demo.business
 import android.view.View
 import android.widget.ImageView
 import com.github.iielse.imageviewer.ImageViewerBuilder
+import com.github.iielse.imageviewer.core.SimpleDataProvider
 import com.github.iielse.imageviewer.core.Transformer
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.core.viewer.MyImageLoader
-import com.github.iielse.imageviewer.demo.core.viewer.provideViewerDataProvider
 import com.github.iielse.imageviewer.demo.data.TestRepository
 
 // 自定义Transition startView 尺寸/位置/加载模式
@@ -17,10 +17,10 @@ object CustomTransitionHelper {
         val builder = ImageViewerBuilder(
                 context = view.context,
                 initKey = clickedData.id,
-                dataProvider = provideViewerDataProvider { dataList },
+                dataProvider = SimpleDataProvider(dataList),
                 imageLoader = MyImageLoader(),
                 transformer = object : Transformer {
-                    override fun getView(key: Long): ImageView? {
+                    override fun getView(key: Long): ImageView {
                         return fakeStartView(view)
                     }
                 }
