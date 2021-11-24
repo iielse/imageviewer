@@ -45,14 +45,9 @@ class Repository {
     }
 
     fun removeAll(item: List<Photo>) {
-        val iterator = snapshot?.toMutableList()?.listIterator()
-        while (iterator?.hasNext() == true) {
-            val i = iterator.next()
-            if (item.any { it.id() == i.id() }) {
-                iterator.remove()
-            }
-        }
-        snapshot = snapshot?.toMutableList()?.apply { removeAll(item) }
+        val last = item.maxOf { it.id() }
+        val target = snapshot?.findLast { it.id() < last } ?: return
+        snapshot = listOf(target)
         dataSource?.invalidate()
     }
 }

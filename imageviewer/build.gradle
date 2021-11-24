@@ -12,7 +12,9 @@ android {
         versionName rootProject.ext.versionName
     }
 
-    buildFeatures.viewBinding = true
+    buildFeatures {
+        viewBinding = true
+    }
 
     kotlinOptions {
         jvmTarget = "1.8"

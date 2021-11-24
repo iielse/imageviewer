@@ -13,7 +13,6 @@ import com.github.iielse.imageviewer.core.ImageLoader
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.business.ViewerHelper
-import com.github.iielse.imageviewer.demo.business.find
 import com.github.iielse.imageviewer.demo.core.ObserverAdapter
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.appContext
@@ -58,7 +57,7 @@ class MyImageLoader : ImageLoader {
         exoVideoView.addAnalyticsListener(object : AnalyticsListener {
             override fun onLoadError(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData, error: IOException, wasCanceled: Boolean) {
                 findLoadingView(viewHolder)?.visibility = View.GONE
-                viewHolder.find<TextView>(R.id.errorPlaceHolder)?.text = error.message
+                viewHolder.itemView.findViewById<TextView>(R.id.errorPlaceHolder)?.text = error.message
             }
         })
         exoVideoView.setVideoRenderedCallback(object : ExoVideoView.VideoRenderedListener {
@@ -69,7 +68,7 @@ class MyImageLoader : ImageLoader {
             }
         })
 
-        val playerControlView = viewHolder.find<PlayerControlView>(R.id.playerControlView)
+        val playerControlView = viewHolder.itemView.findViewById<PlayerControlView>(R.id.playerControlView)
         exoVideoView.addListener(object : ExoVideoView2.Listener {
             override fun onDrag(view: ExoVideoView2, fraction: Float) {
                 if (!ViewerHelper.simplePlayVideo) {

@@ -9,7 +9,7 @@ import com.github.iielse.imageviewer.core.Photo
 
 class ImageViewerViewModel : ViewModel() {
     private val repository = Repository()
-    val dataList = Repository().dataSourceFactory().toLiveData(PagedList.Config.Builder().setPageSize(1).build())
+    val dataList = repository.dataSourceFactory().toLiveData(PagedList.Config.Builder().setPageSize(1).build())
     val viewerUserInputEnabled = MutableLiveData<Boolean>()
 
     fun setViewerUserInputEnabled(enable: Boolean) {
@@ -19,5 +19,16 @@ class ImageViewerViewModel : ViewModel() {
     @Suppress("UNCHECKED_CAST")
     fun remove(item: Any?) {
         (item as? List<Photo>?)?.let { repository.removeAll(it) }
+    }
+
+    val actionEvent = MutableLiveData<Pair<String, Any?>>()
+
+    fun setCurrentItem(pos: Int) = internalHandle(ViewerActions.SET_CURRENT_ITEM, pos)
+    fun dismiss() = internalHandle(ViewerActions.DISMISS, null)
+    fun remove(item: List<Photo>) = internalHandle(ViewerActions.REMOVE_ITEMS, item)
+
+    private fun internalHandle(action: String, extra: Any?) {
+        actionEvent.value = Pair(action, extra)
+        actionEvent.value = null
     }
 }

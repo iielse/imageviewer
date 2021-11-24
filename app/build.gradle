@@ -13,7 +13,9 @@ android {
         versionName rootProject.ext.versionName
         applicationId "com.github.iielse.imageviewer.demo"
     }
-    buildFeatures.viewBinding = true
+    buildFeatures {
+        viewBinding = true
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

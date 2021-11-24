@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import com.github.iielse.imageviewer.demo.BuildConfig
+import java.util.concurrent.Executors
 
 val appContext get() = App.context!!
 fun toast(message: String?) {
@@ -21,6 +22,11 @@ fun log(message: String?) {
 fun isMainThread() = Looper.myLooper() == Looper.getMainLooper()
 fun runOnUIThread(block: () -> Unit) {
     if (isMainThread()) block() else Handler(Looper.getMainLooper()).post(block)
+}
+
+private val workThreadPool by lazy { Executors.newSingleThreadExecutor()!! }
+fun runOnWorkThread(block: () -> Unit) {
+    workThreadPool.execute(block)
 }
 
 fun statusBarHeight(): Int {

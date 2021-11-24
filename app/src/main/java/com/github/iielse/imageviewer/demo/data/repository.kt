@@ -4,20 +4,22 @@ const val PAGE_SIZE = 5 // 分页size
 
 // 用于测试的图片数据源
 private var id = 0L
-val myData: List<MyData> by lazy {
-    mutableListOf(
-            // long horizontal
-            // MyData(subsampling = true, id = id++, url = "http://www.hwjyw.com/36/2011-04-07/U120P26T36D65F170DT20110426092326.jpg"),
-            // long vertical
-            MyData(subsampling = true, id = id++, url = "https://imgkepu.gmw.cn/attachement/jpg/site2/20200417/94c69122e51c2003c2e220.jpg"),
-            // video
-            //MyData(id = id++, url = "https://media.w3.org/2010/05/sintel/trailer.mp4"),
-            MyData(id = id++, url = "https://images.all-free-download.com/footage_preview/mp4/dog_canine_walk_pet_park_estray_804.mp4"),
-            MyData(id = id++, url = "https://images.all-free-download.com/footage_preview/mp4/full_moon_night_darkness_dark_moon_682.mp4")
-    ).let {
-        it.apply { addAll(image.map { MyData(id = id++, url = it) }) }
-    }.toList()
+
+private val data: List<MyData> by lazy {
+        mutableListOf(
+                // long horizontal
+                // long vertical
+                MyData(subsampling = true, id = id++, url = "https://imgkepu.gmw.cn/attachement/jpg/site2/20200417/94c69122e51c2003c2e220.jpg"),
+                // video
+                //MyData(id = id++, url = "https://media.w3.org/2010/05/sintel/trailer.mp4"),
+                MyData(id = id++, url = "https://vd2.bdstatic.com/mda-mkbimw03af9e7t7y/720p/h264/1636723366850332696/mda-mkbimw03af9e7t7y.mp4?v_from_s=hkapp-haokan-nanjing&auth_key=1637577712-0-0-e726b228011ed16503b3cafd395b8a91&bcevod_channel=searchbox_feed&pd=1&pt=3&abtest=&klogid=0712673406"),
+        ).let {
+                it.apply { addAll(image.map { MyData(id = id++, url = it) }) }
+        }.toList()
 }
+
+val myData by lazy {data.toMutableList()}
+val api by lazy {  Api(myData) }
 
 // 图片源数据 源自网络随缘摘取
 private val image = arrayOf(

@@ -11,25 +11,28 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.core.LifecycleDisposable
-import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
-import java.util.concurrent.TimeUnit
 
-fun View.setOnClickCallback(callback: (View) -> Unit) {
-    Observable.create<View> {
-        setOnClickListener(it::onNext)
-    }.throttleFirst(500, TimeUnit.MILLISECONDS)
-            .doOnNext(callback)
-            .subscribe().bindLifecycle(this)
+fun View.setOnClickCallback(interval: Long = 500L, callback: (View) -> Unit) {
+    if (!isClickable) isClickable = true
+    if (!isFocusable) isFocusable = true
+    setOnClickListener(object : View.OnClickListener {
+        override fun onClick(v: View?) {
+            v ?: return
+            val lastClickedTimestamp = v.getTag(R.id.view_last_click_timestamp)?.toString()?.toLongOrNull() ?: 0L
+            val currTimestamp = System.currentTimeMillis()
+            if (currTimestamp - lastClickedTimestamp < interval) return
+            v.setTag(R.id.view_last_click_timestamp, currTimestamp)
+            callback(v)
+        }
+    })
 }
 
 fun Disposable.bindLifecycle(lifecycle: Lifecycle?) {
     if (lifecycle == null) return
     lifecycle.addObserver(LifecycleDisposable(lifecycle, this))
-}
-fun Disposable.bindLifecycle(view: View?) {
-    bindLifecycle(view?.lifecycleOwner?.lifecycle)
 }
 
 val View.activity: Activity?
@@ -87,7 +90,6 @@ private fun findAllSupportFragmentsWithViews(
         findAllSupportFragmentsWithViews(fragment.childFragmentManager.fragments, result)
     }
 }
-
 
 fun ViewGroup.inflate(resId: Int): View {
     return LayoutInflater.from(context).inflate(resId, this, false)

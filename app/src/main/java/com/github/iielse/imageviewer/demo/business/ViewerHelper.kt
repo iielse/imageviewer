@@ -8,8 +8,8 @@ import com.github.iielse.imageviewer.demo.core.viewer.FullScreenImageViewerDialo
 import com.github.iielse.imageviewer.demo.core.viewer.MyImageLoader
 import com.github.iielse.imageviewer.demo.core.viewer.MyTransformer
 import com.github.iielse.imageviewer.demo.core.viewer.provideViewerDataProvider
-import com.github.iielse.imageviewer.demo.data.Api
 import com.github.iielse.imageviewer.demo.data.MyData
+import com.github.iielse.imageviewer.demo.data.api
 import com.github.iielse.imageviewer.demo.data.myData
 
 /**
@@ -22,6 +22,19 @@ object ViewerHelper {
     var simplePlayVideo: Boolean = true
 
     fun provideImageViewerBuilder(context: FragmentActivity, clickedData: MyData, pageKey: String): ImageViewerBuilder {
+        // 数据提供者 一次加载 or 分页
+        fun myDataProvider(clickedData: MyData): DataProvider {
+            return if (loadAllAtOnce) {
+                provideViewerDataProvider { myData }
+            } else {
+                provideViewerDataProvider(
+                    loadInitial = { listOf(clickedData) },
+                    loadAfter = { id, callback -> api.asyncQueryAfter(id, callback) },
+                    loadBefore = { id, callback -> api.asyncQueryBefore(id, callback) }
+                )
+            }
+        }
+
         // viewer 构造的基本元素
         val builder = ImageViewerBuilder(
                 context = context,
@@ -41,17 +54,5 @@ object ViewerHelper {
         return builder
     }
 
-    // 数据提供者 一次加载 or 分页
-    private fun myDataProvider(clickedData: MyData): DataProvider {
-        return if (loadAllAtOnce) {
-            provideViewerDataProvider { myData }
-        } else {
-            provideViewerDataProvider(
-                    loadInitial = { listOf(clickedData) },
-                    loadAfter = { id, callback -> Api.asyncQueryAfter(id, callback) },
-                    loadBefore = { id, callback -> Api.asyncQueryBefore(id, callback) }
-            )
-        }
-    }
 }
 

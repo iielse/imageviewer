@@ -27,8 +27,7 @@ import kotlin.math.max
 open class ImageViewerDialogFragment : BaseDialogFragment() {
     private var innerBinding: FragmentImageViewerDialogBinding? = null
     private val binding get() = innerBinding!!
-    private val events by lazy { ViewModelProvider(requireActivity()).get(ImageViewerActionViewModel::class.java) }
-    private val viewModel by lazy { ViewModelProvider(this).get(ImageViewerViewModel::class.java) }
+    private val viewModel by lazy { ViewModelProvider(requireActivity()).get(ImageViewerViewModel::class.java) }
     private val userCallback by lazy { requireViewerCallback() }
     private val initKey by lazy { requireInitKey() }
     private val transformer by lazy { requireTransformer() }
@@ -71,7 +70,7 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
             binding.viewer.isUserInputEnabled = it ?: true
         }
 
-        events.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
+        viewModel.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
     }
 
 
