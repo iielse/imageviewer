@@ -22,7 +22,7 @@ object ViewerHelper {
     var fullScreen: Boolean = false
     var simplePlayVideo: Boolean = true
 
-    fun provideImageViewerBuilder(context: FragmentActivity, clickedData: MyData, pageKey: String): ImageViewerBuilder {
+    fun provideImageViewerBuilder(context: FragmentActivity, clickedData: MyData): ImageViewerBuilder {
         // 数据提供者 一次加载 or 分页
         fun myDataProvider(clickedData: MyData): DataProvider {
             return if (loadAllAtOnce) {
@@ -44,7 +44,7 @@ object ViewerHelper {
                 initKey = clickedData.id,
                 dataProvider = myDataProvider(clickedData),
                 imageLoader = MyImageLoader(),
-                transformer = MyTransformer(pageKey)
+                transformer = MyTransformer()
         )
 
         MyViewerCustomizer().process(context, builder) // 添加自定义业务逻辑和UI处理

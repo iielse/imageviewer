@@ -1,26 +1,40 @@
 package com.github.iielse.imageviewer.demo.core.viewer
 
-import android.util.LongSparseArray
+import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import com.github.iielse.imageviewer.core.Transformer
+import com.github.iielse.imageviewer.demo.utils.isMainThread
 
-class MyTransformer(private val pageKey: String) : Transformer {
-    override fun getView(key: Long): ImageView? = TransitionViewsRef.provideTransitionViewsRef(pageKey)[key]
+class MyTransformer : Transformer {
+    override fun getView(key: Long): ImageView? = ViewerTransitionHelper.provide(key)
 }
 
 /**
- * 维护Transition过渡动画的缩略图和大图之间的映射关系. 需要在Activity/Fragment释放时刻.清空此界面的View引用
+ * 维护Transition过渡动画的缩略图和大图之间的映射关系.
  */
-object TransitionViewsRef {
-    private val map = mutableMapOf<String, LongSparseArray<ImageView>?>() // 可能有多级页面
-    const val KEY_MAIN = "page_main"
-
-    fun provideTransitionViewsRef(key: String): LongSparseArray<ImageView> {
-        return map[key] ?: LongSparseArray<ImageView>().also { map[key] = it }
+object ViewerTransitionHelper {
+    private val transition = HashMap<ImageView, Long>()
+    fun put(photoId: Long, imageView: ImageView) {
+        require(isMainThread())
+        if (!imageView.isAttachedToWindow) return
+        Log.i("viewer", "ViewerTransitionHelper put photoId $photoId $imageView")
+        imageView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(p0: View?) = Unit
+            override fun onViewDetachedFromWindow(p0: View?) {
+                Log.i("viewer", "auto remove onViewDetachedFromWindow photoId $photoId")
+                transition.remove(imageView)
+                imageView.removeOnAttachStateChangeListener(this)
+            }
+        })
+        transition[imageView] = photoId
     }
 
-    // invoke when activity onDestroy or fragment onDestroyView
-    fun releaseTransitionViewRef(key: String) {
-        map[key] = null
+    fun provide(photoId: Long): ImageView? {
+        transition.keys.forEach {
+            if (transition[it] == photoId)
+                return it
+        }
+        return null
     }
 }

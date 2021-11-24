@@ -1,15 +1,11 @@
 package com.github.iielse.imageviewer.demo.business
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.github.iielse.imageviewer.demo.core.ITEM_CLICKED
-import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef
-import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef.KEY_MAIN
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.databinding.MainActivityBinding
 import com.github.iielse.imageviewer.demo.utils.App
@@ -29,7 +25,6 @@ class MainActivity : AppCompatActivity() {
         binding.customTransition.setOnClickListener(null)
         binding.recyclerView.adapter = null
         adapter.setListener(null)
-        TransitionViewsRef.releaseTransitionViewRef(KEY_MAIN)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 //            return
 //        }
 
-        ViewerHelper.provideImageViewerBuilder(this, item, KEY_MAIN)
+        ViewerHelper.provideImageViewerBuilder(this, item)
                 .show()
     }
 

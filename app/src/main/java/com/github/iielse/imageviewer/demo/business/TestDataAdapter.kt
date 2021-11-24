@@ -3,8 +3,7 @@ package com.github.iielse.imageviewer.demo.business
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.demo.core.BasePagedAdapter
-import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef
-import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef.KEY_MAIN
+import com.github.iielse.imageviewer.demo.core.viewer.ViewerTransitionHelper
 import com.github.iielse.imageviewer.demo.data.MyData
 
 class TestDataAdapter : BasePagedAdapter() {
@@ -26,16 +25,7 @@ class TestDataAdapter : BasePagedAdapter() {
         super.onViewAttachedToWindow(holder)
         if (holder is TestDataViewHolder) {
             (holder.itemView.tag as? MyData?)?.let {
-                TransitionViewsRef.provideTransitionViewsRef(KEY_MAIN).put(it.id, holder.binding.imageView)
-            }
-        }
-    }
-
-    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
-        super.onViewDetachedFromWindow(holder)
-        if (holder is TestDataViewHolder) {
-            (holder.itemView.tag as? MyData?)?.let {
-                TransitionViewsRef.provideTransitionViewsRef(KEY_MAIN).remove(it.id)
+                ViewerTransitionHelper.put(it.id, holder.binding.imageView)
             }
         }
     }
