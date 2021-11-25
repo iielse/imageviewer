@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 
 android {
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -40,4 +41,20 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:2.16.1'
     implementation 'com.github.chrisbanes:PhotoView:2.2.0'
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                artifact androidSourcesJar // optional sources
+            }
+        }
+    }
 }
