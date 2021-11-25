@@ -9,9 +9,9 @@ import java.lang.IllegalStateException
 import kotlin.math.max
 import kotlin.math.min
 
-// 模拟服务器
+// 模拟数据源仓库 操作管理
 class Api(
-    private val data: MutableList<MyData>
+    private val data: MutableList<MyData> // 源数据
 ) {
     // 模拟网络请求或者本地db查询 上一页
     fun asyncQueryBefore(id: Long, pageSize: Int, callback: (List<MyData>) -> Unit) {
@@ -37,9 +37,10 @@ class Api(
         }, 100)
     }
 
+    // 模拟删除
     fun asyncDelete(item: List<MyData>, callback: ()->Unit) {
        require(  isMainThread())
-        data.removeAll(item) // 模拟服务器把数据删掉了
+        data.removeAll(item) // 模拟把数据删掉了
         Handler(Looper.getMainLooper()).postDelayed({
             callback()
         }, 200)

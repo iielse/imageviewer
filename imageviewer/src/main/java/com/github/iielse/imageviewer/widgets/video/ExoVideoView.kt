@@ -8,7 +8,6 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.analytics.AnalyticsListener
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.video.VideoSize
 import kotlin.math.min
@@ -134,12 +133,5 @@ open class ExoVideoView @JvmOverloads constructor(
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         release()
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (exoPlayer == null) {
-            playUrl?.let(::prepare)
-        }
     }
 }

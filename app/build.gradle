@@ -48,7 +48,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer:2.16.1'
 
     implementation project(':imageviewer')
-//     implementation 'com.github.iielse:imageviewer:2.1.8'
+//     implementation 'com.github.iielse:imageviewer:2.1.9'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
 }

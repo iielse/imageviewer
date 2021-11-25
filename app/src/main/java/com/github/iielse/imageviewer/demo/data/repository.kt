@@ -26,6 +26,7 @@ class TestRepository {
         requestMore = { request(false) }
     )
 
+    // 分页加载
     fun request(initial: Boolean) {
         val requestKey = if (initial) -1 else state.nextKey?.toLong()
         api.asyncQueryAfter(requestKey, PAGE_SIZE) {

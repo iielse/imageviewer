@@ -41,18 +41,18 @@ object ViewerHelper {
         // viewer 构造的基本元素
         val builder = ImageViewerBuilder(
                 context = context,
-                initKey = clickedData.id,
-                dataProvider = myDataProvider(clickedData),
-                imageLoader = MyImageLoader(),
-                transformer = MyTransformer()
+                initKey = clickedData.id,  // 被点击的图片id
+                dataProvider = myDataProvider(clickedData), // 数据提供者. 和调用者业务强绑定
+                imageLoader = MyImageLoader(),  // 自定义实现
+                transformer = MyTransformer() // 固定写法. 实现 ViewerTransitionHelper 确定 进场退场动画
         )
 
         MyViewerCustomizer().process(context, builder) // 添加自定义业务逻辑和UI处理
 
-        if (fullScreen) {
+        if (fullScreen) { //
             builder.setViewerFactory(object : ImageViewerDialogFragment.Factory() {
                 override fun build() = FullScreenImageViewerDialogFragment()
-            })
+            }) // 对弹窗增加自定义内容
         }
         return builder
     }
