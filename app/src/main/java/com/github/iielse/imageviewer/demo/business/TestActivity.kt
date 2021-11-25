@@ -22,42 +22,42 @@ class TestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        binding.exoVideoView.setOnClickListener {
-            toast("video click")
-        }
-        binding.exoVideoView.setOnLongClickListener {
-            toast("video long clicked")
-            true
-        }
-        // val url = "https://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4"
-        val url = File("/storage/emulated/0/DCIM/Camera/trailer.mp4").absolutePath
-        binding.exoVideoView.prepare(url)
-        binding.exoVideoView.resume(localMediaSourceProvider)
+//        binding.exoVideoView.setOnClickListener {
+//            toast("video click")
+//        }
+//        binding.exoVideoView.setOnLongClickListener {
+//            toast("video long clicked")
+//            true
+//        }
+//        // val url = "https://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4"
+//        val url = File("/storage/emulated/0/DCIM/Camera/trailer.mp4").absolutePath
+//        binding.exoVideoView.prepare(url)
+//        binding.exoVideoView.resume(localMediaSourceProvider)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        binding.exoVideoView.release()
+//        binding.exoVideoView.release()
     }
 
 }
 
 
-val localMediaSourceProvider = object : ExoVideoView.MediaSourceProvider {
-    override fun provide(playUrl: String): List<MediaSource>? {
-        return try {
-//            val dataSpec = DataSpec(Uri.fromFile(File(playUrl)))
-//            val fileDataSource = FileDataSource()
-//            fileDataSource.open(dataSpec)
-//            val factory = DataSource.Factory { fileDataSource }
-//            val mediaSource =
-//                ProgressiveMediaSource.Factory(factory, DefaultExtractorsFactory())
-//                    .createMediaSource(MediaItem.Builder().setUri(fileDataSource.uri).build())
-//            listOf(mediaSource)
-            null
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-}
+//val localMediaSourceProvider = object : ExoVideoView.MediaSourceProvider {
+//    override fun provide(playUrl: String): List<MediaSource>? {
+//        return try {
+////            val dataSpec = DataSpec(Uri.fromFile(File(playUrl)))
+////            val fileDataSource = FileDataSource()
+////            fileDataSource.open(dataSpec)
+////            val factory = DataSource.Factory { fileDataSource }
+////            val mediaSource =
+////                ProgressiveMediaSource.Factory(factory, DefaultExtractorsFactory())
+////                    .createMediaSource(MediaItem.Builder().setUri(fileDataSource.uri).build())
+////            listOf(mediaSource)
+//            null
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            null
+//        }
+//    }
+//}

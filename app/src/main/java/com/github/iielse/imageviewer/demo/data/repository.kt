@@ -59,17 +59,11 @@ private val data: List<MyData> by lazy {
     mutableListOf(
         // long horizontal
         // long vertical
-        MyData(
-            subsampling = true,
-            id = id++,
-            url = "https://imgkepu.gmw.cn/attachement/jpg/site2/20200417/94c69122e51c2003c2e220.jpg"
-        ),
+        MyData( subsampling = true, id = id++, url = "https://imgkepu.gmw.cn/attachement/jpg/site2/20200417/94c69122e51c2003c2e220.jpg"),
         // video
-        //MyData(id = id++, url = "https://media.w3.org/2010/05/sintel/trailer.mp4"),
-        MyData(
-            id = id++,
-            url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        ),
+        MyData(id = id++, url = "https://media.w3.org/2010/05/sintel/trailer.mp4"),
+        MyData(id = id++, url = "https://gp-dev.cdn.bcebos.com/gp-dev/upload/file/source/d68ca66212adb6bad819678a7c9a4fb9.mp4"),
+        MyData(id = id++, url = "https://webstatic.mihoyo.com/upload/op-public/2020/09/27/fd431739ff26ceeb3010ac561d68446b_345688670889091949.mp4"),
     ).let {
         it.apply { addAll(image.map { MyData(id = id++, url = it) }) }
     }.toList()
