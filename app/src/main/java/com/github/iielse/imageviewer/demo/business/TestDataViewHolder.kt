@@ -26,11 +26,11 @@ class TestDataViewHolder(
     fun bind(item: MyData, pos: Int) {
         itemView.tag = item
 
-        binding.posTxt.text = when {
-            item.subsampling -> "$pos subsampling"
-            item.url.endsWith(".gif") -> "$pos gif"
-            item.url.endsWith(".mp4") -> "$pos video"
-            else -> pos.toString()
+        binding.type.text = when {
+            item.subsampling -> "subsampling"
+            item.url.endsWith(".gif") -> "gif"
+            item.url.endsWith(".mp4") -> "video"
+            else -> "image"
         }
 
         // 测试 fitXY 的过渡动画效果

@@ -1,8 +1,5 @@
 package com.github.iielse.imageviewer.core
 
-import android.util.Log
-import com.github.iielse.imageviewer.utils.Config
-
 object Components {
     private var initialize = false
     val working get() = initialize
@@ -15,7 +12,6 @@ object Components {
     private var viewerCallback: ViewerCallback? = null
 
     fun initialize(imageLoader: ImageLoader, dataProvider: DataProvider, transformer: Transformer, initKey: Long) {
-        if (Config.DEBUG) Log.i("viewer", "Components initialize")
         if (initialize) throw IllegalStateException()
         Components.imageLoader = imageLoader
         Components.dataProvider = dataProvider
@@ -45,7 +41,6 @@ object Components {
     fun requireOverlayCustomizer() = overlayCustomizer ?: object : OverlayCustomizer {}
 
     fun release() {
-        if (Config.DEBUG) Log.i("viewer", "Components release")
         initialize = false
         imageLoader = null
         dataProvider = null

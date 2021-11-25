@@ -13,10 +13,10 @@ import com.github.iielse.imageviewer.core.ImageLoader
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.business.ViewerHelper
-import com.github.iielse.imageviewer.demo.business.find
+import com.github.iielse.imageviewer.demo.core.ObserverAdapter
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.appContext
-import com.github.iielse.imageviewer.demo.utils.bindLifecycle
+import com.github.iielse.imageviewer.demo.utils.lifecycleOwner
 import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
@@ -57,7 +57,7 @@ class MyImageLoader : ImageLoader {
         exoVideoView.addAnalyticsListener(object : AnalyticsListener {
             override fun onLoadError(eventTime: AnalyticsListener.EventTime, loadEventInfo: LoadEventInfo, mediaLoadData: MediaLoadData, error: IOException, wasCanceled: Boolean) {
                 findLoadingView(viewHolder)?.visibility = View.GONE
-                viewHolder.find<TextView>(R.id.errorPlaceHolder)?.text = error.message
+                viewHolder.itemView.findViewById<TextView>(R.id.errorPlaceHolder)?.text = error.message
             }
         })
         exoVideoView.setVideoRenderedCallback(object : ExoVideoView.VideoRenderedListener {
@@ -68,7 +68,7 @@ class MyImageLoader : ImageLoader {
             }
         })
 
-        val playerControlView = viewHolder.find<PlayerControlView>(R.id.playerControlView)
+        val playerControlView = viewHolder.itemView.findViewById<PlayerControlView>(R.id.playerControlView)
         exoVideoView.addListener(object : ExoVideoView2.Listener {
             override fun onDrag(view: ExoVideoView2, fraction: Float) {
                 if (!ViewerHelper.simplePlayVideo) {
@@ -101,7 +101,7 @@ class MyImageLoader : ImageLoader {
                 .doFinally { findLoadingView(viewHolder)?.visibility = View.GONE }
                 .doOnNext { subsamplingView.setImage(ImageSource.uri(Uri.fromFile(it))) }
                 .doOnError { toast(it.message) }
-                .subscribe().bindLifecycle(subsamplingView)
+                .subscribe(ObserverAdapter(subsamplingView.lifecycleOwner?.lifecycle))
     }
 
     private fun subsamplingDownloadRequest(url: String): Observable<File> {
@@ -109,7 +109,7 @@ class MyImageLoader : ImageLoader {
             try {
                 it.onNext(Glide.with(appContext).downloadOnly().load(url).submit().get())
                 it.onComplete()
-            } catch (e: java.lang.Exception) {
+            } catch (e: Throwable) {
                 if (!it.isDisposed) it.onError(e)
             }
         }

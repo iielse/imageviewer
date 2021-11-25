@@ -3,12 +3,8 @@ package com.github.iielse.imageviewer.demo.business
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.annotation.IdRes
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.ImageViewerActionViewModel
 import com.github.iielse.imageviewer.ImageViewerBuilder
@@ -18,7 +14,9 @@ import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.core.VHCustomizer
 import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.demo.R
+import com.github.iielse.imageviewer.demo.core.ObserverAdapter
 import com.github.iielse.imageviewer.demo.data.MyData
+import com.github.iielse.imageviewer.demo.data.TestRepository
 import com.github.iielse.imageviewer.demo.utils.*
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
@@ -33,9 +31,10 @@ import java.util.concurrent.TimeUnit
 /**
  * viewer 自定义业务&UI
  */
-class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, ViewerCallback {
+class MyViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCustomizer, ViewerCallback {
     private var activity: FragmentActivity? = null
-    private var viewerActions: ImageViewerActionViewModel? = null
+    private var testDataViewModel: TestDataViewModel? = null
+    private var viewerViewModel: ImageViewerActionViewModel? = null
     private var videoTask: Disposable? = null
     private var lastVideoVH: RecyclerView.ViewHolder? = null
     private var indicatorDecor: View? = null
@@ -49,7 +48,8 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
      */
     fun process(activity: FragmentActivity, builder: ImageViewerBuilder) {
         this.activity = activity
-        viewerActions = ViewModelProvider(activity).get(ImageViewerActionViewModel::class.java)
+        testDataViewModel = ViewModelProvider(activity).get(TestDataViewModel::class.java)
+        viewerViewModel = ViewModelProvider(activity).get(ImageViewerActionViewModel::class.java)
         activity.lifecycle.addObserver(this)
         builder.setVHCustomizer(this)
         builder.setOverlayCustomizer(this)
@@ -62,19 +62,19 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
         }
         when (type) {
             ItemType.SUBSAMPLING -> {
-                viewHolder.find<View>(R.id.subsamplingView)?.setOnClickCallback { viewerActions?.dismiss() }
+                viewHolder.itemView.findViewById<View>(R.id.subsamplingView)?.setOnClickCallback { viewerViewModel?.dismiss() }
             }
             ItemType.PHOTO -> {
-                viewHolder.find<View>(R.id.photoView)?.setOnClickCallback { viewerActions?.dismiss() }
+                viewHolder.itemView.findViewById<View>(R.id.photoView)?.setOnClickCallback { viewerViewModel?.dismiss() }
             }
             ItemType.VIDEO -> {
                 (viewHolder.itemView as? ViewGroup?)?.let {
                     it.addView(it.inflate(R.layout.item_video_custom_layout))
                 }
-                val playerControlView = viewHolder.find<PlayerControlView>(R.id.playerControlView)
+                val playerControlView = viewHolder.itemView.findViewById<PlayerControlView>(R.id.playerControlView)
                 playerControlView?.visibility = if (ViewerHelper.simplePlayVideo) View.GONE else View.VISIBLE
 
-                viewHolder.find<ExoVideoView>(R.id.videoView)?.let {
+                viewHolder.itemView.findViewById<ExoVideoView>(R.id.videoView)?.let {
                     it.setOnClickCallback { toast("video clicked") }
                     it.setOnLongClickListener {
                         toast("video long clicked")
@@ -88,6 +88,13 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
     override fun bind(type: Int, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val myData = data as MyData
         viewHolder.itemView.findViewById<TextView>(R.id.exText).text = myData.desc
+        viewHolder.itemView.findViewById<View>(R.id.remove).setOnClickListener {
+            val target = listOf(data)
+            TestRepository.get().api.asyncDelete(target) {
+                viewerViewModel?.remove(listOf(data))
+                testDataViewModel?.remove(listOf(data))
+            }
+        }
     }
 
     override fun provideView(parent: ViewGroup): View {
@@ -96,22 +103,20 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
             indicator = it.findViewById(R.id.indicator)
             pre = it.findViewById(R.id.pre)
             next = it.findViewById(R.id.next)
-            pre?.setOnClickCallback { viewerActions?.setCurrentItem(currentPosition - 1) }
-            next?.setOnClickCallback { viewerActions?.setCurrentItem(currentPosition + 1) }
-            it.findViewById<View>(R.id.dismiss).setOnClickCallback { viewerActions?.dismiss() }
+            pre?.setOnClickCallback { viewerViewModel?.setCurrentItem(currentPosition - 1) }
+            next?.setOnClickCallback { viewerViewModel?.setCurrentItem(currentPosition + 1) }
+            it.findViewById<View>(R.id.dismiss).setOnClickCallback { viewerViewModel?.dismiss() }
         }
     }
 
     override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {
-        log("onRelease")
-        viewHolder.find<View>(R.id.customizeDecor)
+        viewHolder.itemView.findViewById<View>(R.id.customizeDecor)
                 ?.animate()?.setDuration(200)?.alpha(0f)?.start()
         indicatorDecor?.animate()?.setDuration(200)?.alpha(0f)?.start()
         release()
     }
 
     override fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {
-        log("onPageSelected $position")
         currentPosition = position
         indicator?.text = position.toString()
         processSelectVideo(viewHolder)
@@ -119,44 +124,44 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
 
     private fun processSelectVideo(viewHolder: RecyclerView.ViewHolder) {
         videoTask?.dispose()
-        lastVideoVH?.find<ExoVideoView>(R.id.videoView)?.reset()
+        lastVideoVH?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.reset()
 
         when (viewHolder) {
             is VideoViewHolder -> {
-                val videoView = viewHolder.find<ExoVideoView>(R.id.videoView)
+                val videoView = viewHolder.itemView.findViewById<ExoVideoView>(R.id.videoView)
 
-                videoTask = Observable.timer(Config.DURATION_TRANSITION + 50, TimeUnit.MILLISECONDS)
+                val task = object : ObserverAdapter<Long>(videoView?.lifecycleOwner?.lifecycle) {
+                    override fun onNext(t: Long) {
+                        if (ViewerHelper.simplePlayVideo) {
+                            videoView?.resume()
+                        } else {
+                            val playerControlView = viewHolder.itemView.findViewById<PlayerControlView>(R.id.playerControlView)
+                            playerControlView?.player = videoView?.player()
+                        }
+                    }
+                }
+                Observable.timer(Config.DURATION_TRANSITION + 50, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
-                        .doOnNext {
-                            if (ViewerHelper.simplePlayVideo) {
-                                videoView?.resume()
-                            } else {
-                                val playerControlView = viewHolder.find<PlayerControlView>(R.id.playerControlView)
-                                playerControlView?.player = videoView?.player()
-                            }
-                        }
-                        .subscribe().bindLifecycle(videoView)
+                        .subscribe(task)
+                videoTask = task
                 lastVideoVH = viewHolder
             }
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    private fun onResume() {
-        lastVideoVH?.find<ExoVideoView>(R.id.videoView)?.resume()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    private fun onPause() {
-        lastVideoVH?.find<ExoVideoView>(R.id.videoView)?.pause()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    private fun onDestroy() {
-        lastVideoVH?.find<ExoVideoView>(R.id.videoView)?.release()
-        videoTask?.dispose()
-        videoTask = null
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        val videoView = lastVideoVH?.itemView?.findViewById<ExoVideoView>(R.id.videoView)
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> videoView?.resume()
+            Lifecycle.Event.ON_PAUSE -> videoView?.pause()
+            Lifecycle.Event.ON_DESTROY -> {
+                videoView?.release()
+                videoTask?.dispose()
+                videoTask = null
+            }
+            else -> {}
+        }
     }
 
     private fun release() {
@@ -171,6 +176,3 @@ class MyViewerCustomizer : LifecycleObserver, VHCustomizer, OverlayCustomizer, V
         next = null
     }
 }
-
-
-fun <T : View> RecyclerView.ViewHolder.find(@IdRes id: Int): T? = itemView.findViewById(id)

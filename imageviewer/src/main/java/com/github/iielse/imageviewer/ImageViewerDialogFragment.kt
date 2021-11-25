@@ -27,8 +27,8 @@ import kotlin.math.max
 open class ImageViewerDialogFragment : BaseDialogFragment() {
     private var innerBinding: FragmentImageViewerDialogBinding? = null
     private val binding get() = innerBinding!!
-    private val events by lazy { ViewModelProvider(requireActivity()).get(ImageViewerActionViewModel::class.java) }
     private val viewModel by lazy { ViewModelProvider(this).get(ImageViewerViewModel::class.java) }
+    private val actions by lazy { ViewModelProvider(requireActivity()).get(ImageViewerActionViewModel::class.java) }
     private val userCallback by lazy { requireViewerCallback() }
     private val initKey by lazy { requireInitKey() }
     private val transformer by lazy { requireTransformer() }
@@ -61,7 +61,6 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
         requireOverlayCustomizer().provideView(binding.overlayView)?.let(binding.overlayView::addView)
 
         viewModel.dataList.observe(viewLifecycleOwner) { list ->
-            if (Config.DEBUG) Log.i("viewer", "submitList ${list.size}")
             adapter.submitList(list)
             initPosition = list.indexOfFirst { it.id == initKey }
             binding.viewer.setCurrentItem(initPosition, false)
@@ -71,13 +70,15 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
             binding.viewer.isUserInputEnabled = it ?: true
         }
 
-        events.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
+        actions.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
     }
+
 
     private fun handle(action: Pair<String, Any?>?) {
         when (action?.first) {
             ViewerActions.SET_CURRENT_ITEM -> binding.viewer.currentItem = max(action.second as Int, 0)
             ViewerActions.DISMISS -> onBackPressed()
+            ViewerActions.REMOVE_ITEMS -> viewModel.remove(action.second) { onBackPressed() }
         }
     }
 
@@ -146,7 +147,6 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
 
     override fun onBackPressed() {
         if (TransitionStartHelper.transitionAnimating || TransitionEndHelper.transitionAnimating) return
-        if (Config.DEBUG) Log.i("viewer", "onBackPressed ${binding.viewer.currentItem}")
 
         val currentKey = adapter.getItemId(binding.viewer.currentItem)
         binding.viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)?.let { endView ->

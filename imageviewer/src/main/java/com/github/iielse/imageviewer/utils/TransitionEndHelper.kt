@@ -1,15 +1,12 @@
 package com.github.iielse.imageviewer.utils
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 import com.github.iielse.imageviewer.R
@@ -42,13 +39,14 @@ object TransitionEndHelper {
         }
         holder.itemView.post(doTransition)
 
-        fragment.lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun onDestroy() {
-                fragment.lifecycle.removeObserver(this)
-                animating = false
-                holder.itemView.removeCallbacks(doTransition)
-                TransitionManager.endTransitions(holder.itemView as ViewGroup)
+        fragment.lifecycle.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    fragment.lifecycle.removeObserver(this)
+                    animating = false
+                    holder.itemView.removeCallbacks(doTransition)
+                    TransitionManager.endTransitions(holder.itemView as ViewGroup)
+                }
             }
         })
     }

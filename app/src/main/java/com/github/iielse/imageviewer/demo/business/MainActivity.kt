@@ -1,14 +1,11 @@
 package com.github.iielse.imageviewer.demo.business
 
-import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.github.iielse.imageviewer.demo.core.ITEM_CLICKED
-import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef
-import com.github.iielse.imageviewer.demo.core.viewer.TransitionViewsRef.KEY_MAIN
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.databinding.MainActivityBinding
 import com.github.iielse.imageviewer.demo.utils.App
@@ -17,8 +14,7 @@ import com.github.iielse.imageviewer.utils.Config
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { MainActivityBinding.inflate(layoutInflater) }
-
-    private val viewModel by lazy { ViewModelProvider(this).get(TestDataViewModel::class.java) }
+    private val viewModel by viewModels<TestDataViewModel> { TestDataViewModelFactory() }
     private val adapter by lazy { TestDataAdapter() }
 
     override fun onDestroy() {
@@ -29,7 +25,6 @@ class MainActivity : AppCompatActivity() {
         binding.customTransition.setOnClickListener(null)
         binding.recyclerView.adapter = null
         adapter.setListener(null)
-        TransitionViewsRef.releaseTransitionViewRef(KEY_MAIN)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +34,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         initialViews()
         viewModel.dataList.observe(this, androidx.lifecycle.Observer(adapter::submitList))
+
+        viewModel.request()
     }
 
     private fun handleAdapterListener(action: String, item: Any?) {
@@ -48,12 +45,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showViewer(item: MyData) {
-        if (item.id == 10L) {
-            startActivity(Intent(this, TestActivity::class.java))
-            return
-        }
+//        if (item.id == 10L) {
+//            startActivity(Intent(this, TestActivity::class.java))
+//            return
+//        }
 
-        ViewerHelper.provideImageViewerBuilder(this, item, KEY_MAIN)
+        ViewerHelper.provideImageViewerBuilder(this, item)
                 .show()
     }
 

@@ -5,10 +5,11 @@
 
 - **过渡动画** 缩略图到大图或大图到缩略图时提供无缝衔接动画
 - **浏览手势** 浏览大图时可使用常势操用手.如缩放图片等.（[PhotoView](https://github.com/chrisbanes/PhotoView)）
-- **超大图** 图片区块加载.避免OOM（[SubsamplingScaleImageView](https://github.com/davemorrissey/subsampling-scale-image-view)）
-- **Video** 支持Video加载 ([SimpleExoPlayer](https://github.com/google/ExoPlayer))
+- **超大图** 图片区块加载 （[SubsamplingScaleImageView](https://github.com/davemorrissey/subsampling-scale-image-view)）
+- **Video** 支持Video加载 ([ExoPlayer](https://github.com/google/ExoPlayer))
 - **拖拽关闭** 对大图进行上/下滑操作退出浏览.
 - **数据分页加载** 在浏览大图的情况下异步加载百万数据.
+- **数据删除**
 - **自定义UI** 对预览页的UI元素自定义追加
 
 ![](https://github.com/iielse/res/blob/master/imageviewer/1.gif)

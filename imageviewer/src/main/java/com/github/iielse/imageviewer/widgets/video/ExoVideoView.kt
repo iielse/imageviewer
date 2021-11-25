@@ -2,14 +2,14 @@ package com.github.iielse.imageviewer.widgets.video
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.TextureView
 import com.github.iielse.imageviewer.utils.Config
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.util.EventLogger
+import com.google.android.exoplayer2.video.VideoSize
 import kotlin.math.min
 
 open class ExoVideoView @JvmOverloads constructor(
@@ -21,64 +21,53 @@ open class ExoVideoView @JvmOverloads constructor(
         fun onRendered(view: ExoVideoView)
     }
 
-    interface MediaSourceProvider {
-        fun provide(playUrl: String): List<MediaSource>?
+    interface MediaItemProvider {
+        fun provide(playUrl: String): List<MediaItem>?
     }
 
-    private val exoSourceManager by lazy { ExoSourceManager.newInstance(context, null) }
     private val logger by lazy { EventLogger(null) }
-    private var simpleExoPlayer: SimpleExoPlayer? = null
+    private var exoPlayer: ExoPlayer? = null
     private var videoRenderedCallback: VideoRenderedListener? = null
     private val listeners = mutableListOf<AnalyticsListener>()
     private var playUrl: String? = null
     protected var prepared = false
 
     fun prepare(url: String) {
-        if (Config.DEBUG) Log.i("viewer", "video prepare $url $simpleExoPlayer")
         playUrl = url
     }
 
     fun resume(
-        provider: MediaSourceProvider? = null
+        provider: MediaItemProvider? = null
     ) {
         val url = playUrl ?: return
-        if (Config.DEBUG) Log.i("viewer", "video resume $url $simpleExoPlayer")
-        if (simpleExoPlayer == null) {
+        if (exoPlayer == null) {
             prepared = false
             alpha = 0f
-            newSimpleExoPlayer()
-            val videoSources = provider?.provide(url) ?: listOf(
-                exoSourceManager.getMediaSource(
-                    url, true, true, true, context.cacheDir, null
-                )
-            )
-            simpleExoPlayer?.setMediaSources(videoSources, true)
-            simpleExoPlayer?.prepare()
+            newExoPlayer()
+            exoPlayer?.setMediaItems(provider?.provide(url) ?: listOf(MediaItem.fromUri(url)))
+            exoPlayer?.prepare()
         }
-        simpleExoPlayer?.playWhenReady = true
+        exoPlayer?.playWhenReady = true
     }
 
     fun pause() {
-        if (Config.DEBUG) Log.i("viewer", "video pause $playUrl $simpleExoPlayer")
-        simpleExoPlayer?.playWhenReady = false
+        exoPlayer?.playWhenReady = false
     }
 
     fun reset() {
-        if (Config.DEBUG) Log.i("viewer", "video reset $playUrl $simpleExoPlayer")
-        simpleExoPlayer?.seekTo(0)
-        simpleExoPlayer?.playWhenReady = false
+        exoPlayer?.seekTo(0)
+        exoPlayer?.playWhenReady = false
     }
 
     fun release() {
-        val player = simpleExoPlayer ?: return
-        if (Config.DEBUG) Log.i("viewer", "video release $playUrl $player")
+        val player = exoPlayer ?: return
         player.playWhenReady = false
         player.setVideoTextureView(null)
         player.removeListener(videoListener)
         player.removeAnalyticsListener(logger)
         listeners.toList().forEach { player.removeAnalyticsListener(it) }
         player.release()
-        simpleExoPlayer = null
+        exoPlayer = null
     }
 
     fun setVideoRenderedCallback(listener: VideoRenderedListener?) {
@@ -92,44 +81,35 @@ open class ExoVideoView @JvmOverloads constructor(
     }
 
     fun player(
-        provider: MediaSourceProvider? = null
-    ): SimpleExoPlayer? {
+        provider: MediaItemProvider? = null
+    ): ExoPlayer? {
         val url = playUrl ?: return null
-        if (simpleExoPlayer == null) {
+        if (exoPlayer == null) {
             prepared = false
             alpha = 0f
-            newSimpleExoPlayer()
-            val videoSources = provider?.provide(url) ?: listOf(
-                exoSourceManager.getMediaSource(
-                    url, true, true, true, context.cacheDir, null
-                )
-            )
-            simpleExoPlayer?.setMediaSources(videoSources, true)
-            simpleExoPlayer?.prepare()
+            newExoPlayer()
+            exoPlayer?.setMediaItems(provider?.provide(url) ?: listOf(MediaItem.fromUri(url)))
+            exoPlayer?.prepare()
         }
-        return simpleExoPlayer
+        return exoPlayer
     }
 
-    private fun newSimpleExoPlayer(): SimpleExoPlayer {
+    private fun newExoPlayer(): ExoPlayer {
         release()
-        if (Config.DEBUG) Log.i("viewer", "video newSimpleExoPlayer $playUrl")
-        return SimpleExoPlayer.Builder(context).build().also {
+        return ExoPlayer.Builder(context).build().also {
             it.setVideoTextureView(this)
             it.addListener(videoListener)
             if (Config.DEBUG) it.addAnalyticsListener(logger)
             listeners.toList().forEach { userListener -> it.addAnalyticsListener(userListener) }
-            simpleExoPlayer = it
+            exoPlayer = it
         }
     }
 
     private val videoListener = object : Player.Listener {
         override fun onVideoSizeChanged(
-            width: Int,
-            height: Int,
-            unappliedRotationDegrees: Int,
-            pixelWidthHeightRatio: Float
+            videoSize: VideoSize
         ) {
-            updateTextureViewSize(width, height)
+            updateTextureViewSize(videoSize.width, videoSize.height)
         }
     }
 
@@ -152,15 +132,6 @@ open class ExoVideoView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (Config.DEBUG) Log.i("viewer", "video onDetachedFromWindow $playUrl $simpleExoPlayer")
         release()
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (simpleExoPlayer == null) {
-            if (Config.DEBUG) Log.i("viewer", "video onAttachedToWindow $playUrl")
-            playUrl?.let(::prepare)
-        }
     }
 }
