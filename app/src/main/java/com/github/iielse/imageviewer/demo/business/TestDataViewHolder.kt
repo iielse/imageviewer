@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.github.iielse.imageviewer.demo.core.AdapterCallback
 import com.github.iielse.imageviewer.demo.core.ITEM_CLICKED
+import com.github.iielse.imageviewer.demo.core.viewer.ViewerTransitionHelper
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.databinding.ItemImageBinding
 
@@ -37,6 +38,7 @@ class TestDataViewHolder(
         binding.imageView.scaleType = if (pos == 19) ImageView.ScaleType.FIT_XY else ImageView.ScaleType.CENTER_CROP
 
         Glide.with(binding.imageView).load(item.url).into(binding.imageView)
+        ViewerTransitionHelper.put(item.id, binding.imageView)
     }
 }
 

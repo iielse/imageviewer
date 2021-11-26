@@ -7,8 +7,8 @@ import com.github.iielse.imageviewer.core.DataProvider
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.core.SimpleDataProvider
 import com.github.iielse.imageviewer.demo.core.viewer.FullScreenImageViewerDialogFragment
-import com.github.iielse.imageviewer.demo.core.viewer.MyImageLoader
-import com.github.iielse.imageviewer.demo.core.viewer.MyTransformer
+import com.github.iielse.imageviewer.demo.core.viewer.SimpleImageLoader
+import com.github.iielse.imageviewer.demo.core.viewer.SimpleTransformer
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.data.PAGE_SIZE
 import com.github.iielse.imageviewer.demo.data.TestRepository
@@ -43,11 +43,11 @@ object ViewerHelper {
                 context = context,
                 initKey = clickedData.id,  // 被点击的图片id
                 dataProvider = myDataProvider(clickedData), // 数据提供者. 和调用者业务强绑定
-                imageLoader = MyImageLoader(),  // 自定义实现
-                transformer = MyTransformer() // 固定写法. 实现 ViewerTransitionHelper 确定 进场退场动画
+                imageLoader = SimpleImageLoader(),  // 自定义实现
+                transformer = SimpleTransformer() // 固定写法. 实现 ViewerTransitionHelper 确定 进场退场动画
         )
 
-        MyViewerCustomizer().process(context, builder) // 添加自定义业务逻辑和UI处理
+        SimpleViewerCustomizer().process(context, builder) // 添加自定义业务逻辑和UI处理
 
         if (fullScreen) { //
             builder.setViewerFactory(object : ImageViewerDialogFragment.Factory() {

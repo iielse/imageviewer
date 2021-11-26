@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
 /**
  * viewer 自定义业务&UI
  */
-class MyViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCustomizer, ViewerCallback {
+class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCustomizer, ViewerCallback {
     private var activity: FragmentActivity? = null
     private var testDataViewModel: TestDataViewModel? = null
     private var viewerViewModel: ImageViewerActionViewModel? = null

@@ -1,38 +1,41 @@
 # Imageviewer
 提供查看缩略视图到原视图的无缝过渡转变的视觉效果，优雅的浏览普通图、长图、动图.
 
-#### 主要功能
+#### 主要特征
 
 - **过渡动画** 缩略图到大图或大图到缩略图时提供无缝衔接动画
 - **浏览手势** 浏览大图时可使用常势操用手.如缩放图片等.（[PhotoView](https://github.com/chrisbanes/PhotoView)）
 - **超大图** 图片区块加载 （[SubsamplingScaleImageView](https://github.com/davemorrissey/subsampling-scale-image-view)）
 - **Video** 支持Video加载 ([ExoPlayer](https://github.com/google/ExoPlayer))
 - **拖拽关闭** 对大图进行上/下滑操作退出浏览.
-- **数据分页加载** 在浏览大图的情况下异步加载百万数据.
+- **数据分页加载** 在浏览大图的情况下异步加载数据.
 - **数据删除**
 - **自定义UI** 对预览页的UI元素自定义追加
+- **已适配RTL**
 
 ![](https://github.com/iielse/res/blob/master/imageviewer/1.gif)
 
-#### 使用
+### 引入
 ```
 implementation 'com.github.iielse:imageviewer:x.y.z'
 ```
-```
-val builder = ImageViewerBuilder(
-    context = this,
-    initKey = photo.id, // 用于定位被点击缩略图变化大图后初始化所在位置.以此来执行过渡动画.
-    dataProvider = MyDataProvider(), // 浏览数据源的提供者.支持一次性给全数据或分页加载.
-    imageLoader = MyImageLoader(), // 实现对数据源的加载.支持自定义加载数据类型，加载方案
-    transformer = MyTransformer() // 以photoId为标示，设置过渡动画的'配对'.
-)
-builder.setVHCustomizer(MyCustomViewHolderUI()) // 自定义每一页上的UI.比如可显示图片的更多信息.提供存储分享等更多功能等
-builder.setOverlayCustomizer(MyCustomIndicatorUI()) // 自定义'覆盖(最上)层'上的UI.比如添加指示器等
-builder.setViewerCallback(MyViewerStateChangedListener()) // 监听viewer的各种状态变化.包括页面的切换.以及过渡动画的执行状态
-builder.show()
-```
 
-#### 主要接口
+### 最简单的调用代码
+```
+fun show() { //
+    val dataList： List<Photo> = // 将要展示的图片集合列表
+    val clickedData: Photo = // 被点击的其中的那个图片元素信息
+    val builder = ImageViewerBuilder(
+        context = view.context,
+        initKey = clickedData.id, // photoId
+        dataProvider = SimpleDataProvider(dataList), // 一次性全量加载 // 实现DataProvider接口支持分页加载
+        imageLoader = SimpleImageLoader(), // 可使用demo固定写法 // 实现对数据源的加载.支持自定义加载数据类型，加载方案
+        transformer = SimpleTransformer(), // 可使用demo固定写法 // 以photoId为标示，设置过渡动画的'配对'.
+    )
+    builder.show()
+}
+```
+### 数据源的定义
 ```
 interface Photo {
     fun id(): Long // 每条图片数据的唯一标示. 主要用于分页数据加载. 定位过渡动画的对应关系
@@ -41,32 +44,9 @@ interface Photo {
 ```
 
 ```
-class MyDataProvider() : DataProvider {
-    override fun loadInitial(): List<Photo> {
-        return listOf() // 返回查看大图对应的数据源.若不需要分页可再次一次性返回所有数据源.
-    }
-
-    override fun loadAfter(key: Long, callback: (List<Photo>) -> Unit) {
-        // 根据最后一条图片数据id. 可进行(服务器/本地db)请求访问后续数据内容集合
-        Api.asyncQueryAfter(key) { result ->
-            callback(result)
-        }
-    }
-
-    override fun loadBefore(key: Long, callback: (List<Photo>) -> Unit) {
-        // 根据最初一条图片数据id. 可进行(服务器/本地db)请求访问之前数据内容集合
-        Api.asyncQueryBefore(key) { result ->
-            callback(result)
-        }
-    }
-}
-```
-
-```
-class MyImageLoader : ImageLoader {
-    /**
-     * 根据自身photo数据加载图片.可以使用其它图片加载框架.
-     */
+// 基本是固定写法. Glide 可以换成别的. demo代码中有video的写法.
+class SimpleImageLoader : ImageLoader {
+    /** 根据自身photo数据加载图片.可以使用其它图片加载框架. */
     override fun load(view: ImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val it = (data as? MyData?)?.url ?: return
         Glide.with(view).load(it)
@@ -75,7 +55,7 @@ class MyImageLoader : ImageLoader {
     }
 
     /**
-     * 根据自身photo数据加载超大图.subsamplingView数据源需要先将内容完整下载到本地.需要注意生命周期
+     * 根据自身photo数据加载超大图.subsamplingView数据源需要先将内容完整下载到本地.
      */
     override fun load(subsamplingView: SubsamplingScaleImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val it = (data as? MyData?)?.url ?: return
@@ -103,9 +83,60 @@ class MyImageLoader : ImageLoader {
     private fun findLoadingView(viewHolder: RecyclerView.ViewHolder): View? {
         return viewHolder.itemView.findViewById<ProgressBar>(R.id.loadingView)
     }
+
+    ......
 }
 ```
 ```
+// 基本是可以作为固定写法.
+class SimpleTransformer : Transformer {
+    override fun getView(key: Long): ImageView? = ViewerTransitionHelper.provide(key)
+}
+
+/**
+ * 维护Transition过渡动画的缩略图和大图之间的映射关系.
+ */
+object ViewerTransitionHelper {
+    private val transition = HashMap<ImageView, Long>()
+    fun put(photoId: Long, imageView: ImageView) { // 一般在加载展示列表图片的后面跟一句这行代码即可
+        require(isMainThread())
+        if (!imageView.isAttachedToWindow) return
+        imageView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(p0: View?) = Unit
+            override fun onViewDetachedFromWindow(p0: View?) {
+                transition.remove(imageView)
+                imageView.removeOnAttachStateChangeListener(this)
+            }
+        })
+        transition[imageView] = photoId
+    }
+
+    fun provide(photoId: Long): ImageView? {
+        transition.keys.forEach {
+            if (transition[it] == photoId)
+                return it
+        }
+        return null
+    }
+}
+```
+
+## 到此简单的集成已经完毕.
+-------------------------------------------------
+
+## 进阶使用.
+（组合实现以下3个方法.可以追加自定义的展示和功能）
+
+// 自定义'每一页'上的UI.比如可显示图片的更多信息.提供存储分享等更多功能等
+`builder.setVHCustomizer(MyCustomViewHolderUI())`
+// 自定义'覆盖(最上)层'上的UI.比如添加指示器等
+`builder.setOverlayCustomizer(MyCustomIndicatorUI())`
+// 监听viewer的各种状态变化.包括页面的切换(显示当前在第几页).；过渡动画的执行状态；维护video的播放状态等
+`builder.setViewerCallback(MyViewerStateChangedListener())`
+
+
+```
+// 一般监听翻页onPageSelected可以控制 video播放的状态
 // viewer 各状态监听回调
 interface ViewerCallback : ImageViewerAdapterListener {
     // 当点击缩略图变化大图的瞬间
@@ -123,12 +154,11 @@ interface ViewerCallback : ImageViewerAdapterListener {
     // 当某大图页面被选中
     fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {}
 }
-```
-#### 参数配置
 
+```
+#### 参数配置. 一般不用调整
 属性  | 作用说明
 ------------- | -------------
-DEBUG  | 调试日志开关
 OFFSCREEN_PAGE_LIMIT  | viewer预加载条数
 VIEWER_ORIENTATION  | viewer滑动方向
 VIEWER_BACKGROUND_COLOR  | 大图预览时背景色(默认纯黑)
@@ -140,17 +170,19 @@ SWIPE_TOUCH_SLOP | 拖拽触摸感知阈值
 DISMISS_FRACTION  | 拖拽返回边界阈值
 TRANSITION_OFFSET_Y | 修正透明状态栏下过渡动画的起始位置
 
-#### 方法调用
-注：通过 `ViewModelProvider(activity).get(ImageViewerActionViewModel::class.java)`获取viewer 操作对象引用
+### FAQ
+- 如何手动关闭退出整个页面？
+- 如何删除一条数据？
 
-方法  | 作用说明
-------------- | -------------
-`setCurrentItem(pos: Int)`  | 切换大图位置到指定位置
-`dismiss()`  | 退出浏览大图
+通过 `ViewModelProvider(activity).get(ImageViewerActionViewModel::class.java)`获取`viewer` 对象引用.
+之后可使用 `setCurrentItem(pos: Int)`切换大图位置到指定位置; `dismiss()`退出浏览大图; `remove(item: List<Photo>)`删除其中的元素
 
-#### 其它说明
-已适配RTL布局
-Video加载请参考demo
-demo可运行.demo代码已重构.具备良好可读性.放心食用
+
+- 如何实现Video的展示？
+可参考demo实现 demo代码位置 `SimpleViewerCustomizer`
+
+
+### 其它重要说明
+demo可运行. demo可运行. demo可运行 .demo代码已重构.
 
 都看到这里了，不点下`Star`吗 [旺柴]

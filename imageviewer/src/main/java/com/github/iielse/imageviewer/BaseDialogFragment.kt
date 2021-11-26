@@ -2,12 +2,10 @@ package com.github.iielse.imageviewer
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.annotation.CallSuper
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import com.github.iielse.imageviewer.utils.Config
 
 open class BaseDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

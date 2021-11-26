@@ -6,7 +6,7 @@ import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.core.SimpleDataProvider
 import com.github.iielse.imageviewer.core.Transformer
 import com.github.iielse.imageviewer.demo.R
-import com.github.iielse.imageviewer.demo.core.viewer.MyImageLoader
+import com.github.iielse.imageviewer.demo.core.viewer.SimpleImageLoader
 import com.github.iielse.imageviewer.demo.data.TestRepository
 
 // 自定义Transition startView 尺寸/位置/加载模式
@@ -18,7 +18,7 @@ object CustomTransitionHelper {
                 context = view.context,
                 initKey = clickedData.id,
                 dataProvider = SimpleDataProvider(dataList),
-                imageLoader = MyImageLoader(),
+                imageLoader = SimpleImageLoader(),
                 transformer = object : Transformer {
                     override fun getView(key: Long): ImageView {
                         return fakeStartView(view)

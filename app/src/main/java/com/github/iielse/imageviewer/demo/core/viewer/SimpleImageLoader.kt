@@ -31,7 +31,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
 
-class MyImageLoader : ImageLoader {
+class SimpleImageLoader : ImageLoader {
     /**
      * 根据自身photo数据加载图片.可以使用其它图片加载框架.
      */
