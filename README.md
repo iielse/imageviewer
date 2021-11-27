@@ -1,4 +1,5 @@
 # Imageviewer
+
 提供查看缩略视图到原视图的无缝过渡转变的视觉效果，优雅的浏览普通图、长图、动图.
 
 #### 主要特征
@@ -16,11 +17,13 @@
 ![](https://github.com/iielse/res/blob/master/imageviewer/1.gif)
 
 ### 引入
+
 ```
 implementation 'com.github.iielse:imageviewer:x.y.z'
 ```
 
 ### 最简单的调用代码
+
 ```
 fun show() { //
     val dataList： List<Photo> = // 将要展示的图片集合列表
@@ -33,13 +36,6 @@ fun show() { //
         transformer = SimpleTransformer(), // 可使用demo固定写法 // 以photoId为标示，设置过渡动画的'配对'.
     )
     builder.show()
-}
-```
-### 数据源的定义
-```
-interface Photo {
-    fun id(): Long // 每条图片数据的唯一标示. 主要用于分页数据加载. 定位过渡动画的对应关系
-    fun itemType(): @ItemType.Type Int // 是否启用SubsamplingScaleImageView实现图片区块加载或ExoVideoView实现Video加载
 }
 ```
 
@@ -87,6 +83,7 @@ class SimpleImageLoader : ImageLoader {
     ......
 }
 ```
+
 ```
 // 基本是可以作为固定写法.
 class SimpleTransformer : Transformer {
@@ -98,7 +95,7 @@ class SimpleTransformer : Transformer {
  */
 object ViewerTransitionHelper {
     private val transition = HashMap<ImageView, Long>()
-    fun put(photoId: Long, imageView: ImageView) { // 一般在加载展示列表图片的后面跟一句这行代码即可
+    fun put(photoId: Long, imageView: ImageView) { // 将photoId和展示这个数据的ImageView'绑定'
         require(isMainThread())
         if (!imageView.isAttachedToWindow) return
         imageView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
@@ -122,18 +119,19 @@ object ViewerTransitionHelper {
 ```
 
 ## 到此简单的集成已经完毕.
--------------------------------------------------
+
+---
 
 ## 进阶使用.
+
 （组合实现以下3个方法.可以追加自定义的展示和功能）
 
-// 自定义'每一页'上的UI.比如可显示图片的更多信息.提供存储分享等更多功能等
-`builder.setVHCustomizer(MyCustomViewHolderUI())`
-// 自定义'覆盖(最上)层'上的UI.比如添加指示器等
-`builder.setOverlayCustomizer(MyCustomIndicatorUI())`
-// 监听viewer的各种状态变化.包括页面的切换(显示当前在第几页).；过渡动画的执行状态；维护video的播放状态等
-`builder.setViewerCallback(MyViewerStateChangedListener())`
-
+* // 自定义'每一页'上的UI.比如可显示图片的更多信息.提供存储分享等更多功能等
+* `builder.setVHCustomizer(MyCustomViewHolderUI())`
+* // 自定义'覆盖(最上)层'上的UI.比如添加指示器等
+* `builder.setOverlayCustomizer(MyCustomIndicatorUI())`
+* // 监听viewer的各种状态变化.包括页面的切换(显示当前在第几页).；过渡动画的执行状态；维护video的播放状态等
+* `builder.setViewerCallback(MyViewerStateChangedListener())`
 
 ```
 // 一般监听翻页onPageSelected可以控制 video播放的状态
@@ -154,9 +152,10 @@ interface ViewerCallback : ImageViewerAdapterListener {
     // 当某大图页面被选中
     fun onPageSelected(position: Int, viewHolder: RecyclerView.ViewHolder) {}
 }
-
 ```
+
 #### 参数配置. 一般不用调整
+
 属性  | 作用说明
 ------------- | -------------
 OFFSCREEN_PAGE_LIMIT  | viewer预加载条数
@@ -170,19 +169,32 @@ SWIPE_TOUCH_SLOP | 拖拽触摸感知阈值
 DISMISS_FRACTION  | 拖拽返回边界阈值
 TRANSITION_OFFSET_Y | 修正透明状态栏下过渡动画的起始位置
 
+### 数据源的定义
+
+```
+interface Photo {
+    fun id(): Long // 每条图片数据的唯一标示. 主要用于分页数据加载. 定位过渡动画的对应关系
+    fun itemType(): @ItemType.Type Int // 是否启用SubsamplingScaleImageView实现图片区块加载或ExoVideoView实现Video加载
+}
+```
+
 ### FAQ
+
 - 如何手动关闭退出整个页面？
 - 如何删除一条数据？
 
 通过 `ViewModelProvider(activity).get(ImageViewerActionViewModel::class.java)`获取`viewer` 对象引用.
 之后可使用 `setCurrentItem(pos: Int)`切换大图位置到指定位置; `dismiss()`退出浏览大图; `remove(item: List<Photo>)`删除其中的元素
 
-
 - 如何实现Video的展示？
-可参考demo实现 demo代码位置 `SimpleViewerCustomizer`
-
+  可参考demo实现 demo代码位置 `SimpleViewerCustomizer`
+- 为什么没有过渡动画？
+  需要正确的配置 `Transformer`。需要保证`getView` 返回不为null.
+- 为什么动画的执行和原图有高度偏差？
+  注意状态栏的影响。配置`Config.TRANSITION_OFFSET_Y`
 
 ### 其它重要说明
+
 demo可运行. demo可运行. demo可运行 .demo代码已重构.
 
 都看到这里了，不点下`Star`吗 [旺柴]
