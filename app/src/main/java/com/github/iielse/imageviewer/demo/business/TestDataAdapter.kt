@@ -3,6 +3,7 @@ package com.github.iielse.imageviewer.demo.business
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.demo.core.BasePagedAdapter
+import com.github.iielse.imageviewer.demo.core.viewer.ViewerTransitionHelper
 import com.github.iielse.imageviewer.demo.data.MyData
 
 class TestDataAdapter : BasePagedAdapter() {
@@ -17,6 +18,14 @@ class TestDataAdapter : BasePagedAdapter() {
         val item = getItem(position)
         when (holder) {
             is TestDataViewHolder -> item?.data<MyData>()?.let { holder.bind(it, position) }
+        }
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        if (holder is TestDataViewHolder) {
+            val photoId = (holder.itemView.tag as? MyData?)?.id ?: return
+            ViewerTransitionHelper.put(photoId, holder.binding.imageView)
         }
     }
 }
