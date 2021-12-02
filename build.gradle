@@ -8,8 +8,8 @@ buildscript {
         maven { url 'https://maven.google.com' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31'
+        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
@@ -29,10 +29,10 @@ task clean(type: Delete) {
 
 
 ext {
-    compileSdkVersion= 31
+    compileSdkVersion= 30
     buildToolsVersion= "30.0.3"
     minSdkVersion    = 21
-    targetSdkVersion = 31
-    versionCode      = 219
-    versionName      = "2.1.9"
+    targetSdkVersion = 30
+    versionCode      = 221
+    versionName      = "2.1.11"
 }

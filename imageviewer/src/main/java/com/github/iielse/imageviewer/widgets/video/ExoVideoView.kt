@@ -7,6 +7,7 @@ import com.github.iielse.imageviewer.utils.Config
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.video.VideoSize
@@ -26,7 +27,7 @@ open class ExoVideoView @JvmOverloads constructor(
     }
 
     private val logger by lazy { EventLogger(null) }
-    private var exoPlayer: ExoPlayer? = null
+    private var exoPlayer: SimpleExoPlayer? = null
     private var videoRenderedCallback: VideoRenderedListener? = null
     private val listeners = mutableListOf<AnalyticsListener>()
     private var playUrl: String? = null
@@ -96,7 +97,7 @@ open class ExoVideoView @JvmOverloads constructor(
 
     private fun newExoPlayer(): ExoPlayer {
         release()
-        return ExoPlayer.Builder(context).build().also {
+        return SimpleExoPlayer.Builder(context).build().also {
             it.setVideoTextureView(this)
             it.addListener(videoListener)
             if (Config.DEBUG) it.addAnalyticsListener(logger)
