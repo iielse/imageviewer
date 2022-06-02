@@ -198,3 +198,11 @@ interface Photo {
 demo可运行. demo可运行. demo可运行 .demo代码已重构.
 
 都看到这里了，不点下`Star`吗 [旺柴]
+
+### Thanks
+
+#### 如果您觉得我的开源库帮你节省了大量的开发时间，可扫描下方的二维码随意打赏。你的鼓励是我维护项目最大的动力
+
+<img src="https://raw.githubusercontent.com/iielse/res/master/q/ali_q.png" alt="支付宝捐赠" width="320"><img src="https://raw.githubusercontent.com/iielse/res/master/q/wx_q.png" alt="微信捐赠" width="320">
+
+
