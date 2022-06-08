@@ -14,7 +14,7 @@ import com.github.iielse.imageviewer.utils.Config
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { MainActivityBinding.inflate(layoutInflater) }
-    private val viewModel by viewModels<TestDataViewModel> { TestDataViewModelFactory() }
+    private val viewModel by viewModels<TestDataViewModel> { TestDataViewModel.Factory() }
     private val adapter by lazy { TestDataAdapter() }
 
     override fun onDestroy() {
@@ -40,16 +40,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleAdapterListener(action: String, item: Any?) {
         when (action) {
-            ITEM_CLICKED -> (item as? MyData?)?.let(::showViewer)
+            ITEM_CLICKED -> showViewer(item as? MyData?)
         }
     }
 
-    private fun showViewer(item: MyData) {
+    private fun showViewer(item: MyData?) {
+        if (item == null) return
 //        if (item.id == 10L) {
 //            startActivity(Intent(this, TestActivity::class.java))
 //            return
 //        }
-
         ViewerHelper.provideImageViewerBuilder(this, item)
                 .show()
     }

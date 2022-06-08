@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
-import com.github.iielse.imageviewer.demo.data.PAGE_SIZE
+import com.github.iielse.imageviewer.demo.utils.PAGE_SIZE
 
 data class ListState<T>(
     val page: Int = PAGE_INITIAL,
@@ -98,7 +98,7 @@ fun <T> List<T>.safelySubList(
     return this.subList(fromIndex, toIndex)
 }
 
-fun <Key, Value> DataSource.Factory<Key, Value>.toLiveData(
+fun <Key: Any, Value: Any> DataSource.Factory<Key, Value>.toLiveData(
     cellId: (Value) -> String,
     requestMore: () -> Unit
 ): LiveData<PagedList<Value>> {

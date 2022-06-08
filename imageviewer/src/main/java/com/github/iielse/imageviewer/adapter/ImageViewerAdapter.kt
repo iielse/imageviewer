@@ -2,7 +2,7 @@ package com.github.iielse.imageviewer.adapter
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.paging.PagedListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_ID
@@ -14,7 +14,7 @@ import com.github.iielse.imageviewer.viewholders.UnknownViewHolder
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
 import java.util.*
 
-class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.ViewHolder>(diff) {
+class ImageViewerAdapter(initKey: Long) : PagingDataAdapter<Photo, RecyclerView.ViewHolder>(diff) {
     private var listener: ImageViewerAdapterListener? = null
     private var key = initKey
 
@@ -34,22 +34,20 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
         when (holder) {
-            is PhotoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
-            is SubsamplingViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
-            is VideoViewHolder -> item?.extra<Photo>()?.let { holder.bind(it) }
+            is PhotoViewHolder -> item?.let { holder.bind(it) }
+            is SubsamplingViewHolder -> item?.let { holder.bind(it) }
+            is VideoViewHolder -> item?.let { holder.bind(it) }
         }
-
-        if (item?.id == key) {
-            listener?.onInit(holder)
+        if (item?.id() == key) {
+            listener?.onInit(holder, position)
             key = NO_ID
         }
     }
 
-    override fun getItemId(position: Int): Long = provideItem(position)?.id ?: NO_ID
-    override fun getItemViewType(position: Int) = provideItem(position)?.type ?: ItemType.UNKNOWN
+    override fun getItemViewType(position: Int) = provideItem(position)?.itemType() ?: ItemType.UNKNOWN
     private val callback: ImageViewerAdapterListener = object : ImageViewerAdapterListener {
-        override fun onInit(viewHolder: RecyclerView.ViewHolder) {
-            listener?.onInit(viewHolder)
+        override fun onInit(viewHolder: RecyclerView.ViewHolder, position: Int) {
+            listener?.onInit(viewHolder, position)
         }
 
         override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {
@@ -72,19 +70,20 @@ class ImageViewerAdapter(initKey: Long) : PagedListAdapter<Item, RecyclerView.Vi
     }
 }
 
-private val diff = object : DiffUtil.ItemCallback<Item>() {
-    override fun areItemsTheSame(
-            oldItem: Item,
-            newItem: Item
-    ): Boolean {
-        return newItem.type == oldItem.type && newItem.id == oldItem.id
-    }
+private val diff
+    get() = object : DiffUtil.ItemCallback<Photo>() {
+        override fun areItemsTheSame(
+            oldItem: Photo,
+            newItem: Photo
+        ): Boolean {
+            return newItem.itemType() == oldItem.itemType() && newItem.id() == oldItem.id()
+        }
 
-    override fun areContentsTheSame(
-            oldItem: Item,
-            newItem: Item
-    ): Boolean {
-        return newItem.type == oldItem.type && newItem.id == oldItem.id
-                && Objects.equals(newItem.extra, oldItem.extra)
+        override fun areContentsTheSame(
+            oldItem: Photo,
+            newItem: Photo
+        ): Boolean {
+            return newItem.itemType() == oldItem.itemType() && newItem.id() == oldItem.id()
+                    && Objects.equals(newItem.extra(), oldItem.extra())
+        }
     }
-}

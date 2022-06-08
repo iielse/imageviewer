@@ -5,7 +5,7 @@ import kotlin.math.min
 
 abstract class XPageKeyedDataSource : PageKeyedDataSource<Int, Cell>() {
     abstract fun totalCount(): Int
-    abstract fun loadRange(start: Int, count: Int): List<Cell?>
+    abstract fun loadRange(start: Int, count: Int): List<Cell>
 
     override fun loadInitial(
         params: LoadInitialParams<Int>,

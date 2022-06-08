@@ -7,12 +7,12 @@ import com.github.iielse.imageviewer.core.SimpleDataProvider
 import com.github.iielse.imageviewer.core.Transformer
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.core.viewer.SimpleImageLoader
-import com.github.iielse.imageviewer.demo.data.TestRepository
+import com.github.iielse.imageviewer.demo.data.Service
 
 // 自定义Transition startView 尺寸/位置/加载模式
 object CustomTransitionHelper {
     fun show(view: View) {
-        val dataList = TestRepository.get().data
+        val dataList = Service.houMen.toMutableList()
         val clickedData = dataList[dataList.size - 1 - (System.currentTimeMillis() % 10).toInt()]
         val builder = ImageViewerBuilder(
                 context = view.context,

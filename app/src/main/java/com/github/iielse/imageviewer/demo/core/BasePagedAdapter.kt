@@ -15,7 +15,6 @@ const val ID_ERROR = "id_error"
 const val ID_MORE_LOADING = "id_more_loading" // 其实可以用 负数int类型的
 const val ID_NO_MORE = "id_no_more"
 const val PAGE_INITIAL = 1
-const val PAGE_RESET = PAGE_INITIAL - 1
 const val ITEM_CLICKED = "item_clicked"
 typealias AdapterCallback = (action: String, item: Any?) -> Unit
 

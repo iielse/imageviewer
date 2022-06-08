@@ -10,8 +10,8 @@ import com.github.iielse.imageviewer.demo.core.viewer.FullScreenImageViewerDialo
 import com.github.iielse.imageviewer.demo.core.viewer.SimpleImageLoader
 import com.github.iielse.imageviewer.demo.core.viewer.SimpleTransformer
 import com.github.iielse.imageviewer.demo.data.MyData
-import com.github.iielse.imageviewer.demo.data.PAGE_SIZE
-import com.github.iielse.imageviewer.demo.data.TestRepository
+import com.github.iielse.imageviewer.demo.data.Service
+import com.github.iielse.imageviewer.demo.utils.PAGE_SIZE
 
 /**
  * viewer的自定义初始化方案
@@ -26,14 +26,14 @@ object ViewerHelper {
         // 数据提供者 一次加载 or 分页
         fun myDataProvider(clickedData: MyData): DataProvider {
             return if (loadAllAtOnce) {
-                SimpleDataProvider(TestRepository.get().data)
+                SimpleDataProvider(Service.houMen)
             } else {
                  object : DataProvider {
                     override fun loadInitial(): List<Photo> = listOf(clickedData)
                     override fun loadAfter(key: Long, callback: (List<Photo>) -> Unit)
-                        = TestRepository.get().api.asyncQueryAfter(key, PAGE_SIZE, callback)
+                        = Service.api.asyncQueryAfter(key, PAGE_SIZE, callback)
                     override fun loadBefore(key: Long, callback: (List<Photo>) -> Unit)
-                        = TestRepository.get().api.asyncQueryBefore(key, PAGE_SIZE, callback)
+                        = Service.api.asyncQueryBefore(key, PAGE_SIZE, callback)
                 }
             }
         }

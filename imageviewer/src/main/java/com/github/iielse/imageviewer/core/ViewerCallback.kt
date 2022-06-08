@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.ImageViewerAdapterListener
 
 interface ViewerCallback : ImageViewerAdapterListener {
-    override fun onInit(viewHolder: RecyclerView.ViewHolder) {}
+    override fun onInit(viewHolder: RecyclerView.ViewHolder, position: Int) {}
     override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {}
     override fun onRestore(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {}
     override fun onRelease(viewHolder: RecyclerView.ViewHolder, view: View) {}

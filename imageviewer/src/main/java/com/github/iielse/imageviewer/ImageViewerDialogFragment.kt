@@ -2,7 +2,6 @@ package com.github.iielse.imageviewer
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,16 +59,17 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
 
         requireOverlayCustomizer().provideView(binding.overlayView)?.let(binding.overlayView::addView)
 
-        viewModel.dataList.observe(viewLifecycleOwner) { list ->
-            adapter.submitList(list)
-            initPosition = list.indexOfFirst { it.id == initKey }
-            binding.viewer.setCurrentItem(initPosition, false)
+        viewModel.initialIndex.observe(viewLifecycleOwner) { initialIndex ->
+            if (initialIndex == null || initPosition != RecyclerView.NO_POSITION) return@observe
+            initPosition = initialIndex
+            binding.viewer.also { it.post { it.setCurrentItem(initPosition, false) } }
         }
-
+        viewModel.pagingData.observe(viewLifecycleOwner) {
+            adapter.submitData(viewLifecycleOwner.lifecycle, it)
+        }
         viewModel.viewerUserInputEnabled.observe(viewLifecycleOwner) {
             binding.viewer.isUserInputEnabled = it ?: true
         }
-
         actions.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
     }
 
@@ -78,16 +78,16 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
         when (action?.first) {
             ViewerActions.SET_CURRENT_ITEM -> binding.viewer.currentItem = max(action.second as Int, 0)
             ViewerActions.DISMISS -> onBackPressed()
-            ViewerActions.REMOVE_ITEMS -> viewModel.remove(action.second) { onBackPressed() }
+            ViewerActions.REMOVE_ITEMS -> viewModel.remove(adapter, action.second) { onBackPressed() }
         }
     }
 
     private val adapterListener by lazy {
         object : ImageViewerAdapterListener {
-            override fun onInit(viewHolder: RecyclerView.ViewHolder) {
+            override fun onInit(viewHolder: RecyclerView.ViewHolder, position: Int) {
                 TransitionStartHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), viewHolder)
                 binding.background.changeToBackgroundColor(Config.VIEWER_BACKGROUND_COLOR)
-                userCallback.onInit(viewHolder)
+                userCallback.onInit(viewHolder, position)
 
                 if (initPosition > 0) userCallback.onPageSelected(initPosition, viewHolder)
             }
@@ -122,10 +122,10 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
             }
 
             override fun onPageSelected(position: Int) {
-                val currentKey = adapter.getItemId(position)
+                val currentKey = viewModel.snapshot[position].id()
                 val holder = binding.viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)
-                        ?.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?
-                        ?: return
+                    ?.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?
+                    ?: return
                 userCallback.onPageSelected(position, holder)
             }
         }
@@ -148,9 +148,9 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
     override fun onBackPressed() {
         if (TransitionStartHelper.transitionAnimating || TransitionEndHelper.transitionAnimating) return
 
-        val currentKey = adapter.getItemId(binding.viewer.currentItem)
+        val currentKey = viewModel.snapshot[binding.viewer.currentItem].id()
         binding.viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)?.let { endView ->
-            val startView = transformer.getView(currentKey)
+            val startView = transformer.getView(endView.getTag(R.id.viewer_adapter_item_key) as Long)
             binding.background.changeToBackgroundColor(Color.TRANSPARENT)
 
             (endView.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?)?.let {

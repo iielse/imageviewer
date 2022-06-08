@@ -8,6 +8,8 @@ import android.widget.Toast
 import com.github.iielse.imageviewer.demo.BuildConfig
 import java.util.concurrent.Executors
 
+const val PAGE_SIZE = 5 // 分页size
+
 val appContext get() = App.context!!
 fun toast(message: String?) {
     if (message.isNullOrEmpty()) return

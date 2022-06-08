@@ -21,7 +21,9 @@ open class BaseDialogFragment : DialogFragment() {
         view.isFocusableInTouchMode = true
         view.setOnKeyListener { _, keyCode, event ->
             val backPressed = event.action == MotionEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK
-            if (backPressed) onBackPressed()
+            if (backPressed) {
+                onBackPressed()
+            }
             backPressed
         }
     }

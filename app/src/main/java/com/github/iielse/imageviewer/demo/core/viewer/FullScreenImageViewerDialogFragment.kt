@@ -1,7 +1,6 @@
 package com.github.iielse.imageviewer.demo.core.viewer
 
 import android.graphics.Color
-import android.os.Build
 import android.view.Window
 import android.view.WindowManager
 import androidx.core.content.ContextCompat

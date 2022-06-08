@@ -1,62 +1,64 @@
 package com.github.iielse.imageviewer.adapter
 
-import androidx.paging.DataSource
-import androidx.paging.ItemKeyedDataSource
-import androidx.paging.toLiveData
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import androidx.paging.*
 import com.github.iielse.imageviewer.core.Components
 import com.github.iielse.imageviewer.core.Photo
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class Repository {
     private val dataProvider by lazy { Components.requireDataProvider() }
-    private val lock = Any()
-    private var snapshot: List<Photo>? = null
-    private var dataSource: DataSource<Long, Item>? = null
-    private val dataSourceFactory = object : DataSource.Factory<Long, Item>() {
-        override fun create() = dataSource().also { dataSource = it }
-    }
-    val dataList = dataSourceFactory.toLiveData(pageSize = 1)
-    private fun dataSource() = object : ItemKeyedDataSource<Long, Item>() {
-        override fun getKey(item: Item) = item.id
-        override fun loadInitial(
-            params: LoadInitialParams<Long>,
-            callback: LoadInitialCallback<Item>
-        ) {
-            val result: List<Photo>
-            synchronized(lock) {
-                result = snapshot ?: dataProvider.loadInitial()
-                snapshot = result
-            }
-            callback.onResult(result.map { Item.from(it) }, 0, result.size)
-        }
+    private val initKey by lazy { Components.requireInitKey() }
+    private val dataList = MutableLiveData<List<Photo>>()
+    internal val snapshot: List<Photo> get() = dataList.value ?: listOf()
+    internal val pagingData = Pager(PagingConfig(1),null) { dataSource() }.liveData
+    internal val initialIndex = MutableLiveData<Int?>()
 
-        override fun loadAfter(params: LoadParams<Long>, callback: LoadCallback<Item>) {
-            dataProvider.loadAfter(params.key) {
-                synchronized(lock) {
-                    snapshot = snapshot?.toMutableList()?.apply { addAll(it) }
+    private fun dataSource() = object : PagingSource<Long, Photo>() {
+        override fun getRefreshKey(state: PagingState<Long, Photo>): Long? = null
+        override suspend fun load(params: LoadParams<Long>): LoadResult<Long, Photo> {
+            Log.i("Repository", "load $params ${params.key} ${params.loadSize} snapshot.size ${snapshot.size}")
+            when (params) {
+                is LoadParams.Refresh -> {
+                    val list: List<Photo> = snapshot.ifEmpty { dataProvider.loadInitial() }
+                    if (snapshot.isEmpty()) {
+                        val idx = list.indexOfFirst { it.id() == initKey }
+                        if (idx >= 0) initialIndex.value = idx
+                        if (initialIndex.value != null) initialIndex.value = null
+                    }
+                    dataList.value = list
+                    return LoadResult.Page(list, list.firstOrNull()?.id(), list.lastOrNull()?.id())
                 }
-                callback.onResult(it.map { photo -> Item.from(photo) })
-            }
-        }
-
-        override fun loadBefore(params: LoadParams<Long>, callback: LoadCallback<Item>) {
-            dataProvider.loadBefore(params.key) {
-                synchronized(lock) {
-                    snapshot = snapshot?.toMutableList()?.apply { addAll(0, it) }
+                is LoadParams.Append -> {
+                    val list: List<Photo> = suspendCancellableCoroutine { continuation ->
+                        dataProvider.loadAfter(params.key) {
+                            continuation.resume(it, null)
+                        }
+                    }
+                    dataList.value = snapshot.toMutableList().also { it.addAll(list) }
+                    return LoadResult.Page(list, list.firstOrNull()?.id(), list.lastOrNull()?.id())
                 }
-                callback.onResult(it.map { photo -> Item.from(photo) })
+                is LoadParams.Prepend -> {
+                    val list: List<Photo> = suspendCancellableCoroutine { continuation ->
+                        dataProvider.loadBefore(params.key) {
+                            continuation.resume(it, null)
+                        }
+                    }
+                    dataList.value = snapshot.toMutableList().also { it.addAll(0, list) }
+                    return LoadResult.Page(list, list.firstOrNull()?.id(), list.lastOrNull()?.id())
+                }
             }
         }
     }
 
-    fun redirect(exclude: List<Photo>, emptyCallback: () -> Unit) {
+    fun redirect(adapter: ImageViewerAdapter, exclude: List<Photo>, emptyCallback: () -> Unit) {
         val last = exclude.maxOf { it.id() }
-        val list = snapshot?.toList()
-
-        val target = list?.findLast { it.id() < last }
-            ?: list?.find { it.id() > last }
+        val list = snapshot
+        val target = list.findLast { it.id() < last }
+            ?: list.find { it.id() > last }
             ?: return Unit.also { emptyCallback() }
-
-        snapshot = listOf(target)
-        dataSource?.invalidate()
+        dataList.value = listOf(target)
+        adapter.refresh()
     }
 }

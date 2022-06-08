@@ -7,21 +7,16 @@ import androidx.paging.PagedList
 import com.github.iielse.imageviewer.demo.core.Cell
 import com.github.iielse.imageviewer.demo.data.*
 
-class TestDataViewModelFactory(
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val repository = TestRepository.get()
-        if (modelClass.isAssignableFrom(TestDataViewModel::class.java)) {
-            return TestDataViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-
 class TestDataViewModel(
     private val repository: TestRepository
 ) : ViewModel() {
     val dataList: LiveData<PagedList<Cell>> = repository.dataList
-    fun remove(item: List<MyData>) = repository.reduceDelete(item)
+    fun remove(item: List<MyData>) = repository.localDelete(item)
     fun request() = repository.request(true)
+
+    class Factory : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return TestDataViewModel( TestRepository.get()) as T
+        }
+    }
 }
