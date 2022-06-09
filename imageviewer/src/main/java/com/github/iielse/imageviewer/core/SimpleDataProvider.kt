@@ -2,7 +2,6 @@ package com.github.iielse.imageviewer.core
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 
 import kotlin.math.min
 

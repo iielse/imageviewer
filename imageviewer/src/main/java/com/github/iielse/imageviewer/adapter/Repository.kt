@@ -1,6 +1,5 @@
 package com.github.iielse.imageviewer.adapter
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.*
 import com.github.iielse.imageviewer.core.Components
@@ -18,7 +17,6 @@ class Repository {
     private fun dataSource() = object : PagingSource<Long, Photo>() {
         override fun getRefreshKey(state: PagingState<Long, Photo>): Long? = null
         override suspend fun load(params: LoadParams<Long>): LoadResult<Long, Photo> {
-            Log.i("Repository", "load $params ${params.key} ${params.loadSize} snapshot.size ${snapshot.size}")
             when (params) {
                 is LoadParams.Refresh -> {
                     val list: List<Photo> = snapshot.ifEmpty { dataProvider.loadInitial() }
