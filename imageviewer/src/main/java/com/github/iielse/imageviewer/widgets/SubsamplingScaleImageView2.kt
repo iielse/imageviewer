@@ -1,6 +1,7 @@
 package com.github.iielse.imageviewer.widgets
 
 import android.content.Context
+import android.graphics.PointF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ViewConfiguration
@@ -22,7 +23,8 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
     }
 
     private val viewModel by lazy { provideViewModel(this, ImageViewerViewModel::class.java) }
-
+    private var initCenter: PointF? = null
+    private var changedCenter: PointF? = null
     private var initScale: Float? = null
     private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop * Config.SWIPE_TOUCH_SLOP }
     private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
@@ -33,9 +35,16 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
     private var listener: Listener? = null
 
     init {
+        setOnStateChangedListener(object : OnStateChangedListener {
+            override fun onScaleChanged(newScale: Float, origin: Int) = Unit
+            override fun onCenterChanged(newCenter: PointF?, origin: Int) {
+                changedCenter = newCenter
+            }
+        })
         setOnImageEventListener(object : DefaultOnImageEventListener() {
             override fun onImageLoaded() {
-                initScale = null
+                initScale = scale
+                initCenter = center
             }
         })
     }
@@ -52,6 +61,7 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
     }
 
     private fun handleDispatchTouchEvent(event: MotionEvent?) {
+        if (initScale == null) return
         when (event?.actionMasked) {
             MotionEvent.ACTION_POINTER_DOWN -> {
                 setSingleTouch(false)
@@ -59,10 +69,9 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
                         .translationX(0f).translationY(0f).scaleX(1f).scaleY(1f)
                         .setDuration(200).start()
             }
-            MotionEvent.ACTION_DOWN -> if (initScale == null) initScale = scale
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> up()
             MotionEvent.ACTION_MOVE -> {
-                if (singleTouch && scale == initScale) {
+                if (singleTouch && scale == initScale && (changedCenter?.y ?: initCenter?.y) == (initCenter?.y ?: 0f)) {
                     if (lastX == 0f) lastX = event.rawX
                     if (lastY == 0f) lastY = event.rawY
                     val offsetX = event.rawX - lastX
@@ -120,4 +129,6 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
         super.onDetachedFromWindow()
         animate().cancel()
     }
+
+
 }

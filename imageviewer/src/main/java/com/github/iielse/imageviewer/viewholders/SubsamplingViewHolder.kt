@@ -3,6 +3,7 @@ package com.github.iielse.imageviewer.viewholders
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.github.iielse.imageviewer.ImageViewerAdapterListener
 import com.github.iielse.imageviewer.R
 import com.github.iielse.imageviewer.adapter.ItemType
@@ -20,7 +21,7 @@ class SubsamplingViewHolder(
         ItemImageviewerSubsamplingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 ) : RecyclerView.ViewHolder(binding.root) {
     init {
-        binding.subsamplingView.setMinimumScaleType(Config.SUBSAMPLING_SCALE_TYPE)
+        binding.subsamplingView.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_START)
         binding.subsamplingView.setListener(object : SubsamplingScaleImageView2.Listener {
             override fun onDrag(view: SubsamplingScaleImageView2, fraction: Float) = callback.onDrag(this@SubsamplingViewHolder, view, fraction)
             override fun onRestore(view: SubsamplingScaleImageView2, fraction: Float) = callback.onRestore(this@SubsamplingViewHolder, view, fraction)
