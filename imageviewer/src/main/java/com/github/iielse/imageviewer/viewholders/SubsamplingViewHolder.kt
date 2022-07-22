@@ -11,7 +11,6 @@ import com.github.iielse.imageviewer.core.Components.requireImageLoader
 import com.github.iielse.imageviewer.core.Components.requireVHCustomizer
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.databinding.ItemImageviewerSubsamplingBinding
-import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.SubsamplingScaleImageView2
 
 class SubsamplingViewHolder(

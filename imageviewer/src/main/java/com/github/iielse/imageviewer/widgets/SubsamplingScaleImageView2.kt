@@ -28,6 +28,7 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
     private var initScale: Float? = null
     private val scaledTouchSlop by lazy { ViewConfiguration.get(context).scaledTouchSlop * Config.SWIPE_TOUCH_SLOP }
     private val dismissEdge by lazy { height * Config.DISMISS_FRACTION }
+    private var imageLoaded = false
     private var singleTouch = true
     private var fakeDragOffset = 0f
     private var lastX = 0f
@@ -42,10 +43,7 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
             }
         })
         setOnImageEventListener(object : DefaultOnImageEventListener() {
-            override fun onImageLoaded() {
-                initScale = scale
-                initCenter = center
-            }
+            override fun onImageLoaded() { imageLoaded = true }
         })
     }
 
@@ -61,7 +59,12 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
     }
 
     private fun handleDispatchTouchEvent(event: MotionEvent?) {
-        if (initScale == null) return
+        if (!imageLoaded) return
+        if (initScale == null) {
+            initScale = scale
+            initCenter = center
+            changedCenter = center
+        }
         when (event?.actionMasked) {
             MotionEvent.ACTION_POINTER_DOWN -> {
                 setSingleTouch(false)
@@ -129,6 +132,4 @@ class SubsamplingScaleImageView2 @JvmOverloads constructor(context: Context, att
         super.onDetachedFromWindow()
         animate().cancel()
     }
-
-
 }

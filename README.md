@@ -87,35 +87,32 @@ class SimpleImageLoader : ImageLoader {
 ```
 // 基本是可以作为固定写法.
 class SimpleTransformer : Transformer {
-    override fun getView(key: Long): ImageView? = ViewerTransitionHelper.provide(key)
-}
-
-/**
- * 维护Transition过渡动画的缩略图和大图之间的映射关系.
- */
-object ViewerTransitionHelper {
-    private val transition = HashMap<ImageView, Long>()
-    fun put(photoId: Long, imageView: ImageView) { // 将photoId和展示这个数据的ImageView'绑定'
-        require(isMainThread())
-        if (!imageView.isAttachedToWindow) return
-        imageView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(p0: View?) = Unit
-            override fun onViewDetachedFromWindow(p0: View?) {
-                transition.remove(imageView)
-                imageView.removeOnAttachStateChangeListener(this)
-            }
-        })
-        transition[imageView] = photoId
-    }
-
-    fun provide(photoId: Long): ImageView? {
-        transition.keys.forEach {
-            if (transition[it] == photoId)
-                return it
+    override fun getView(key: Long): ImageView? = provide(key)
+    
+    companion object {
+        private val transition = HashMap<ImageView, Long>()
+        fun put(photoId: Long, imageView: ImageView) {
+            require(isMainThread())
+            if (!imageView.isAttachedToWindow) return
+            imageView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(p0: View?) = Unit
+                override fun onViewDetachedFromWindow(p0: View?) {
+                    transition.remove(imageView)
+                    imageView.removeOnAttachStateChangeListener(this)
+                }
+            })
+            transition[imageView] = photoId
         }
-        return null
+
+        private fun provide(photoId: Long): ImageView? {
+            transition.keys.forEach {
+                if (transition[it] == photoId)
+                    return it
+            }
+            return null
+        }
     }
-}
+} 
 ```
 
 ## 到此简单的集成已经完毕.
@@ -163,7 +160,6 @@ VIEWER_ORIENTATION  | viewer滑动方向
 VIEWER_BACKGROUND_COLOR  | 大图预览时背景色(默认纯黑)
 DURATION_TRANSITION  | 过渡动画时长
 DURATION_BG  | 过渡动画背景变化时长
-SUBSAMPLING_SCALE_TYPE  | 大图初始化加载模式
 SWIPE_DISMISS  | 是否支持拖拽返回
 SWIPE_TOUCH_SLOP | 拖拽触摸感知阈值
 DISMISS_FRACTION  | 拖拽返回边界阈值

@@ -1,6 +1,7 @@
 package com.github.iielse.imageviewer.demo.core.viewer
 
 import android.net.Uri
+import android.util.LruCache
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -93,13 +94,15 @@ class SimpleImageLoader : ImageLoader {
      * 根据自身photo数据加载超大图.subsamplingView数据源需要先将内容完整下载到本地.需要注意生命周期
      */
     override fun load(subsamplingView: SubsamplingScaleImageView, data: Photo, viewHolder: RecyclerView.ViewHolder) {
-        val it = (data as? MyData?)?.url ?: return
-        subsamplingDownloadRequest(it)
+        val url = (data as? MyData?)?.url ?: return
+        val cache = subsamplingCache.get(url)
+        if (cache != null) subsamplingView.setImage(cache)
+        else subsamplingDownloadRequest(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { findLoadingView(viewHolder)?.visibility = View.VISIBLE }
                 .doFinally { findLoadingView(viewHolder)?.visibility = View.GONE }
-                .doOnNext { subsamplingView.setImage(ImageSource.uri(Uri.fromFile(it))) }
+                .doOnNext { subsamplingView.setImage(ImageSource.uri(Uri.fromFile(it)).also { source -> subsamplingCache.put(url, source) }) }
                 .doOnError { toast(it.message) }
                 .subscribe(ObserverAdapter(subsamplingView.lifecycleOwner?.lifecycle))
     }
@@ -117,5 +120,9 @@ class SimpleImageLoader : ImageLoader {
 
     private fun findLoadingView(viewHolder: RecyclerView.ViewHolder): View? {
         return viewHolder.itemView.findViewById<ProgressBar>(R.id.loadingView)
+    }
+
+    companion object {
+        val subsamplingCache = LruCache<String, ImageSource>(3)
     }
 }

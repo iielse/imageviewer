@@ -2,7 +2,6 @@ package com.github.iielse.imageviewer.utils
 
 import android.graphics.Color
 import androidx.viewpager2.widget.ViewPager2
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 
 object Config {
     var DEBUG: Boolean = true
