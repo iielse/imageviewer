@@ -16,10 +16,10 @@
 
 ![](https://github.com/iielse/res/blob/master/imageviewer/1.gif)
 
-### 引入
+### 引入 [![](https://jitpack.io/v/iielse/imageviewer.svg)](https://jitpack.io/#iielse/imageviewer)
 
 ```
-implementation 'com.github.iielse:imageviewer:x.y.z'
+implementation 'com.github.iielse:imageviewer:x.y.z' 
 ```
 
 ### 最简单的调用代码
