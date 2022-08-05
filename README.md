@@ -30,8 +30,7 @@ fun show() { //
     val clickedData: Photo = // 被点击的其中的那个图片元素信息
     val builder = ImageViewerBuilder(
         context = view.context,
-        initKey = clickedData.id, // photoId
-        dataProvider = SimpleDataProvider(dataList), // 一次性全量加载 // 实现DataProvider接口支持分页加载
+        dataProvider = SimpleDataProvider(clickedData, dataList), // 一次性全量加载 // 实现DataProvider接口支持分页加载
         imageLoader = SimpleImageLoader(), // 可使用demo固定写法 // 实现对数据源的加载.支持自定义加载数据类型，加载方案
         transformer = SimpleTransformer(), // 可使用demo固定写法 // 以photoId为标示，设置过渡动画的'配对'.
     )

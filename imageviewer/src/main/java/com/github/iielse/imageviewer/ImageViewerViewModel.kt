@@ -12,7 +12,6 @@ import com.github.iielse.imageviewer.core.Photo
 class ImageViewerViewModel : ViewModel() {
     private val repository = Repository()
     val snapshot: List<Photo> get() = repository.snapshot
-    val initialIndex: LiveData<Int?> = repository.initialIndex
     val pagingData: LiveData<PagingData<Photo>> = repository.pagingData
     val viewerUserInputEnabled = MutableLiveData<Boolean>()
 
@@ -23,6 +22,5 @@ class ImageViewerViewModel : ViewModel() {
     fun remove(adapter: ImageViewerAdapter, item: Any?, emptyCallback: () -> Unit) {
         val removed = (item as? List<Photo>?) ?: return
         repository.redirect(adapter, removed, emptyCallback)
-
     }
 }

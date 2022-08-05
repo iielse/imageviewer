@@ -8,7 +8,6 @@ class ImageViewerBuilder(private val context: Context?,
                          private val imageLoader: ImageLoader,
                          private val dataProvider: DataProvider,
                          private val transformer: Transformer,
-                         private val initKey: Long = 0
 ) {
     private var vhCustomizer: VHCustomizer? = null
     private var viewerCallback: ViewerCallback? = null
@@ -42,7 +41,7 @@ class ImageViewerBuilder(private val context: Context?,
     fun show() {
         if (Components.working) return
         (context as? FragmentActivity?)?.let {
-            Components.initialize(imageLoader, dataProvider, transformer, initKey)
+            Components.initialize(imageLoader, dataProvider, transformer)
             Components.setVHCustomizer(vhCustomizer)
             Components.setViewerCallback(viewerCallback)
             Components.setOverlayCustomizer(overlayCustomizer)

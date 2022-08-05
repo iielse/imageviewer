@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.github.iielse.imageviewer.adapter.ImageViewerAdapter
 import com.github.iielse.imageviewer.core.Components
-import com.github.iielse.imageviewer.core.Components.requireInitKey
+import com.github.iielse.imageviewer.core.Components.requireDataProvider
 import com.github.iielse.imageviewer.core.Components.requireOverlayCustomizer
 import com.github.iielse.imageviewer.core.Components.requireTransformer
 import com.github.iielse.imageviewer.core.Components.requireViewerCallback
@@ -29,10 +29,10 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
     private val viewModel by lazy { ViewModelProvider(this).get(ImageViewerViewModel::class.java) }
     private val actions by lazy { ViewModelProvider(requireActivity()).get(ImageViewerActionViewModel::class.java) }
     private val userCallback by lazy { requireViewerCallback() }
-    private val initKey by lazy { requireInitKey() }
+    private val initKey by lazy { requireDataProvider().loadInitial().first().id() }
     private val transformer by lazy { requireTransformer() }
     private val adapter by lazy { ImageViewerAdapter(initKey) }
-    private var initPosition = RecyclerView.NO_POSITION
+    private var submitPagingData = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +59,8 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
 
         requireOverlayCustomizer().provideView(binding.overlayView)?.let(binding.overlayView::addView)
 
-        viewModel.initialIndex.observe(viewLifecycleOwner) { initialIndex ->
-            if (initialIndex == null || initPosition != RecyclerView.NO_POSITION) return@observe
-            initPosition = initialIndex
-            binding.viewer.also { it.post { it.setCurrentItem(initPosition, false) } }
-        }
         viewModel.pagingData.observe(viewLifecycleOwner) {
+            submitPagingData = true
             adapter.submitData(viewLifecycleOwner.lifecycle, it)
         }
         viewModel.viewerUserInputEnabled.observe(viewLifecycleOwner) {
@@ -88,8 +84,6 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
                 TransitionStartHelper.start(this@ImageViewerDialogFragment, transformer.getView(initKey), viewHolder)
                 binding.background.changeToBackgroundColor(Config.VIEWER_BACKGROUND_COLOR)
                 userCallback.onInit(viewHolder, position)
-
-                if (initPosition > 0) userCallback.onPageSelected(initPosition, viewHolder)
             }
 
             override fun onDrag(viewHolder: RecyclerView.ViewHolder, view: View, fraction: Float) {
@@ -122,10 +116,13 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
             }
 
             override fun onPageSelected(position: Int) {
+                if (submitPagingData) return Unit.also { submitPagingData = false }
+
                 val currentKey = viewModel.snapshot[position].id()
                 val holder = binding.viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)
                     ?.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?
                     ?: return
+
                 userCallback.onPageSelected(position, holder)
             }
         }

@@ -3,9 +3,7 @@ package com.github.iielse.imageviewer.demo.utils
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.Toast
-import com.github.iielse.imageviewer.demo.BuildConfig
 import java.util.concurrent.Executors
 
 const val PAGE_SIZE = 5 // 分页size

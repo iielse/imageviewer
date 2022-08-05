@@ -6,9 +6,10 @@ import android.os.Looper
 import kotlin.math.min
 
 class SimpleDataProvider(
+    val init: Photo,
     val list: List<Photo>
 ) : DataProvider {
-    override fun loadInitial() = list
+    override fun loadInitial() = listOf(init)
     override fun loadAfter(key: Long, callback: (List<Photo>) -> Unit) {
         val idx = list.indexOfFirst { it.id() == key }
         val result: List<Photo> = if (idx < 0) emptyList()

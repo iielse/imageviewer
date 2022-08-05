@@ -26,7 +26,7 @@ object ViewerHelper {
         // 数据提供者 一次加载 or 分页
         fun myDataProvider(clickedData: MyData): DataProvider {
             return if (loadAllAtOnce) {
-                SimpleDataProvider(Service.houMen)
+                SimpleDataProvider(clickedData, Service.houMen)
             } else {
                  object : DataProvider {
                     override fun loadInitial(): List<Photo> = listOf(clickedData)
@@ -41,7 +41,6 @@ object ViewerHelper {
         // viewer 构造的基本元素
         val builder = ImageViewerBuilder(
                 context = context,
-                initKey = clickedData.id,  // 被点击的图片id
                 dataProvider = myDataProvider(clickedData), // 数据提供者. 和调用者业务强绑定
                 imageLoader = SimpleImageLoader(),  // 自定义实现
                 transformer = SimpleTransformer() // 固定写法. 实现 ViewerTransitionHelper 确定 进场退场动画

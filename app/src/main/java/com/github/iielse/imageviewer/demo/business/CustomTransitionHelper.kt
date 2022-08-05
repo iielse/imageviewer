@@ -16,8 +16,7 @@ object CustomTransitionHelper {
         val clickedData = dataList[dataList.size - 1 - (System.currentTimeMillis() % 10).toInt()]
         val builder = ImageViewerBuilder(
                 context = view.context,
-                initKey = clickedData.id,
-                dataProvider = SimpleDataProvider(dataList),
+                dataProvider = SimpleDataProvider(clickedData, dataList),
                 imageLoader = SimpleImageLoader(),
                 transformer = object : Transformer {
                     override fun getView(key: Long): ImageView {

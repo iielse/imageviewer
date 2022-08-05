@@ -8,11 +8,9 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 
 class Repository {
     private val dataProvider by lazy { Components.requireDataProvider() }
-    private val initKey by lazy { Components.requireInitKey() }
     private val dataList = MutableLiveData<List<Photo>>()
     internal val snapshot: List<Photo> get() = dataList.value ?: listOf()
     internal val pagingData = Pager(PagingConfig(1),null) { dataSource() }.liveData
-    internal val initialIndex = MutableLiveData<Int?>()
 
     private fun dataSource() = object : PagingSource<Long, Photo>() {
         override fun getRefreshKey(state: PagingState<Long, Photo>): Long? = null
@@ -20,11 +18,6 @@ class Repository {
             when (params) {
                 is LoadParams.Refresh -> {
                     val list: List<Photo> = snapshot.ifEmpty { dataProvider.loadInitial() }
-                    if (snapshot.isEmpty()) {
-                        val idx = list.indexOfFirst { it.id() == initKey }
-                        if (idx >= 0) initialIndex.value = idx
-                        if (initialIndex.value != null) initialIndex.value = null
-                    }
                     dataList.value = list
                     return LoadResult.Page(list, list.firstOrNull()?.id(), list.lastOrNull()?.id())
                 }
