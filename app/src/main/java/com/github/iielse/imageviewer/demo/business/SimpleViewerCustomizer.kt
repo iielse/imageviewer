@@ -1,24 +1,31 @@
 package com.github.iielse.imageviewer.demo.business
 
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.ImageViewerActionViewModel
 import com.github.iielse.imageviewer.ImageViewerBuilder
-import com.github.iielse.imageviewer.core.*
+import com.github.iielse.imageviewer.core.OverlayCustomizer
+import com.github.iielse.imageviewer.core.Photo
+import com.github.iielse.imageviewer.core.VHCustomizer
+import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.core.ObserverAdapter
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.data.Service
 import com.github.iielse.imageviewer.demo.databinding.ItemVideoCustomLayoutBinding
 import com.github.iielse.imageviewer.demo.databinding.LayoutIndicatorBinding
-import com.github.iielse.imageviewer.demo.utils.*
+import com.github.iielse.imageviewer.demo.utils.inflate
+import com.github.iielse.imageviewer.demo.utils.lifecycleOwner
+import com.github.iielse.imageviewer.demo.utils.setOnClickCallback
+import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
@@ -83,8 +90,11 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
         viewHolder.itemView.findViewById<TextView>(R.id.exText).text = myData.desc
         viewHolder.itemView.findViewById<View>(R.id.remove).setOnClickListener {
             if (ViewerHelper.loadAllAtOnce) {
-                toast("SimpleDataProvider的写法不支持删除")
-                Handler(Looper.getMainLooper()).postDelayed({ toast("LoadAllAtOnce(off)支持动态删除功能") } , 500)
+                val target = listOf(data)
+                Service.api.asyncDelete(target) {
+                    testDataViewModel?.remove(target)
+                    viewerViewModel?.remove(target)
+                }
             }
             else {
                 val target = listOf(data)

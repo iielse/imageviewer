@@ -14,4 +14,5 @@ object Config {
     var SWIPE_TOUCH_SLOP = 4f
     var DISMISS_FRACTION: Float = 0.12f
     var TRANSITION_OFFSET_Y = 0
+    var VIEWER_FIRST_PAGE_SELECTED_DELAY = 300L
 }

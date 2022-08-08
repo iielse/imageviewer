@@ -50,6 +50,7 @@ class Repository {
             ?: list.find { it.id() > last }
             ?: return Unit.also { emptyCallback() }
         dataList.value = listOf(target)
+        dataProvider.exclude(exclude, target)
         adapter.refresh()
     }
 }

@@ -56,6 +56,7 @@ object Service {
         "https://images.unsplash.com/photo-1496963729609-7d408fa580b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
         "https://images.unsplash.com/photo-1531959870249-9f9b729efcf4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
     )
+//    private val myData by lazy { listOf(originMyData.toMutableList().first()).toMutableList() }
     private val myData by lazy { originMyData.toMutableList() }
     val api = Api(myData)
 

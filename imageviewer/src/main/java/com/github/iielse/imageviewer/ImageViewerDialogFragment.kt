@@ -2,6 +2,9 @@ package com.github.iielse.imageviewer
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +35,7 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
     private val initKey by lazy { requireDataProvider().loadInitial().first().id() }
     private val transformer by lazy { requireTransformer() }
     private val adapter by lazy { ImageViewerAdapter(initKey) }
+    private val taskId = 110
     private var submitPagingData = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,13 +120,18 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
             }
 
             override fun onPageSelected(position: Int) {
-                if (submitPagingData) return Unit.also { submitPagingData = false }
-
                 val currentKey = viewModel.snapshot[position].id()
                 val holder = binding.viewer.findViewWithKeyTag(R.id.viewer_adapter_item_key, currentKey)
                     ?.getTag(R.id.viewer_adapter_item_holder) as? RecyclerView.ViewHolder?
                     ?: return
 
+                if (submitPagingData) {
+                    submitPagingData = false
+                    viewerHandler.removeMessages(taskId)
+                    viewerHandler.sendMessageDelayed(Message.obtain(viewerHandler, taskId, position, 0, holder), Config.VIEWER_FIRST_PAGE_SELECTED_DELAY)
+                    return
+                }
+                viewerHandler.removeMessages(taskId)
                 userCallback.onPageSelected(position, holder)
             }
         }
@@ -135,6 +144,7 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewerHandler.removeMessages(taskId)
         adapter.setListener(null)
         binding.viewer.unregisterOnPageChangeCallback(pagerCallback)
         binding.viewer.adapter = null
@@ -154,6 +164,14 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
                 TransitionEndHelper.end(this, startView, it)
                 userCallback.onRelease(it, endView)
             }
+        }
+    }
+
+    private val viewerHandler by lazy {
+        Handler(Looper.getMainLooper()) {
+            it.target.removeMessages(it.what)
+            userCallback.onPageSelected(it.arg1, it.obj as RecyclerView.ViewHolder)
+            true
         }
     }
 
