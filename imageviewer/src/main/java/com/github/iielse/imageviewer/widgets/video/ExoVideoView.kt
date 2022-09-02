@@ -11,6 +11,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.video.VideoSize
+import kotlin.math.max
 import kotlin.math.min
 
 open class ExoVideoView @JvmOverloads constructor(
@@ -26,12 +27,19 @@ open class ExoVideoView @JvmOverloads constructor(
         fun provide(playUrl: String): List<MediaItem>?
     }
 
+    companion object {
+        const val SCALE_TYPE_FIT_XY = 0
+        const val SCALE_TYPE_FIT_CENTER = 1
+        const val SCALE_TYPE_CENTER_CROP = 2
+    }
+
     private val logger by lazy { EventLogger(null) }
     private var exoPlayer: SimpleExoPlayer? = null
     private var videoRenderedCallback: VideoRenderedListener? = null
     private val listeners = mutableListOf<AnalyticsListener>()
     private var playUrl: String? = null
     protected var prepared = false
+    private var scaleType = Config.VIDEO_SCALE_TYPE
 
     fun prepare(url: String) {
         playUrl = url
@@ -115,6 +123,18 @@ open class ExoVideoView @JvmOverloads constructor(
     }
 
     private fun updateTextureViewSize(videoWidth: Int, videoHeight: Int) {
+        when (scaleType) {
+            SCALE_TYPE_FIT_CENTER -> fitCenter(videoWidth, videoHeight)
+            SCALE_TYPE_CENTER_CROP -> centerCrop(videoWidth, videoHeight)
+            SCALE_TYPE_FIT_XY -> fitXY(videoWidth, videoHeight)
+        }
+        invalidate()
+        alpha = 1f
+        videoRenderedCallback?.onRendered(this)
+        prepared = true
+    }
+
+    private fun fitCenter(videoWidth: Int, videoHeight: Int) {
         val sx = width * 1f / videoWidth
         val sy = height * 1f / videoHeight
         val matrix = android.graphics.Matrix()
@@ -125,10 +145,23 @@ open class ExoVideoView @JvmOverloads constructor(
             if (sx > sy) 0f else (height - videoHeight * sx) / 2
         )
         setTransform(matrix)
-        invalidate()
-        alpha = 1f
-        videoRenderedCallback?.onRendered(this)
-        prepared = true
+    }
+
+    private fun centerCrop(videoWidth: Int, videoHeight: Int) {
+        val sx = width * 1f / videoWidth
+        val sy = height * 1f / videoHeight
+        val matrix = android.graphics.Matrix()
+        matrix.postScale(videoWidth * 1f / width, videoHeight * 1f / height)
+        matrix.postScale(max(sx, sy), max(sx, sy))
+        matrix.postTranslate(
+            if (sx < sy) (width - videoWidth * sy) / 2 else 0f,
+            if (sx < sy) 0f else (height - videoHeight * sx) / 2
+        )
+        setTransform(matrix)
+    }
+
+    private fun fitXY(videoWidth: Int, videoHeight: Int) {
+        // default
     }
 
     override fun onDetachedFromWindow() {

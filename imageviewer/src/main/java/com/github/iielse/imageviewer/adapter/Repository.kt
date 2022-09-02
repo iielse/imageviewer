@@ -5,6 +5,7 @@ import androidx.paging.*
 import com.github.iielse.imageviewer.core.Components
 import com.github.iielse.imageviewer.core.Photo
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 class Repository {
     private val dataProvider by lazy { Components.requireDataProvider() }
@@ -24,7 +25,7 @@ class Repository {
                 is LoadParams.Append -> {
                     val list: List<Photo> = suspendCancellableCoroutine { continuation ->
                         dataProvider.loadAfter(params.key) {
-                            continuation.resume(it, null)
+                            continuation.resume(it)
                         }
                     }
                     dataList.value = snapshot.toMutableList().also { it.addAll(list) }
@@ -33,7 +34,7 @@ class Repository {
                 is LoadParams.Prepend -> {
                     val list: List<Photo> = suspendCancellableCoroutine { continuation ->
                         dataProvider.loadBefore(params.key) {
-                            continuation.resume(it, null)
+                            continuation.resume(it)
                         }
                     }
                     dataList.value = snapshot.toMutableList().also { it.addAll(0, list) }

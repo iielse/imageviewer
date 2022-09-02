@@ -2,6 +2,7 @@ package com.github.iielse.imageviewer.utils
 
 import android.graphics.Color
 import androidx.viewpager2.widget.ViewPager2
+import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 
 object Config {
     var DEBUG: Boolean = true
@@ -15,4 +16,5 @@ object Config {
     var DISMISS_FRACTION: Float = 0.12f
     var TRANSITION_OFFSET_Y = 0
     var VIEWER_FIRST_PAGE_SELECTED_DELAY = 300L
+    var VIDEO_SCALE_TYPE = ExoVideoView.SCALE_TYPE_CENTER_CROP
 }
