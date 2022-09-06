@@ -1,6 +1,7 @@
 package com.github.iielse.imageviewer.demo.business
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -11,6 +12,7 @@ import com.github.iielse.imageviewer.demo.databinding.MainActivityBinding
 import com.github.iielse.imageviewer.demo.utils.App
 import com.github.iielse.imageviewer.demo.utils.statusBarHeight
 import com.github.iielse.imageviewer.utils.Config
+import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { MainActivityBinding.inflate(layoutInflater) }
@@ -77,10 +79,28 @@ class MainActivity : AppCompatActivity() {
             ViewerHelper.simplePlayVideo = !isSimplePlayVideo
             binding.simplePlayVideo.text = if (!isSimplePlayVideo) "Video(simple)" else "Video(controlView)"
         }
+        binding.videoScaleType.setOnClickListener {
+            when(ViewerHelper.videoScaleType) {
+                ExoVideoView.SCALE_TYPE_FIT_XY -> {
+                    ViewerHelper.videoScaleType = ExoVideoView.SCALE_TYPE_CENTER_CROP
+                    binding.videoScaleType.text = "videoScaleType(centerCrop)"
+                    Config.VIDEO_SCALE_TYPE = ExoVideoView.SCALE_TYPE_CENTER_CROP
+                }
+                ExoVideoView.SCALE_TYPE_CENTER_CROP -> {
+                    ViewerHelper.videoScaleType = ExoVideoView.SCALE_TYPE_FIT_CENTER
+                    binding.videoScaleType.text = "videoScaleType(fitCenter)"
+                    Config.VIDEO_SCALE_TYPE = ExoVideoView.SCALE_TYPE_FIT_CENTER
+                }
+                ExoVideoView.SCALE_TYPE_FIT_CENTER -> {
+                    ViewerHelper.videoScaleType = ExoVideoView.SCALE_TYPE_FIT_XY
+                    binding.videoScaleType.text = "videoScaleType(fitXY)"
+                    Config.VIDEO_SCALE_TYPE = ExoVideoView.SCALE_TYPE_FIT_XY
+                }
+            }
+        }
         binding.customTransition.setOnClickListener {
             CustomTransitionHelper.show(it)
         }
-
         binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
         binding.recyclerView.adapter = adapter
         adapter.setListener(::handleAdapterListener)

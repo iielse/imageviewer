@@ -51,6 +51,11 @@ class SimpleImageLoader : ImageLoader {
             findLoadingView(viewHolder)?.visibility = View.VISIBLE
         }
         cover.postDelayed(loadingTask, Config.DURATION_TRANSITION + 1500)
+        when(exoVideoView.scaleType) {
+            ExoVideoView.SCALE_TYPE_FIT_XY -> cover.scaleType = ImageView.ScaleType.FIT_XY
+            ExoVideoView.SCALE_TYPE_CENTER_CROP -> cover.scaleType = ImageView.ScaleType.CENTER_CROP
+            ExoVideoView.SCALE_TYPE_FIT_CENTER -> cover.scaleType = ImageView.ScaleType.FIT_CENTER
+        }
         Glide.with(exoVideoView).load(it)
                 .placeholder(cover.drawable)
                 .into(cover)

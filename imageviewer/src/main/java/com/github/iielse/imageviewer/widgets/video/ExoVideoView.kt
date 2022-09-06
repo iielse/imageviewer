@@ -39,7 +39,8 @@ open class ExoVideoView @JvmOverloads constructor(
     private val listeners = mutableListOf<AnalyticsListener>()
     private var playUrl: String? = null
     protected var prepared = false
-    private var scaleType = Config.VIDEO_SCALE_TYPE
+    private var st = Config.VIDEO_SCALE_TYPE
+    val scaleType get() = st
 
     fun prepare(url: String) {
         playUrl = url
@@ -77,6 +78,10 @@ open class ExoVideoView @JvmOverloads constructor(
         listeners.toList().forEach { player.removeAnalyticsListener(it) }
         player.release()
         exoPlayer = null
+    }
+
+    fun setScaleType(st: Int) {
+        this.st = st
     }
 
     fun setVideoRenderedCallback(listener: VideoRenderedListener?) {
@@ -123,7 +128,7 @@ open class ExoVideoView @JvmOverloads constructor(
     }
 
     private fun updateTextureViewSize(videoWidth: Int, videoHeight: Int) {
-        when (scaleType) {
+        when (st) {
             SCALE_TYPE_FIT_CENTER -> fitCenter(videoWidth, videoHeight)
             SCALE_TYPE_CENTER_CROP -> centerCrop(videoWidth, videoHeight)
             SCALE_TYPE_FIT_XY -> fitXY(videoWidth, videoHeight)

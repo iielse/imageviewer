@@ -12,6 +12,7 @@ import com.github.iielse.imageviewer.demo.core.viewer.SimpleTransformer
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.data.Service
 import com.github.iielse.imageviewer.demo.utils.PAGE_SIZE
+import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 
 /**
  * viewer的自定义初始化方案
@@ -21,6 +22,7 @@ object ViewerHelper {
     var loadAllAtOnce: Boolean = false
     var fullScreen: Boolean = false
     var simplePlayVideo: Boolean = true
+    var videoScaleType: Int = ExoVideoView.SCALE_TYPE_FIT_CENTER
 
     fun provideImageViewerBuilder(context: FragmentActivity, clickedData: MyData): ImageViewerBuilder {
         // 数据提供者 一次加载 or 分页

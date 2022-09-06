@@ -50,6 +50,16 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
+        android:id="@+id/videoScaleType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="videoScaleType(fitCenter)"
+        android:textAllCaps="false"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/simplePlayVideo"
+        app:layout_constraintStart_toEndOf="@id/simplePlayVideo" />
+
+    <Button
         android:id="@+id/customTransition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,5 +67,5 @@
         android:textAllCaps="false"
         android:textSize="10dp"
         app:layout_constraintBottom_toBottomOf="@id/simplePlayVideo"
-        app:layout_constraintStart_toEndOf="@id/simplePlayVideo" />
+        app:layout_constraintStart_toEndOf="@id/videoScaleType" />
 </androidx.constraintlayout.widget.ConstraintLayout>
