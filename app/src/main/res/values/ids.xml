@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="view_last_click_timestamp" type="id" />
+
+    <item name="view_lifecycle_owner" type="id" />
 </resources>

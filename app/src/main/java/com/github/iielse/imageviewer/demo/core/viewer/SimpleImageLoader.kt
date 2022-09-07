@@ -111,7 +111,7 @@ class SimpleImageLoader : ImageLoader {
                 .doFinally { findLoadingView(viewHolder)?.visibility = View.GONE }
                 .doOnNext { subsamplingView.setImage(ImageSource.uri(Uri.fromFile(it)).also { source -> subsamplingCache.put(url, source) }) }
                 .doOnError { toast(it.message) }
-                .subscribe(ObserverAdapter(subsamplingView.lifecycleOwner?.lifecycle))
+                .subscribe(ObserverAdapter(subsamplingView.lifecycleOwner.lifecycle))
     }
 
     private fun subsamplingDownloadRequest(url: String): Observable<File> {

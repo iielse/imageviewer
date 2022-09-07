@@ -46,7 +46,7 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
     private var testDataViewModel: TestDataViewModel? = null
     private var viewerViewModel: ImageViewerActionViewModel? = null
     private var videoTask: Disposable? = null
-    private var lastVideoVH: RecyclerView.ViewHolder? = null
+    private var lastVideoVH: VideoViewHolder? = null
     private var binding: LayoutIndicatorBinding? = null
     private var currentPosition = -1
 
@@ -133,19 +133,18 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
 
     private fun processSelectVideo(viewHolder: RecyclerView.ViewHolder) {
         videoTask?.dispose()
-        lastVideoVH?.itemView?.findViewById<ExoVideoView>(R.id.videoView)?.reset()
+        lastVideoVH?.binding?.videoView?.reset()
 
         when (viewHolder) {
             is VideoViewHolder -> {
-                val videoView = viewHolder.itemView.findViewById<ExoVideoView>(R.id.videoView)
-
-                val task = object : ObserverAdapter<Long>(videoView?.lifecycleOwner?.lifecycle) {
+                val videoView = viewHolder.binding.videoView
+                val task = object : ObserverAdapter<Long>(videoView.lifecycleOwner.lifecycle) {
                     override fun onNext(t: Long) {
                         if (ViewerHelper.simplePlayVideo) {
-                            videoView?.resume()
+                            videoView.resume()
                         } else {
                             val playerControlView = viewHolder.itemView.findViewById<PlayerControlView>(R.id.playerControlView)
-                            playerControlView?.player = videoView?.player()
+                            playerControlView?.player = videoView.player()
                         }
                     }
                 }
