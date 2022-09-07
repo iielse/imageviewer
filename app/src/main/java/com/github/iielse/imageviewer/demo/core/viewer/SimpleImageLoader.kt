@@ -22,6 +22,7 @@ import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView2
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
@@ -93,6 +94,7 @@ class SimpleImageLoader : ImageLoader {
         })
 
         exoVideoView.prepare(it)
+        exoVideoView.player()?.repeatMode = Player.REPEAT_MODE_ONE
     }
 
     /**
