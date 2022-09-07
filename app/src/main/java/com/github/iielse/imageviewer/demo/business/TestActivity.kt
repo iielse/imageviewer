@@ -3,7 +3,7 @@ package com.github.iielse.imageviewer.demo.business
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.github.iielse.imageviewer.demo.databinding.ActivityTestBinding
+import com.github.iielse.imageviewer.demo.databinding.TestActivityBinding
 import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 import com.google.android.exoplayer2.MediaItem
@@ -16,7 +16,7 @@ import com.google.android.exoplayer2.upstream.FileDataSource
 import java.io.File
 
 class TestActivity : AppCompatActivity() {
-    private val binding by lazy { ActivityTestBinding.inflate(layoutInflater) }
+    private val binding by lazy { TestActivityBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -74,9 +74,12 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
                 val customBinding = ItemVideoCustomLayoutBinding.inflate(LayoutInflater.from(viewHolder.binding.root.context))
                 viewHolder.binding.root.addView(customBinding.root)
                 customBinding.playerControlView.visibility = if (ViewerHelper.simplePlayVideo) View.GONE else View.VISIBLE
-                viewHolder.binding.videoView.let {
-                    it.setOnClickCallback { toast("video clicked") }
-                    it.setOnLongClickListener {
+                viewHolder.binding.videoView.let { videoView ->
+                    videoView.setOnClickCallback {
+                        toast("video clicked")
+                        FullVideoActivity.start(videoView.context, videoView)
+                    }
+                    videoView.setOnLongClickListener {
                         toast("video long clicked")
                         true
                     }

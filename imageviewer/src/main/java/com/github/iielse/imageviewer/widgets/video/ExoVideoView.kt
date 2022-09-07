@@ -41,6 +41,8 @@ open class ExoVideoView @JvmOverloads constructor(
     protected var prepared = false
     private var st = Config.VIDEO_SCALE_TYPE
     val scaleType get() = st
+    private var ar = false
+    val autoRelease get() = ar
 
     fun prepare(url: String) {
         playUrl = url
@@ -80,8 +82,12 @@ open class ExoVideoView @JvmOverloads constructor(
         exoPlayer = null
     }
 
-    fun setScaleType(st: Int) {
-        this.st = st
+    fun setScaleType(scaleType: Int) {
+        st = scaleType
+    }
+
+    fun setAutoRelease(autoRelease: Boolean) {
+        ar = autoRelease
     }
 
     fun setVideoRenderedCallback(listener: VideoRenderedListener?) {
@@ -171,6 +177,6 @@ open class ExoVideoView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        release()
+        if (autoRelease) release()
     }
 }

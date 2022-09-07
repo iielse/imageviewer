@@ -22,7 +22,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".business.TestActivity"
-            android:exported="false"/>
+        <activity android:name=".business.TestActivity" />
+        <activity android:name=".business.FullVideoActivity"
+            android:screenOrientation="landscape" />
     </application>
 </manifest>
