@@ -61,8 +61,13 @@ class FullVideoActivity : AppCompatActivity() {
         if (released) return
         val view = videoView ?: return
         (view.parent as ViewGroup?)?.removeView(view)
-        videoParentRef?.get()?.addView(view)
-        view.setAutoRelease(true)
+
+        val parent = videoParentRef?.get()
+        if (parent != null) {
+            parent.addView(view)
+            view.setAutoRelease(true)
+        } else view.release()
+
         videoParentRef = null
         videoView = null
         released = true
