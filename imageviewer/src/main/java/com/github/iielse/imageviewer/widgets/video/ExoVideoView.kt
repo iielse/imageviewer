@@ -41,7 +41,7 @@ open class ExoVideoView @JvmOverloads constructor(
     protected var prepared = false
     private var st = Config.VIDEO_SCALE_TYPE
     val scaleType get() = st
-    private var ar = false
+    private var ar = true
     val autoRelease get() = ar
 
     fun prepare(url: String) {
