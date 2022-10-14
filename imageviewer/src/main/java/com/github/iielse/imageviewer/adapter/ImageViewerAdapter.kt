@@ -32,7 +32,7 @@ class ImageViewerAdapter(initKey: Long) : PagingDataAdapter<Photo, RecyclerView.
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = getItem(position)
+        val item = provideItem(position)
         when (holder) {
             is PhotoViewHolder -> item?.let { holder.bind(it) }
             is SubsamplingViewHolder -> item?.let { holder.bind(it) }
@@ -64,8 +64,10 @@ class ImageViewerAdapter(initKey: Long) : PagingDataAdapter<Photo, RecyclerView.
     }
 
     private fun provideItem(position: Int) = try {
-        getItem(position) // IndexOutOfBoundsException Item count is zero, getItem() call is invalid
-    } catch (e: Exception) {
+        // Fatal Exception: java.util.ConcurrentModificationException
+        // IndexOutOfBoundsException Item count is zero, getItem() call is invalid
+        getItem(position)
+    } catch (e: Throwable) {
         null
     }
 }
