@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         App.context = this.applicationContext // 随便找位置借个全局context用用.
         Config.TRANSITION_OFFSET_Y = statusBarHeight()
+        // Config.TRANSITION_OFFSET_X = statusBarHeight() // android:screenOrientation="landscape"
         setContentView(binding.root)
         initialViews()
         viewModel.dataList.observe(this, androidx.lifecycle.Observer(adapter::submitList))

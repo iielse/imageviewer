@@ -63,7 +63,7 @@ object TransitionStartHelper {
                     val location = IntArray(2)
                     getLocationOnScreen(startView, location)
                     if (this is ViewGroup.MarginLayoutParams) {
-                        marginStart = location[0]
+                        marginStart = location[0] - Config.TRANSITION_OFFSET_X
                         topMargin = location[1] - Config.TRANSITION_OFFSET_Y
                     }
                 }
@@ -75,7 +75,7 @@ object TransitionStartHelper {
                     val location = IntArray(2)
                     getLocationOnScreen(startView, location)
                     if (this is ViewGroup.MarginLayoutParams) {
-                        marginStart = location[0]
+                        marginStart = location[0] - Config.TRANSITION_OFFSET_X
                         topMargin = location[1] - Config.TRANSITION_OFFSET_Y
                     }
                 }
@@ -87,7 +87,7 @@ object TransitionStartHelper {
                     val location = IntArray(2)
                     getLocationOnScreen(startView, location)
                     if (this is ViewGroup.MarginLayoutParams) {
-                        marginStart = location[0]
+                        marginStart = location[0] - Config.TRANSITION_OFFSET_X
                         topMargin = location[1] - Config.TRANSITION_OFFSET_Y
                     }
                 }
