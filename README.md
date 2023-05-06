@@ -114,20 +114,16 @@ class SimpleTransformer : Transformer {
 } 
 ```
 
-## 到此简单的集成已经完毕.
+到此简单的集成已经完毕.
 
----
 
 ## 进阶使用.
 
-（组合实现以下3个方法.可以追加自定义的展示和功能）
+（实现以下3个方法.可以追加自定义的展示和功能）
 
-* // 自定义'每一页'上的UI.比如可显示图片的更多信息.提供存储分享等更多功能等
-* `builder.setVHCustomizer(MyCustomViewHolderUI())`
-* // 自定义'覆盖(最上)层'上的UI.比如添加指示器等
-* `builder.setOverlayCustomizer(MyCustomIndicatorUI())`
-* // 监听viewer的各种状态变化.包括页面的切换(显示当前在第几页).；过渡动画的执行状态；维护video的播放状态等
-* `builder.setViewerCallback(MyViewerStateChangedListener())`
+* 自定义'每一页'上的UI.比如可显示图片的更多信息.提供存储分享等更多功能等 `builder.setVHCustomizer(MyCustomViewHolderUI())`
+* 自定义'覆盖(最上)层'上的UI.比如添加指示器等 `builder.setOverlayCustomizer(MyCustomIndicatorUI())`
+* 监听viewer的各种状态变化.包括页面的切换(显示当前在第几页).；过渡动画的执行状态；维护video的播放状态等 `builder.setViewerCallback(MyViewerStateChangedListener())`
 
 ```
 // 一般监听翻页onPageSelected可以控制 video播放的状态
@@ -196,8 +192,4 @@ demo可运行. demo可运行. demo可运行 .demo代码已重构.
 
 ### Thanks
 
-#### 如果您觉得我的开源库帮你节省了大量的开发时间，可扫描下方的二维码随意打赏。你的鼓励是我维护项目最大的动力
-
-<img src="https://raw.githubusercontent.com/iielse/res/master/q/ali_q.png" alt="支付宝捐赠" width="320"><img src="https://raw.githubusercontent.com/iielse/res/master/q/wx_q.png" alt="微信捐赠" width="320">
-
-
+如果您觉得我的开源库帮你节省了大量的开发时间，可扫描下方的二维码随意打赏。你的鼓励是我维护项目最大的动力
