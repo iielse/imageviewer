@@ -1,20 +1,20 @@
 package com.github.iielse.imageviewer.demo.business
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import com.github.iielse.imageviewer.demo.core.BaseActivity
 import com.github.iielse.imageviewer.demo.core.ITEM_CLICKED
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.databinding.MainActivityBinding
 import com.github.iielse.imageviewer.demo.utils.App
 import com.github.iielse.imageviewer.demo.utils.statusBarHeight
+import com.github.iielse.imageviewer.demo.utils.useStatusBar
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private val binding by lazy { MainActivityBinding.inflate(layoutInflater) }
     private val viewModel by viewModels<TestDataViewModel> { TestDataViewModel.Factory() }
     private val adapter by lazy { TestDataAdapter() }
@@ -34,6 +34,12 @@ class MainActivity : AppCompatActivity() {
         App.context = this.applicationContext // 随便找位置借个全局context用用.
         Config.TRANSITION_OFFSET_Y = statusBarHeight()
         // Config.TRANSITION_OFFSET_X = statusBarHeight() // android:screenOrientation="landscape"
+        useStatusBar(
+            statusBarLight = true,
+            navigationBarLight = true,
+            statusBarTranslucent = true,
+            navigationBarTranslucent = false
+        )
         setContentView(binding.root)
         initialViews()
         viewModel.dataList.observe(this, androidx.lifecycle.Observer(adapter::submitList))

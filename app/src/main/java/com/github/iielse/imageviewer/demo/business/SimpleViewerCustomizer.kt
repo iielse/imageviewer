@@ -159,7 +159,7 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        val videoView = lastVideoVH?.itemView?.findViewById<ExoVideoView>(R.id.videoView)
+        val videoView = lastVideoVH?.itemView?.findViewById<ExoVideoView>(com.github.iielse.imageviewer.R.id.videoView)
         when (event) {
             Lifecycle.Event.ON_RESUME -> videoView?.resume()
             Lifecycle.Event.ON_PAUSE -> videoView?.pause()

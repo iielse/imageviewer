@@ -1,15 +1,24 @@
 package com.github.iielse.imageviewer.demo.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.graphics.Color
+import android.os.Build
+import android.util.LruCache
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+import android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import com.github.iielse.imageviewer.demo.R
 import io.reactivex.disposables.Disposable
+import androidx.core.graphics.toColorInt
 
 fun View.setOnClickCallback(interval: Long = 500L, callback: (View) -> Unit) {
     if (!isClickable) isClickable = true
@@ -92,19 +101,19 @@ val View.lifecycleOwner: LifecycleOwner get() {
     if (owner == null) {
         val lifecycleOwner = object : LifecycleOwner {
             private val registry = LifecycleRegistry(this)
-            override fun getLifecycle() = registry
+            override val lifecycle = registry
         }
         self.setTag(R.id.view_lifecycle_owner, lifecycleOwner)
         val viewLifecycle = lifecycleOwner.lifecycle
         owner = lifecycleOwner
         self.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(v: View?) {
+            override fun onViewAttachedToWindow(v: View) {
                 viewLifecycle.currentState = Lifecycle.State.CREATED
                 viewLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_START)
                 viewLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
             }
 
-            override fun onViewDetachedFromWindow(v: View?) {
+            override fun onViewDetachedFromWindow(v: View) {
                 viewLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
                 viewLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
                 viewLifecycle.currentState = Lifecycle.State.DESTROYED
@@ -151,3 +160,77 @@ fun ViewGroup.inflate(resId: Int): View {
     return LayoutInflater.from(context).inflate(resId, this, false)
 }
 
+fun Activity.useStatusBar(
+    statusBarLight: Boolean = true,
+    navigationBarLight: Boolean = true,
+    statusBarTranslucent: Boolean = true,
+    navigationBarTranslucent: Boolean = false,
+) {
+    window?.useStatusBar(statusBarLight,navigationBarLight,statusBarTranslucent,navigationBarTranslucent)
+}
+fun Window?.useStatusBar(
+    statusBarLight: Boolean,
+    navigationBarLight: Boolean,
+    statusBarTranslucent: Boolean,
+    navigationBarTranslucent: Boolean,
+) {
+    if (this == null) return
+    fun setWindowFlag(
+        win: Window,
+        bits: Int,
+        on: Boolean
+    ) {
+        val winParams = win.attributes
+        if (on) {
+            winParams.flags = winParams.flags or bits
+        } else {
+            winParams.flags = winParams.flags and bits.inv()
+        }
+        win.attributes = winParams
+    }
+
+    if (statusBarTranslucent) {
+        setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false)
+    }
+    statusBarColor = Color.TRANSPARENT
+
+    if (navigationBarTranslucent) {
+        setWindowFlag(
+            this,
+            WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
+            false
+        )
+    }
+    navigationBarColor = Color.TRANSPARENT
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        navigationBarDividerColor = Color.TRANSPARENT
+    }
+    var result = View.SYSTEM_UI_FLAG_VISIBLE
+    if (statusBarTranslucent) result =
+        result or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+    if (navigationBarTranslucent) result =
+        result or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+    if (statusBarLight) if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        result = result or SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (navigationBarLight) result =
+            result or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+    }
+    try {
+        decorView.systemUiVisibility = result
+    } catch (ignored: Throwable) {}
+}
+
+val String.colorInt: Int get() = getColor(this)
+private val colors = LruCache<String, Int>(80)
+private fun getColor(color: String): Int {
+    val result = colors[color]
+    if (result != null) return result
+    return try {
+        color.toColorInt().also { colors.put(color, it) }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Color.TRANSPARENT
+    }
+}

@@ -56,7 +56,7 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
         return super.dispatchTouchEvent(event)
     }
 
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+    override fun onTouch(v: View?, event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
         return true
     }
@@ -134,13 +134,13 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
         }
     }).apply {
         setOnDoubleTapListener(object : GestureDetector.OnDoubleTapListener {
-            override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                 clickListener?.onClick(this@ExoVideoView2)
                 return true
             }
 
-            override fun onDoubleTapEvent(e: MotionEvent?) = false
-            override fun onDoubleTap(e: MotionEvent?): Boolean = true
+            override fun onDoubleTapEvent(e: MotionEvent) = false
+            override fun onDoubleTap(e: MotionEvent): Boolean = true
         })
     }
 }

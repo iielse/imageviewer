@@ -1,11 +1,9 @@
 package com.github.iielse.imageviewer.demo.core.viewer
 
-import android.graphics.Color
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import androidx.core.content.ContextCompat
 import com.github.iielse.imageviewer.ImageViewerDialogFragment
-import com.github.iielse.imageviewer.demo.R
 
 /**
  * 自定义ImageViewerDialogFragment
@@ -14,13 +12,7 @@ import com.github.iielse.imageviewer.demo.R
 class FullScreenImageViewerDialogFragment : ImageViewerDialogFragment() {
     override fun setWindow(win: Window) {
         super.setWindow(win)
-        win.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-        activity?.window?.statusBarColor = Color.BLACK
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        activity?.window?.statusBarColor = context?.let { ContextCompat.getColor(it, R.color.colorPrimaryDark) }
-                ?: Color.TRANSPARENT
+        win.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        win.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_FULLSCREEN
     }
 }

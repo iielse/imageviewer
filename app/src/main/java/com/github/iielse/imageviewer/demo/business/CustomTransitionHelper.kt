@@ -5,7 +5,7 @@ import android.widget.ImageView
 import com.github.iielse.imageviewer.ImageViewerBuilder
 import com.github.iielse.imageviewer.core.SimpleDataProvider
 import com.github.iielse.imageviewer.core.Transformer
-import com.github.iielse.imageviewer.demo.R
+import com.github.iielse.imageviewer.R
 import com.github.iielse.imageviewer.demo.core.viewer.SimpleImageLoader
 import com.github.iielse.imageviewer.demo.data.Service
 

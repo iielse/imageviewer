@@ -14,8 +14,8 @@ class SimpleTransformer : Transformer {
             require(isMainThread())
             if (!imageView.isAttachedToWindow) return
             imageView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                override fun onViewAttachedToWindow(p0: View?) = Unit
-                override fun onViewDetachedFromWindow(p0: View?) {
+                override fun onViewAttachedToWindow(p0: View) = Unit
+                override fun onViewDetachedFromWindow(p0: View) {
                     transition.remove(imageView)
                     imageView.removeOnAttachStateChangeListener(this)
                 }

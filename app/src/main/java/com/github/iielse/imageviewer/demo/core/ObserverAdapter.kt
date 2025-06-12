@@ -9,7 +9,7 @@ open class ObserverAdapter<T>(lifecycle: Lifecycle?) : DisposableObserver<T>() {
         bindLifecycle(lifecycle)
     }
 
-    override fun onNext(t: T) {
+    override fun onNext(t: T & Any) {
     }
 
     override fun onError(e: Throwable) {
