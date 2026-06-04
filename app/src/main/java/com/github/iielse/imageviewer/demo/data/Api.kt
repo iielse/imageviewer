@@ -6,8 +6,10 @@ import com.github.iielse.imageviewer.demo.core.remove
 import com.github.iielse.imageviewer.demo.core.removeAll
 import com.github.iielse.imageviewer.demo.utils.isMainThread
 import java.lang.IllegalStateException
+import kotlin.coroutines.resume
 import kotlin.math.max
 import kotlin.math.min
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 // 模拟数据源仓库 操作管理
 class Api(
@@ -32,10 +34,19 @@ class Api(
                 id == -1L -> callback(result.subList(0, min(pageSize, result.size))) // 第一页
                 id == null -> callback(emptyList()) // 查完了
                 idx < 0 -> callback(emptyList())
-                else -> callback(result.subList(idx + 1, max(idx + 1, min(idx + 1 + pageSize, result.size - 1))))
+                else -> callback(result.subList(idx + 1, max(idx + 1, min(idx + 1 + pageSize, result.size))))
             }
         }, 100)
     }
+
+    suspend fun queryAfter(id: Long?, pageSize: Int): List<MyData> =
+        suspendCancellableCoroutine { continuation ->
+            asyncQueryAfter(id, pageSize) {
+                if (continuation.isActive) {
+                    continuation.resume(it)
+                }
+            }
+        }
 
     // 模拟删除
     fun asyncDelete(item: List<MyData>, callback: ()->Unit) {

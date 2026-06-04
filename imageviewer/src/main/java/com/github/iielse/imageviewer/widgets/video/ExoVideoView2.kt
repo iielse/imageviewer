@@ -49,22 +49,22 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
         longClickListener = listener
     }
 
-    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (Config.SWIPE_DISMISS && Config.VIEWER_ORIENTATION == ViewPager2.ORIENTATION_HORIZONTAL) {
             handleDispatchTouchEvent(event)
         }
         return super.dispatchTouchEvent(event)
     }
 
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+    override fun onTouch(v: View?, event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
         return true
     }
 
-    private fun handleDispatchTouchEvent(event: MotionEvent?) {
+    private fun handleDispatchTouchEvent(event: MotionEvent) {
         if (!prepared) return
 
-        when (event?.actionMasked) {
+        when (event.actionMasked) {
             MotionEvent.ACTION_POINTER_DOWN -> {
                 singleTouch = false
                 animate()
@@ -134,13 +134,13 @@ class ExoVideoView2 @JvmOverloads constructor(context: Context, attrs: Attribute
         }
     }).apply {
         setOnDoubleTapListener(object : GestureDetector.OnDoubleTapListener {
-            override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                 clickListener?.onClick(this@ExoVideoView2)
                 return true
             }
 
-            override fun onDoubleTapEvent(e: MotionEvent?) = false
-            override fun onDoubleTap(e: MotionEvent?): Boolean = true
+            override fun onDoubleTapEvent(e: MotionEvent) = false
+            override fun onDoubleTap(e: MotionEvent): Boolean = true
         })
     }
 }

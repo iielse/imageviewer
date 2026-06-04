@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.ImageViewerActionViewModel
 import com.github.iielse.imageviewer.ImageViewerBuilder
@@ -17,26 +18,21 @@ import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.core.VHCustomizer
 import com.github.iielse.imageviewer.core.ViewerCallback
 import com.github.iielse.imageviewer.demo.R
-import com.github.iielse.imageviewer.demo.core.ObserverAdapter
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.data.Service
 import com.github.iielse.imageviewer.demo.databinding.ItemVideoCustomLayoutBinding
 import com.github.iielse.imageviewer.demo.databinding.LayoutIndicatorBinding
 import com.github.iielse.imageviewer.demo.utils.inflate
-import com.github.iielse.imageviewer.demo.utils.lifecycleOwner
 import com.github.iielse.imageviewer.demo.utils.setOnClickCallback
 import com.github.iielse.imageviewer.demo.utils.toast
 import com.github.iielse.imageviewer.utils.Config
 import com.github.iielse.imageviewer.viewholders.PhotoViewHolder
 import com.github.iielse.imageviewer.viewholders.SubsamplingViewHolder
 import com.github.iielse.imageviewer.viewholders.VideoViewHolder
-import com.github.iielse.imageviewer.widgets.video.ExoVideoView
 import com.google.android.exoplayer2.ui.PlayerControlView
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * viewer 自定义业务&UI
@@ -45,7 +41,7 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
     private var activity: FragmentActivity? = null
     private var testDataViewModel: TestDataViewModel? = null
     private var viewerViewModel: ImageViewerActionViewModel? = null
-    private var videoTask: Disposable? = null
+    private var videoTask: Job? = null
     private var lastVideoVH: VideoViewHolder? = null
     private var binding: LayoutIndicatorBinding? = null
     private var currentPosition = -1
@@ -132,26 +128,21 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
     }
 
     private fun processSelectVideo(viewHolder: RecyclerView.ViewHolder) {
-        videoTask?.dispose()
+        videoTask?.cancel()
         lastVideoVH?.binding?.videoView?.reset()
 
         when (viewHolder) {
             is VideoViewHolder -> {
                 val videoView = viewHolder.binding.videoView
-                val task = object : ObserverAdapter<Long>(videoView.lifecycleOwner.lifecycle) {
-                    override fun onNext(t: Long) {
-                        if (ViewerHelper.simplePlayVideo) {
-                            videoView.resume()
-                        } else {
-                            val playerControlView = viewHolder.itemView.findViewById<PlayerControlView>(R.id.playerControlView)
-                            playerControlView?.player = videoView.player()
-                        }
+                val task = activity?.lifecycleScope?.launch {
+                    delay(Config.DURATION_TRANSITION + 50)
+                    if (ViewerHelper.simplePlayVideo) {
+                        videoView.resume()
+                    } else {
+                        val playerControlView = viewHolder.itemView.findViewById<PlayerControlView>(R.id.playerControlView)
+                        playerControlView?.player = videoView.player()
                     }
                 }
-                Observable.timer(Config.DURATION_TRANSITION + 50, TimeUnit.MILLISECONDS)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe(task)
                 videoTask = task
                 lastVideoVH = viewHolder
             }
@@ -159,13 +150,13 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        val videoView = lastVideoVH?.itemView?.findViewById<ExoVideoView>(R.id.videoView)
+        val videoView = lastVideoVH?.binding?.videoView
         when (event) {
             Lifecycle.Event.ON_RESUME -> videoView?.resume()
             Lifecycle.Event.ON_PAUSE -> videoView?.pause()
             Lifecycle.Event.ON_DESTROY -> {
                 videoView?.release()
-                videoTask?.dispose()
+                videoTask?.cancel()
                 videoTask = null
             }
             else -> {}
@@ -175,7 +166,7 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
     private fun release() {
         activity?.lifecycle?.removeObserver(this)
         activity = null
-        videoTask?.dispose()
+        videoTask?.cancel()
         videoTask = null
         lastVideoVH = null
         binding = null

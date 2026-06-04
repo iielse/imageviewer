@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.davemorrissey.labs.subscaleview.ImageSource
@@ -14,7 +15,6 @@ import com.github.iielse.imageviewer.core.ImageLoader
 import com.github.iielse.imageviewer.core.Photo
 import com.github.iielse.imageviewer.demo.R
 import com.github.iielse.imageviewer.demo.business.ViewerHelper
-import com.github.iielse.imageviewer.demo.core.ObserverAdapter
 import com.github.iielse.imageviewer.demo.data.MyData
 import com.github.iielse.imageviewer.demo.utils.appContext
 import com.github.iielse.imageviewer.demo.utils.lifecycleOwner
@@ -27,11 +27,11 @@ import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.ui.PlayerControlView
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SimpleImageLoader : ImageLoader {
     /**
@@ -104,32 +104,33 @@ class SimpleImageLoader : ImageLoader {
         val url = (data as? MyData?)?.url ?: return
         val cache = subsamplingCache.get(url)
         if (cache != null) subsamplingView.setImage(cache)
-        else subsamplingDownloadRequest(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { findLoadingView(viewHolder)?.visibility = View.VISIBLE }
-                .doFinally { findLoadingView(viewHolder)?.visibility = View.GONE }
-                .doOnNext { subsamplingView.setImage(ImageSource.uri(Uri.fromFile(it)).also { source -> subsamplingCache.put(url, source) }) }
-                .doOnError { toast(it.message) }
-                .subscribe(ObserverAdapter(subsamplingView.lifecycleOwner.lifecycle))
-    }
-
-    private fun subsamplingDownloadRequest(url: String): Observable<File> {
-        return Observable.create {
+        else subsamplingView.lifecycleOwner.lifecycleScope.launch {
             try {
-                it.onNext(Glide.with(appContext).downloadOnly().load(url).submit().get())
-                it.onComplete()
+                findLoadingView(viewHolder)?.visibility = View.VISIBLE
+                val file = subsamplingDownloadRequest(url)
+                subsamplingView.setImage(
+                    ImageSource.uri(Uri.fromFile(file)).also { source ->
+                        subsamplingCache.put(url, source)
+                    }
+                )
             } catch (e: Throwable) {
-                if (!it.isDisposed) it.onError(e)
+                toast(e.message)
+            } finally {
+                findLoadingView(viewHolder)?.visibility = View.GONE
             }
         }
     }
+
+    private suspend fun subsamplingDownloadRequest(url: String): File =
+        withContext(Dispatchers.IO) {
+            Glide.with(appContext).downloadOnly().load(url).submit().get()
+        }
 
     private fun findLoadingView(viewHolder: RecyclerView.ViewHolder): View? {
         return viewHolder.itemView.findViewById<ProgressBar>(R.id.loadingView)
     }
 
     companion object {
-        val subsamplingCache = LruCache<String, ImageSource>(3)
+        val subsamplingCache = LruCache<String, ImageSource>(2)
     }
 }

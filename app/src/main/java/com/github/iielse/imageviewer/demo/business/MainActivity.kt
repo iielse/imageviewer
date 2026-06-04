@@ -36,7 +36,9 @@ class MainActivity : AppCompatActivity() {
         // Config.TRANSITION_OFFSET_X = statusBarHeight() // android:screenOrientation="landscape"
         setContentView(binding.root)
         initialViews()
-        viewModel.dataList.observe(this, androidx.lifecycle.Observer(adapter::submitList))
+        viewModel.dataList.observe(this) {
+            adapter.submitData(lifecycle, it)
+        }
 
         viewModel.request()
     }
@@ -49,10 +51,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun showViewer(item: MyData?) {
         if (item == null) return
-//        if (item.id == 10L) {
-//            startActivity(Intent(this, TestActivity::class.java))
-//            return
-//        }
         ViewerHelper.provideImageViewerBuilder(this, item)
                 .show()
     }
@@ -107,4 +105,3 @@ class MainActivity : AppCompatActivity() {
         adapter.setListener(::handleAdapterListener)
     }
 }
-

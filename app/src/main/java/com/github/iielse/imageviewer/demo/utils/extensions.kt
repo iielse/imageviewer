@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import com.github.iielse.imageviewer.demo.R
-import io.reactivex.disposables.Disposable
 
 fun View.setOnClickCallback(interval: Long = 500L, callback: (View) -> Unit) {
     if (!isClickable) isClickable = true
@@ -24,10 +23,6 @@ fun View.setOnClickCallback(interval: Long = 500L, callback: (View) -> Unit) {
             callback(v)
         }
     })
-}
-
-fun Disposable.bindLifecycle(lifecycle: Lifecycle?) {
-    lifecycle?.observeOnDestroy { dispose() }
 }
 
 val View.activity: FragmentActivity?
@@ -92,19 +87,19 @@ val View.lifecycleOwner: LifecycleOwner get() {
     if (owner == null) {
         val lifecycleOwner = object : LifecycleOwner {
             private val registry = LifecycleRegistry(this)
-            override fun getLifecycle() = registry
+            override val lifecycle get() = registry
         }
         self.setTag(R.id.view_lifecycle_owner, lifecycleOwner)
         val viewLifecycle = lifecycleOwner.lifecycle
         owner = lifecycleOwner
         self.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(v: View?) {
+            override fun onViewAttachedToWindow(v: View) {
                 viewLifecycle.currentState = Lifecycle.State.CREATED
                 viewLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_START)
                 viewLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
             }
 
-            override fun onViewDetachedFromWindow(v: View?) {
+            override fun onViewDetachedFromWindow(v: View) {
                 viewLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
                 viewLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
                 viewLifecycle.currentState = Lifecycle.State.DESTROYED
@@ -150,4 +145,3 @@ fun Lifecycle.observeOnResume(once: Boolean = true, block: () -> Unit) {
 fun ViewGroup.inflate(resId: Int): View {
     return LayoutInflater.from(context).inflate(resId, this, false)
 }
-

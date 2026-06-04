@@ -2,7 +2,7 @@ package com.github.iielse.imageviewer.demo.core
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.paging.PagedListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.demo.R
@@ -31,7 +31,7 @@ data class Cell(
 }
 
 
-abstract class BasePagedAdapter : PagedListAdapter<Cell, RecyclerView.ViewHolder>(DIFF) {
+abstract class BasePagedAdapter : PagingDataAdapter<Cell, RecyclerView.ViewHolder>(DIFF) {
 
     private var listener: AdapterCallback? = null
 

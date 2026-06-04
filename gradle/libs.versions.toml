@@ -1,0 +1,44 @@
+[versions]
+agp = "9.2.1"
+compileSdk = "36"
+minSdk = "23"
+targetSdk = "36"
+appcompat = "1.7.1"
+coreKtx = "1.18.0"
+activityKtx = "1.13.0"
+constraintlayout = "2.2.1"
+recyclerview = "1.4.0"
+viewpager2 = "1.1.0"
+paging = "3.5.0"
+glide = "5.0.7"
+photoView = "2.3.0"
+subsamplingScaleImageView = "3.10.0"
+exoplayer = "2.19.1"
+transition = "1.7.0"
+lifecycle = "2.10.0"
+coroutines = "1.11.0"
+ksp = "2.2.10-2.0.2"
+
+[plugins]
+application = { id = "com.android.application", version.ref = "agp" }
+library = { id = "com.android.library", version.ref = "agp" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[libraries]
+activityKtx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+coreKtx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+exoplayer = { module = "com.google.android.exoplayer:exoplayer", version.ref = "exoplayer" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glideKsp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
+lifecycleLiveDataKtx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycleRuntimeKtx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycleViewModelKtx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+pagingRuntimeKtx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "paging" }
+photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
+recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+subsamplingScaleImageView = { module = "com.davemorrissey.labs:subsampling-scale-image-view-androidx", version.ref = "subsamplingScaleImageView" }
+transition = { module = "androidx.transition:transition", version.ref = "transition" }
+viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
