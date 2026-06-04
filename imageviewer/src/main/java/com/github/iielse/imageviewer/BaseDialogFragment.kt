@@ -1,9 +1,14 @@
 package com.github.iielse.imageviewer
 
 import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.CallSuper
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 
@@ -37,11 +42,25 @@ open class BaseDialogFragment : DialogFragment() {
     }
 
     open fun setWindow(win: Window) {
+        WindowCompat.setDecorFitsSystemWindows(win, false)
+        win.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        win.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        win.statusBarColor = Color.TRANSPARENT
+        win.navigationBarColor = Color.TRANSPARENT
+        WindowInsetsControllerCompat(win, win.decorView).apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = false
+        }
+
         win.setWindowAnimations(R.style.Animation_Keep)
         win.decorView.setPadding(0, 0, 0, 0)
         val lp = win.attributes
         lp.width = WindowManager.LayoutParams.MATCH_PARENT
         lp.height = WindowManager.LayoutParams.MATCH_PARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            lp.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
         win.attributes = lp
         win.setGravity(Gravity.CENTER)
     }
