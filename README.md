@@ -20,7 +20,7 @@
 
 ## 引入
 
-JitPack:
+JitPack: [![](https://jitpack.io/v/iielse/imageviewer.svg)](https://jitpack.io/#iielse/imageviewer)
 
 ```gradle
 implementation("com.github.iielse:imageviewer:x.y.z")
