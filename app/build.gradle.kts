@@ -55,5 +55,6 @@ dependencies {
     ksp(libs.glideKsp)
     implementation(libs.photoView)
     implementation(libs.subsamplingScaleImageView)
-    implementation(libs.exoplayer)
+    implementation(libs.media3Exoplayer)
+    implementation(libs.media3Ui)
 }

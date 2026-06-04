@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.pagingRuntimeKtx)
     implementation(libs.viewpager2)
     implementation(libs.constraintlayout)
-    implementation(libs.exoplayer)
+    implementation(libs.media3Exoplayer)
     implementation(libs.photoView)
     implementation(libs.subsamplingScaleImageView)
 }

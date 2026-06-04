@@ -8,8 +8,10 @@ import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.github.iielse.imageviewer.adapter.ImageViewerAdapter
@@ -24,6 +26,7 @@ import com.github.iielse.imageviewer.utils.Config.OFFSCREEN_PAGE_LIMIT
 import com.github.iielse.imageviewer.utils.TransitionEndHelper
 import com.github.iielse.imageviewer.utils.TransitionStartHelper
 import com.github.iielse.imageviewer.utils.findViewWithKeyTag
+import kotlinx.coroutines.launch
 import kotlin.math.max
 
 open class ImageViewerDialogFragment : BaseDialogFragment() {
@@ -70,12 +73,16 @@ open class ImageViewerDialogFragment : BaseDialogFragment() {
         viewModel.viewerUserInputEnabled.observe(viewLifecycleOwner) {
             binding.viewer.isUserInputEnabled = it ?: true
         }
-        actions.actionEvent.observe(viewLifecycleOwner, Observer(::handle))
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                actions.actionEvent.collect(::handle)
+            }
+        }
     }
 
 
-    private fun handle(action: Pair<String, Any?>?) {
-        when (action?.first) {
+    private fun handle(action: Pair<String, Any?>) {
+        when (action.first) {
             ViewerActions.SET_CURRENT_ITEM -> binding.viewer.currentItem = max(action.second as Int, 0)
             ViewerActions.DISMISS -> onBackPressed()
             ViewerActions.REMOVE_ITEMS -> viewModel.remove(adapter, action.second) { onBackPressed() }

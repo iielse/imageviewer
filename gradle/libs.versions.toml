@@ -13,7 +13,7 @@ paging = "3.5.0"
 glide = "5.0.7"
 photoView = "2.3.0"
 subsamplingScaleImageView = "3.10.0"
-exoplayer = "2.19.1"
+media3 = "1.9.4"
 transition = "1.7.0"
 lifecycle = "2.10.0"
 coroutines = "1.11.0"
@@ -30,7 +30,8 @@ appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat"
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 coreKtx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-exoplayer = { module = "com.google.android.exoplayer:exoplayer", version.ref = "exoplayer" }
+media3Exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
+media3Ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glideKsp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 lifecycleLiveDataKtx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }

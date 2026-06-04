@@ -1,7 +1,7 @@
 package com.github.iielse.imageviewer.demo.business
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
                 .show()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initialViews() {
         binding.orientation.setOnClickListener {
             val orientationH = ViewerHelper.orientationH
