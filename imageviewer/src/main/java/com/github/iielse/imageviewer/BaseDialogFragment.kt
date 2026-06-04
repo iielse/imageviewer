@@ -45,8 +45,6 @@ open class BaseDialogFragment : DialogFragment() {
         WindowCompat.setDecorFitsSystemWindows(win, false)
         win.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         win.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        win.statusBarColor = Color.TRANSPARENT
-        win.navigationBarColor = Color.TRANSPARENT
         WindowInsetsControllerCompat(win, win.decorView).apply {
             isAppearanceLightStatusBars = false
             isAppearanceLightNavigationBars = false

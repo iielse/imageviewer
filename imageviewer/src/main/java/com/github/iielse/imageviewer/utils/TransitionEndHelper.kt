@@ -4,7 +4,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
@@ -178,7 +177,7 @@ object TransitionEndHelper {
             location[1] = (startView?.getTag(R.id.viewer_start_view_location_1) as? Int) ?: 0
         }
 
-        if (startView?.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL) {
+        if (startView?.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
             location[0] = startView.context.resources.displayMetrics.widthPixels - location[0] - startView.width
         }
     }

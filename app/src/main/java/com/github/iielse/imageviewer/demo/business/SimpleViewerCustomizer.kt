@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerControlView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.iielse.imageviewer.ImageViewerActionViewModel
@@ -127,6 +128,7 @@ class SimpleViewerCustomizer : LifecycleEventObserver, VHCustomizer, OverlayCust
         processSelectVideo(viewHolder)
     }
 
+    @UnstableApi
     private fun processSelectVideo(viewHolder: RecyclerView.ViewHolder) {
         videoTask?.cancel()
         lastVideoVH?.binding?.videoView?.reset()

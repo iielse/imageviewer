@@ -2,7 +2,6 @@
 
 plugins {
     alias(libs.plugins.application)
-    alias(libs.plugins.ksp)
 }
 
 val bundleId: String by project
@@ -52,7 +51,6 @@ dependencies {
     implementation(libs.coroutinesAndroid)
 
     implementation(libs.glide)
-    ksp(libs.glideKsp)
     implementation(libs.photoView)
     implementation(libs.subsamplingScaleImageView)
     implementation(libs.media3Exoplayer)

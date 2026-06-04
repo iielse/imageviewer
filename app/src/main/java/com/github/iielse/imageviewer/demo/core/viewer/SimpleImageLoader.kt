@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.source.LoadEventInfo
 import androidx.media3.exoplayer.source.MediaLoadData
@@ -44,6 +45,7 @@ class SimpleImageLoader : ImageLoader {
                 .into(view)
     }
 
+    @UnstableApi
     override fun load(exoVideoView: ExoVideoView2, data: Photo, viewHolder: RecyclerView.ViewHolder) {
         val it = (data as? MyData?)?.url ?: return
         val cover = viewHolder.itemView.findViewById<ImageView>(R.id.imageView)

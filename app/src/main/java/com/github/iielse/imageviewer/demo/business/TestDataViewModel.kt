@@ -16,7 +16,8 @@ class TestDataViewModel(
 
     class Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return TestDataViewModel( TestRepository.get()) as T
+            return modelClass.cast(TestDataViewModel(TestRepository.get()))
+                ?: error("Unsupported ViewModel class: ${modelClass.name}")
         }
     }
 }

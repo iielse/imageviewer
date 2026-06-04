@@ -1,9 +1,16 @@
 package com.github.iielse.imageviewer.demo.business
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updateLayoutParams
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.github.iielse.imageviewer.demo.core.ITEM_CLICKED
@@ -32,9 +39,28 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         App.context = this.applicationContext // 随便找位置借个全局context用用.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
         Config.TRANSITION_OFFSET_Y = statusBarHeight()
         // Config.TRANSITION_OFFSET_X = statusBarHeight() // android:screenOrientation="landscape"
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.orientation.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                leftMargin = systemBars.left
+                bottomMargin = systemBars.bottom
+            }
+            binding.simplePlayVideo.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                leftMargin = systemBars.left
+            }
+            insets
+        }
         initialViews()
         viewModel.dataList.observe(this) {
             adapter.submitData(lifecycle, it)

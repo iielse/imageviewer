@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
@@ -151,7 +150,7 @@ object TransitionStartHelper {
             location[1] = (startView?.getTag(R.id.viewer_start_view_location_1) as? Int) ?: 0
         }
 
-        if (startView?.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL) {
+        if (startView?.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
             location[0] = startView.context.resources.displayMetrics.widthPixels - location[0] - startView.width
         }
     }

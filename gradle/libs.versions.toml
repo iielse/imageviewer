@@ -17,12 +17,10 @@ media3 = "1.9.4"
 transition = "1.7.0"
 lifecycle = "2.10.0"
 coroutines = "1.11.0"
-ksp = "2.2.10-2.0.2"
 
 [plugins]
 application = { id = "com.android.application", version.ref = "agp" }
 library = { id = "com.android.library", version.ref = "agp" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [libraries]
 activityKtx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
@@ -33,7 +31,6 @@ coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android
 media3Exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
 media3Ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-glideKsp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 lifecycleLiveDataKtx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
 lifecycleRuntimeKtx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycleViewModelKtx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
