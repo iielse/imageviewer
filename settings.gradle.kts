@@ -20,5 +20,5 @@ dependencyResolutionManagement {
     }
 }
 
-include(":app")
+include(":androidApp")
 include(":imageviewer")
