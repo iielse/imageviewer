@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
         }
-        Config.TRANSITION_OFFSET_Y = statusBarHeight()
+        // Config.TRANSITION_OFFSET_Y = statusBarHeight()
         // Config.TRANSITION_OFFSET_X = statusBarHeight() // android:screenOrientation="landscape"
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
